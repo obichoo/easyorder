@@ -1,3 +1,7 @@
-export default function Page() {
-    return <div>About</div>
+import Navbar from "@/app/components/navbar/page";
+
+export default function Home() {
+    return <div>
+        <Navbar />
+        About</div>
 }
