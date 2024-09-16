@@ -2,20 +2,84 @@
 import {IFavorite} from "@/models/favorite.model";
 import fakeFavorites from "@/app/favorites/fake-favorites";
 import { MdFavorite } from "react-icons/md";
+import {useRouter} from "next/navigation";
+import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure} from "@nextui-org/modal";
+import {useState} from "react";
 
-const FavoriteItem = ({favorite}: { favorite: IFavorite }) => {
-    const handleFavoriteClick = (event) => {
-        event.preventDefault()
-        console.log('favorite clicked', favorite)
+const RemoveFavoriteModal = ({confirm, favorite }: { confirm: Function, favorite: IFavorite }) => {
+    const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
+
+    const handleOpen = (event: any) => {
+        event.stopPropagation()
+        onOpen()
+    }
+
+    const handleClose = (event: any) => {
+        event.stopPropagation()
+        onClose()
+    }
+
+    const handleConfirm = (event: any) => {
+        event.stopPropagation()
+        confirm()
+        onClose()
     }
 
     return (
-        <div className={'w-60 h-60 shadow mx-auto rounded-2xl p-3 duration-100 hover:scale-105 bg-white'} key={favorite.id}>
-            <img className={'rounded-xl'} src="https://picsum.photos/224/200" alt=""/>
+        <>
+            <button onClick={(e) => handleOpen(e)}>
+                <MdFavorite className={'text-red-500 text-2xl'} />
+            </button>
+            <Modal  isOpen={isOpen} onOpenChange={onOpenChange} >
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">Retirer des favoris</ModalHeader>
+                            <ModalBody>
+                                <p>
+                                   Voulez-vous vraiment retirer ce produit de vos favoris ?
+                                </p>
+                            </ModalBody>
+                            <ModalFooter>
+                                <button className="bg-easyorder-gray py-1 px-2 rounded" onClick={(e) => handleClose(e)}>
+                                    Annuler
+                                </button>
+                                <button className="bg-easyorder-green py-1 px-2 rounded" onClick={(e) => handleConfirm(e)}>
+                                    Confirmer
+                                </button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
+        </>
+    );
+}
+
+const FavoriteItem = ({favorite, remove}: { favorite: IFavorite, remove: Function }) => {
+    const router = useRouter()
+
+    const handleRemoveFavorite = () => {
+        remove()
+    }
+
+    const handleProductClick = (event: any) => {
+        console.log('product clicked', favorite.product)
+        router.push(`/products/${favorite.product?.id}`)
+    }
+
+
+    return (
+        <div
+            className={'w-60 h-60 shadow mx-auto rounded-2xl p-3 duration-100 bg-white cursor-pointer hover:scale-105'}
+            key={favorite.id}
+            onClick={(e) => handleProductClick(e)}
+        >
+            <img className={'rounded-xl '} src="https://picsum.photos/224/200" alt=""/>
             <div className={'flex justify-between mt-1'}>
                 <p className={'text-center'}>{favorite.product?.name}</p>
-                <div className={'cursor-pointer'} onClick={(e) => handleFavoriteClick(e)}>
-                    <MdFavorite className={'text-red-500 text-2xl'} />
+                <div>
+                    <RemoveFavoriteModal favorite={favorite} confirm={handleRemoveFavorite}></RemoveFavoriteModal>
                 </div>
             </div>
         </div>
@@ -23,14 +87,18 @@ const FavoriteItem = ({favorite}: { favorite: IFavorite }) => {
 }
 
 const Favorites = () => {
-    const favorites = fakeFavorites
+    const [favorites, setFavorites] = useState<IFavorite[]>(fakeFavorites)
+
+    const handleRemove = (favorite: IFavorite) => {
+        setFavorites(favorites.filter(fav => fav.id !== favorite.id))
+    }
 
     return (
         <div>
             <h1 className={'text-center text-3xl my-16'}>Mes favoris</h1>
             <div className={'w-full grid grid-cols-5 gap-10'}>
                 {favorites.map(favorite => (
-                    <FavoriteItem key={favorite.id} favorite={favorite} />
+                    <FavoriteItem key={favorite.id} favorite={favorite} remove={() => handleRemove(favorite)} />
                 ))}
             </div>
         </div>
