@@ -129,7 +129,7 @@ const Login = () => {
                             <button
                                 type="button"
                                 onClick={() => setType('signup')}
-                                className="text-easyorder-black hover:underline">
+                                className="text-easyorder-green hover:underline">
                                 S’inscrire
                             </button>
                         </>
@@ -139,7 +139,7 @@ const Login = () => {
                             <button
                                 type="button"
                                 onClick={() => setType('signin')}
-                                className="text-easyorder-black hover:underline">
+                                className="text-easyorder-green hover:underline">
                                 Se connecter
                             </button>
                         </>
