@@ -1,6 +1,4 @@
-import {IFavorite} from "../../models/favorite.model";
-
-const favorites = [
+const favoriteProducts = [
     {
         id: 1,
         user_id: 1,
@@ -123,4 +121,49 @@ const favorites = [
     }
 ]
 
-export default favorites;
+const favoriteShopKeepers = [
+    {
+        id: 1,
+        user_id: 1,
+        user: {
+            id: 1,
+            email: 'jean@gmail.com',
+            password: 'jean',
+            name: 'Jean Dupont',
+            role: 'artisan',
+            company: 'Jean Dupont Company',
+            createdAt: '2020-01-01',
+            updatedAt: '2020-01-01'
+        }
+    },
+    {
+        id: 2,
+        user_id: 2,
+        user: {
+            id: 2,
+            email: 'quentin@gmail.com',
+            password: 'quentin',
+            name: 'Quentin Dupont',
+            role: 'artisan',
+            company: 'Quentin Dupont Company',
+            createdAt: '2020-01-01',
+            updatedAt: '2020-01-01'
+        }
+    },
+    {
+        id: 5,
+        user_id: 3,
+        user: {
+            id: 3,
+            email: 'edouard@gmail.com',
+            password: 'edouard',
+            name: 'Edouard Dupont',
+            role: 'artisan',
+            company: 'Edouard Dupont Company',
+            createdAt: '2020-01-01',
+            updatedAt: '2020-01-01'
+        }
+    }
+]
+
+export { favoriteProducts, favoriteShopKeepers };
