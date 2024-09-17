@@ -6,7 +6,6 @@ import CarrouselBanner from '../components/carousel/page';
 const Home = () => {
     return (
         <div className="min-h-screen bg-gray-100">
-            <Navbar />
 
             <main className="mt-8 px-6">
 
