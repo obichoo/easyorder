@@ -1,11 +1,9 @@
-import Navbar from '@/app/components/navbar/page';
 import React from 'react';
 import { FaHeart } from 'react-icons/fa';
 
 export default function Page() {
   return (
     <div>
-      <Navbar />
       <div className="w-full h-16 bg-easyorder-gray mb-4"></div>
         {/* Nom du produit */}
         <h1 className="text-center text-3xl font-bold mb-12">Nom du Produit</h1>

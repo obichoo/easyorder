@@ -23,20 +23,19 @@ export default function Page() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Navbar />
+    <div className="min-h-screen">
       {/* Section Actualités */}
-      <section className="py-12 bg-white">
+      <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-extrabold text-easyorder-black text-center">Actualités</h2>
           <div className="mt-6 space-y-4">
-            <div className="p-4 bg-easyorder-gray rounded-lg shadow-md">
+            <div className="p-4 bg-easyorder-gray rounded-lg shadow-md bg-white">
               <h3 className="text-xl font-semibold text-easyorder-green"> 15/09/2024 - Nouvelle fonctionnalité déployée !</h3>
               <p className="mt-2 text-easyorder-black">
                 Nous avons récemment introduit une nouvelle fonctionnalité pour améliorer l'expérience utilisateur.
               </p>
             </div>
-            <div className="p-4 bg-easyorder-gray rounded-lg shadow-md">
+            <div className="p-4 bg-easyorder-gray rounded-lg shadow-md bg-white">
               <h3 className="text-xl font-semibold text-easyorder-green">10/09/2024 - Mise à jour du site web</h3>
               <p className="mt-2 text-easyorder-black">
                 Notre site a été mis à jour avec une interface plus moderne et des performances améliorées.
@@ -47,9 +46,9 @@ export default function Page() {
       </section>
 
       {/* Formulaire de contact */}
-      <section className="py-12 bg-white">
+      <section className="py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="p-6 bg-easyorder-gray rounded-lg shadow-md">
+          <div className="p-6 bg-easyorder-gray rounded-lg shadow-md bg-white">
             <h2 className="text-3xl font-extrabold text-easyorder-black text-center p-6">Contactez-nous</h2>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="flex flex-col items-center pt-2">
