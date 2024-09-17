@@ -48,7 +48,7 @@ export default function Page() {
         </div>
 
         {/* Suggestion de produits */}
-        <div className="mt-8">
+        <div className="mt-8 mb-6">
           <h2 className="text-2xl font-bold mb-4">Suggestions</h2>
           <div className="grid grid-cols-4 gap-4">
             {/* Produit 1 */}
