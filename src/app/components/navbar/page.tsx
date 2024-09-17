@@ -27,7 +27,7 @@ const Navbar = () => {
                         <Link href="/favorites" className="text-gray-700 hover:text-gray-900">Mes favoris</Link>
                     </li>
                     <li>
-                        <Link href="/messagerie" className="text-gray-700 hover:text-gray-900">Messagerie</Link>
+                        <Link href="/chat" className="text-gray-700 hover:text-gray-900">Messagerie</Link>
                     </li>
                 </ul>
 
@@ -50,10 +50,6 @@ const Navbar = () => {
                         </Link>
                     ) : (
                         <div>
-                            <Link href="/signup" className="text-gray-700 hover:text-gray-900">
-                                S'inscrire
-                            </Link>
-                            <span className="mx-2">/</span>
                             <Link href="/login" className="text-gray-700 hover:text-gray-900">
                                 Se connecter
                             </Link>

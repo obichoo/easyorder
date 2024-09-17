@@ -14,7 +14,7 @@ const Login = () => {
         setErrors({}); // Réinitialiser les erreurs
         setLoading(true);
 
-        const form = e.target as HTMLFormElement;
+        const form = e.target as any;
         const email = form.email.value;
         const password = form.password.value;
         const name = type === 'signup' ? form.name.value : null;
@@ -116,7 +116,7 @@ const Login = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className={`w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                        className={`w-full bg-easyorder-green text-white p-2 rounded-md hover:bg-easyorder-black transition ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}>
                         {loading ? 'Chargement...' : type === 'signin' ? 'Se connecter' : 'S’inscrire'}
                     </button>
                 </form>
@@ -129,7 +129,7 @@ const Login = () => {
                             <button
                                 type="button"
                                 onClick={() => setType('signup')}
-                                className="text-blue-500 hover:underline">
+                                className="text-easyorder-black hover:underline">
                                 S’inscrire
                             </button>
                         </>
@@ -139,7 +139,7 @@ const Login = () => {
                             <button
                                 type="button"
                                 onClick={() => setType('signin')}
-                                className="text-blue-500 hover:underline">
+                                className="text-easyorder-black hover:underline">
                                 Se connecter
                             </button>
                         </>

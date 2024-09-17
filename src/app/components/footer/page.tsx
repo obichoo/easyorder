@@ -6,7 +6,7 @@ const Footer = () => {
     ]
 
     return (
-        <footer className={'bg-easyorder-black w-full h-full'}>
+        <footer className={'bg-easyorder-black w-full h-28'}>
             <ul className={'container w-full h-full flex items-center justify-center gap-x-20 flex-wrap'}>
                 {footerItems.map((item, index) => (
                     <li key={index}>

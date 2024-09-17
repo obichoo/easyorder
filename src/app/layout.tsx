@@ -11,9 +11,9 @@ export default function RootLayout({
   return (
     <html lang="en">
         <body className="antialiased">
-            <NextUIProvider className="bg-easyorder-gray grid layout">
+            <NextUIProvider className="relative easyorder-container h-screen grid">
                 <Navbar />
-                <div className={'container'}>
+                <div className="container flex flex-col bg-easyorder-gray">
                   {children}
                 </div>
                 <Footer />
