@@ -12,6 +12,7 @@
     "@next/env": "^14.2.12",
     "@nextui-org/modal": "^2.0.41",
     "@nextui-org/react": "^2.4.8",
+    "@stripe/react-stripe-js": "^2.8.0",
     "@stripe/stripe-js": "^4.5.0",
     "axios": "^1.7.7",
     "chart.js": "^4.4.4",

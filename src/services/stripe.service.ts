@@ -1,13 +1,13 @@
 import Stripe from 'stripe';
 import {loadStripe} from "@stripe/stripe-js";
 
+
 const secretKey = process.env.NEXT_PUBLIC_STRIPE_PRIVATE_KEY as string;
 const stripe = new Stripe(secretKey);
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY as string);
 
 class StripeService {
-    async createPayment(amount: number, stripeId?: string) {// Récupère le montant du paiement du frontend
-        // Créer une session de paiement avec un montant variable
+    async createPayment(amount: number, stripeId?: string) {
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: [
@@ -24,21 +24,28 @@ class StripeService {
                 },
             ],
             mode: 'payment',
-            success_url: 'https://easyorder-gamma.vercel.app/payment/confirmation',
-            cancel_url: 'https://easyorder-gamma.vercel.app/payment/failure',
-            customer: stripeId
+            // success_url: 'https://easyorder-gamma.vercel.app/payment/confirmation',
+            // cancel_url: 'https://easyorder-gamma.vercel.app/payment/failure',
+            // return_url: 'https://easyorder-gamma.vercel.app/payment/confirmation',
+            customer: stripeId,
+            ui_mode: 'embedded',
+            redirect_on_completion: 'never',
         },{
             apiKey: secretKey
         });
 
-        const stripeRedirect = await stripePromise;
-        const { error }: any = await stripeRedirect?.redirectToCheckout({ sessionId: session.id });
+        return session
 
-        if (error) {
-            return { success: false, error }
-        } else {
-            return { success: true }
-        }
+        // window.location.replace(session.url as string)
+
+        // const stripeRedirect = await stripePromise;
+        // const { error }: any = await stripeRedirect?.redirectToCheckout({ sessionId: session.id });
+        //
+        // if (error) {
+        //     return { success: false, error }
+        // } else {
+        //     return { success: true }
+        // }
     }
 }
 
