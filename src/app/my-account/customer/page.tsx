@@ -18,7 +18,7 @@ export default function ProfileEditPage() {
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      const userData = JSON.parse(storedUser).user;
+      const userData = JSON.parse(storedUser);
       setName(userData.name);
       setEmail(userData.email);
       setPreviewImage(userData.profile_pic || '/default-profile.png');

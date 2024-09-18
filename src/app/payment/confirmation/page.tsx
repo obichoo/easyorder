@@ -1,7 +1,29 @@
+'use client';
+
 import Link from 'next/link';
 import { FaCheckCircle } from 'react-icons/fa';
+import UserService from "@/services/user.service";
+import {useEffect} from "react";
+import { useSearchParams } from 'next/navigation'
 
 const ConfirmationPage = () => {
+    const searchParams = useSearchParams()
+    const setSubscriber = () => {
+        const userJson = localStorage.getItem('user');
+        if (!userJson) return;
+        const user = JSON.parse(userJson);
+        user.subscriber = true;
+        UserService.updateUser(user).then(() => {
+            localStorage.setItem('user', JSON.stringify(user));
+        })
+    }
+
+    useEffect(() => {
+        if (searchParams.get('subscription') === 'true') {
+            setSubscriber();
+        }
+    }, [])
+
     return (
         <div className="flex flex-col items-center justify-center h-full mb-10">
             <div className="text-center">
