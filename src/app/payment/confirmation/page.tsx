@@ -3,10 +3,18 @@
 import Link from 'next/link';
 import { FaCheckCircle } from 'react-icons/fa';
 import UserService from "@/services/user.service";
-import {useEffect} from "react";
+import {Suspense, useEffect} from "react";
 import { useSearchParams } from 'next/navigation'
 
 const ConfirmationPage = () => {
+    return (
+        <Suspense>
+            <Page />
+        </Suspense>
+    )
+}
+
+const Page = () => {
     const searchParams = useSearchParams()
     const setSubscriber = () => {
         const userJson = localStorage.getItem('user');

@@ -56,7 +56,7 @@ export default function ProfileEditPage() {
       }
 
       if (userId) {
-        await UserService.updateUser({ id: userId, ...updatedUser });
+        await UserService.updateUser({ _id: userId, ...updatedUser });
         setUpdateMessage("Profil mis à jour avec succès !");
       }
 
