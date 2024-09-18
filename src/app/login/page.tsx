@@ -1,153 +1,147 @@
 'use client';
 
-import { useState } from "react";
-import UserService from "@/services/user.service"; // Import du service utilisateur
+import Link from 'next/link';
+import { useState, useRef, useEffect } from 'react';
+import { FaUserCircle, FaSearch } from 'react-icons/fa';
+import UserService from '@/services/user.service';
 
-type LoginType = 'signin' | 'signup';
+const Navbar = () => {
+    const [isLoggedIn, setIsLoggedIn] = useState(true);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [user, setUser] = useState(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
-const Login = () => {
-    const [type, setType] = useState<LoginType>('signin');
-    const [errors, setErrors] = useState<{ email?: string; password?: string; name?: string; server?: string }>({});
-    const [loading, setLoading] = useState(false);
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setErrors({}); // Réinitialiser les erreurs
-        setLoading(true);
-
-        const form = e.target as any;
-        const email = form.email.value;
-        const password = form.password.value;
-        const name = type === 'signup' ? form.name.value : null;
-
-        let newErrors: { email?: string; password?: string; name?: string } = {};
-
-        // Validation front-end
-        if (!email) newErrors.email = "L'email est requis.";
-        if (!password) newErrors.password = "Le mot de passe est requis.";
-        if (type === 'signup' && !name) newErrors.name = "Le nom est requis.";
-
-        if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
-            setLoading(false);
-            return;
-        }
-
+    // Fonction pour récupérer n'importe quel utilisateur
+    const fetchAnyUser = async () => {
         try {
-            let response;
-            if (type === 'signin') {
-                // Utilisation du service pour la connexion
-                response = await UserService.login(email, password);
-            } else {
-                // Utilisation du service pour l'inscription
-                const user = { email, password, name };
-                response = await UserService.createUser(user);
-            }
+            const response = await UserService.getAllUsers();
+            const users = response.data;
 
-            if (response.status === 200) {
-                alert(type === 'signin' ? 'Connexion réussie' : 'Inscription réussie');
-                // Ici, rediriger ou traiter après succès (stocker un token, redirection, etc.)
+            if (users.length > 0) {
+                setUser(users[0]);
+                setIsLoggedIn(true); // Simule que l'utilisateur est connecté
             }
-        } catch (error: any) {
-            const serverError = error.response?.data?.message || "Une erreur est survenue lors de la connexion.";
-            setErrors({ server: serverError });
+        } catch (error) {
+            console.error('Erreur lors de la récupération des utilisateurs', error);
+            setIsLoggedIn(false);
         }
-
-        setLoading(false);
     };
 
+    // Utilisation de useEffect pour récupérer un utilisateur à l'initialisation
+    useEffect(() => {
+        fetchAnyUser();
+    }, []);
+
+    // Handle outside click to close the dropdown
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [dropdownRef]);
+
     return (
-        <div className="mt-16">
-            <h1 className="text-3xl mb-16 text-center">Bienvenue sur EasyOrder !</h1>
-            <div className="mx-auto w-96">
-                <h2 className="text-2xl font-bold mb-6 text-center">
-                    {type === 'signin' ? 'Connexion' : 'Inscription'}
-                </h2>
+        <div className={'bg-gray-100 border-b border-gray-300 p-4'}>
+            <nav className="container flex justify-between items-center">
+                <div className="flex items-center">
+                    <img src="/logo.png" alt="Logo Easyorder"
+                         className="h-16 mr-3 rounded-full border-2 border-teal-500"/>
+                    <h1 className="text-xl font-semibold">EasyOrder</h1>
+                </div>
 
-                {/* Affichage des erreurs serveur */}
-                {errors.server && <p className="text-red-500 text-center mb-4">{errors.server}</p>}
+                <ul className="flex space-x-8 text-lg">
+                    <li>
+                        <Link href="/home" className="text-gray-700 hover:text-gray-900">Accueil</Link>
+                    </li>
+                    <li>
+                        <Link href="/artisans" className="text-gray-700 hover:text-gray-900">Les artisans</Link>
+                    </li>
+                    <li>
+                        <Link href="/favorites" className="text-gray-700 hover:text-gray-900">Mes favoris</Link>
+                    </li>
+                    <li>
+                        <Link href="/chat" className="text-gray-700 hover:text-gray-900">Messagerie</Link>
+                    </li>
+                </ul>
 
-                {/* Formulaire de connexion/inscription */}
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    {type === 'signup' && (
+                {/* Barre de recherche centrée */}
+                <div className="relative flex items-center space-x-2">
+                    <input
+                        type="text"
+                        placeholder="Rechercher un bien..."
+                        className="border border-gray-300 rounded-full py-2 px-4 w-64 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                    <FaSearch className="text-gray-500"/>
+                </div>
+
+                {/* Section utilisateur avec icône */}
+                <div className="relative flex items-center space-x-4">
+                    {isLoggedIn && user ? (
+                        <div className="relative" ref={dropdownRef}>
+                            <button
+                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                className="text-gray-700 hover:text-gray-900 flex items-center"
+                            >
+                                <FaUserCircle size={40} className="text-gray-700"/>
+                                <span className="ml-2">{user.name}</span> {/* Affiche le nom de l'utilisateur */}
+                            </button>
+
+                            {isDropdownOpen && (
+                                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg z-50">
+                                    <ul className="py-1">
+                                        <li>
+                                            <Link
+                                                href={user.role === 'artisant' ? "/my-account/shopkeeper" : "/my-account/customer"}
+                                                className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                                            >
+                                                Mon profil
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <Link href="/history" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                                Historique
+                                            </Link>
+                                        </li>
+                                        {user.role === 'artisant' && (
+                                            <li>
+                                                <Link href="/stock" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                                    Gérer le stock
+                                                </Link>
+                                            </li>
+                                        )}
+                                        <li>
+                                            <button
+                                                onClick={() => {
+                                                    setIsLoggedIn(false);
+                                                    setIsDropdownOpen(false);
+                                                    // Log out functionality here
+                                                }}
+                                                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                                            >
+                                                Déconnexion
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
                         <div>
-                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                                Nom
-                            </label>
-                            <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                className={`mt-1 block w-full p-2 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md`}
-                                placeholder="Votre nom"
-                            />
-                            {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+                            <Link href="/login" className="text-gray-700 hover:text-gray-900">
+                                Se connecter
+                            </Link>
                         </div>
                     )}
-
-                    <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                            Email
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            className={`mt-1 block w-full p-2 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md`}
-                            placeholder="Votre email"
-                        />
-                        {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
-                    </div>
-
-                    <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                            Mot de passe
-                        </label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            className={`mt-1 block w-full p-2 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-md`}
-                            placeholder="Votre mot de passe"
-                        />
-                        {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
-                    </div>
-
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className={`w-full bg-easyorder-green text-white p-2 rounded-md hover:bg-easyorder-black transition ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                        {loading ? 'Chargement...' : type === 'signin' ? 'Se connecter' : 'S’inscrire'}
-                    </button>
-                </form>
-
-                {/* Switch between signin/signup */}
-                <p className="mt-4 text-center text-sm text-gray-600">
-                    {type === 'signin' ? (
-                        <>
-                            Pas encore de compte ?{' '}
-                            <button
-                                type="button"
-                                onClick={() => setType('signup')}
-                                className="text-easyorder-green hover:underline">
-                                S’inscrire
-                            </button>
-                        </>
-                    ) : (
-                        <>
-                            Vous avez déjà un compte ?{' '}
-                            <button
-                                type="button"
-                                onClick={() => setType('signin')}
-                                className="text-easyorder-green hover:underline">
-                                Se connecter
-                            </button>
-                        </>
-                    )}
-                </p>
-            </div>
+                </div>
+            </nav>
         </div>
     );
 };
 
-export default Login;
+export default Navbar;

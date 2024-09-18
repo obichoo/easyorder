@@ -3,36 +3,40 @@
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { FaUserCircle, FaSearch } from 'react-icons/fa';
-import UserService from '@/services/user.service';
+import { useRouter } from 'next/navigation'; // Import de useRouter
 
 const Navbar = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(true);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [user, setUser] = useState<any>(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [user, setUser] = useState(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const router = useRouter(); // Utiliser useRouter pour détecter les changements de route
 
-    // Fonction pour récupérer n'importe quel utilisateur (simule la connexion)
-    const fetchAnyUser = async () => {
-        try {
-            const response = await UserService.getAllUsers();
-            const users = response.data;
-
-            if (users.length > 0) {
-                setUser(users[0]); // Utilise le premier utilisateur trouvé
-                setIsLoggedIn(true); // Simule que l'utilisateur est connecté
+    // Fonction pour récupérer l'utilisateur depuis le localStorage
+    const fetchUserFromLocalStorage = () => {
+        const storedData = localStorage.getItem("user");
+        if (storedData) {
+            const parsedData = JSON.parse(storedData);
+            // Vérifier si les données contiennent un utilisateur
+            if (parsedData && parsedData.user) {
+                setUser(parsedData.user); // Utiliser les données de l'utilisateur
+                setIsLoggedIn(true);
+            } else {
+                setIsLoggedIn(false);
+                setUser(null);
             }
-        } catch (error) {
-            console.error('Erreur lors de la récupération des utilisateurs', error);
+        } else {
             setIsLoggedIn(false);
+            setUser(null);
         }
     };
 
-    // Utilisation de useEffect pour récupérer un utilisateur à l'initialisation
+    // Utilisation de useEffect pour charger l'utilisateur à l'initialisation et à chaque changement de route
     useEffect(() => {
-        fetchAnyUser();
-    }, []);
+        fetchUserFromLocalStorage();
+    }, [router]); // Dépendance au changement de route pour déclencher la mise à jour
 
-    // Handle outside click to close the dropdown
+    // Gérer le clic extérieur pour fermer le dropdown
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -88,11 +92,15 @@ const Navbar = () => {
                                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                 className="text-gray-700 hover:text-gray-900 flex items-center"
                             >
-                                <FaUserCircle size={40} className="text-gray-700"/>
+                                <FaUserCircle size={40} className="text-gray-700" />
+                                {/* Affichage du nom de l'utilisateur */}
+                                <span className="ml-2 text-gray-700 font-medium">
+                                    {user.name}
+                                </span>
                             </button>
 
                             {isDropdownOpen && (
-                                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg z-50">
+                                <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg z-50">
                                     <ul className="py-1">
                                         <li>
                                             <Link
@@ -118,8 +126,10 @@ const Navbar = () => {
                                             <button
                                                 onClick={() => {
                                                     setIsLoggedIn(false);
+                                                    setUser(null);
                                                     setIsDropdownOpen(false);
-                                                    // Log out functionality here
+                                                    localStorage.removeItem("user"); // Déconnexion
+                                                    router.push('/home'); // Redirection vers la page d'accueil
                                                 }}
                                                 className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                                             >
