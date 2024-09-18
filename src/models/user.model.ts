@@ -1,5 +1,6 @@
 export interface User {
     id?: number;
+    stripe_id?: string;
     email?: string;
     password?: string;
     name?: string;

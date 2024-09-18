@@ -6,10 +6,6 @@ const stripe = new Stripe(secretKey);
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY as string);
 
 class StripeService {
-    async createCustomer(email: string, name: string) {
-
-    }
-
     async createPayment(amount: number, stripeId?: string) {// Récupère le montant du paiement du frontend
         // Créer une session de paiement avec un montant variable
         const session = await stripe.checkout.sessions.create({

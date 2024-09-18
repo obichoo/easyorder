@@ -3,13 +3,17 @@
 import { useState } from "react";
 import { useRouter } from 'next/navigation'; // Import du router pour redirection
 import UserService from "@/services/user.service";
-import { FaSpinner } from 'react-icons/fa'; // Loader icon
+import { FaSpinner } from 'react-icons/fa';
+import Stripe from 'stripe';
+
+const secretKey = process.env.NEXT_PUBLIC_STRIPE_PRIVATE_KEY as string;
+const stripe = new Stripe(secretKey);
 
 type LoginType = 'signin' | 'signup';
 
 const Login = () => {
     const [type, setType] = useState<LoginType>('signin');
-    const [errors, setErrors] = useState<{ email?: string; password?: string; name?: string; server?: string }>({});
+    const [errors, setErrors] = useState<{ email?: string; password?: string; name?: string; server?: string; role?: string; }>({});
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false); // Nouveau state pour le refresh
     const router = useRouter(); // Utilisation du router pour la redirection
@@ -22,13 +26,15 @@ const Login = () => {
         const form = e.target as any;
         const email = form.email.value;
         const password = form.password.value;
-        const name = type === 'signup' ? form.name.value : null;
+        const name = type === 'signup' ? form.name.value : undefined;
+        const role = type === 'signup' ? form.role.value : undefined;
 
-        let newErrors: { email?: string; password?: string; name?: string } = {};
+        let newErrors: { email?: string; password?: string; name?: string; role?: string; } = {};
 
         if (!email) newErrors.email = "L'email est requis.";
         if (!password) newErrors.password = "Le mot de passe est requis.";
         if (type === 'signup' && !name) newErrors.name = "Le nom est requis.";
+        if (type === 'signup' && !role) newErrors.role = "Le rôle est requis.";
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
@@ -39,13 +45,18 @@ const Login = () => {
         try {
             let response;
             if (type === 'signin') {
-                response = await UserService.login(email, password);
+                response = await UserService.login(email, password)
+                response.data = response.data.user;
             } else {
-                const user = { email, password, name };
-                response = await UserService.createUser(user);
+                const user = { email, password, name, role };
+                const customer = await stripe.customers.create({
+                    email: email,
+                    name: name,
+                });
+                response = await UserService.createUser({ ...user, stripe_id: customer.id})
             }
 
-            if (response.status === 200) {
+            if ([200, 201].includes(response.status)) {
                 const userData = response.data;
 
                 // Sauvegarder les informations de l'utilisateur dans le localStorage
@@ -56,10 +67,6 @@ const Login = () => {
                 setTimeout(() => {
                     // Redirection vers la page d'accueil
                     router.push('/home');
-                    // Forcer le rafraîchissement de la page après redirection
-                    setTimeout(() => {
-                        window.location.reload(); // Forcer le refresh
-                    }, 500);
                 }, 1500);
             }
         } catch (error: any) {
@@ -83,20 +90,6 @@ const Login = () => {
 
                 {/* Formulaire de connexion/inscription */}
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    {type === 'signup' && (
-                        <div>
-                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nom</label>
-                            <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                className={`mt-1 block w-full p-2 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md`}
-                                placeholder="Votre nom"
-                            />
-                            {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
-                        </div>
-                    )}
-
                     <div>
                         <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
                         <input
@@ -108,6 +101,36 @@ const Login = () => {
                         />
                         {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
                     </div>
+
+                    {type === 'signup' && (
+                        <>
+                            <div>
+                                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nom</label>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    className={`mt-1 block w-full p-2 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md`}
+                                    placeholder="Votre nom"
+                                />
+                                {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+                            </div>
+                            <div>
+                                <label htmlFor="role" className="block text-sm font-medium text-gray-700">Rôle</label>
+                                <select
+                                    name="role"
+                                    id="role"
+                                    defaultValue=""
+                                    className={`mt-1 block w-full p-2 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md`}
+                                >
+                                    <option value="">Choisissez un rôle</option>
+                                    <option value="artisan">Artisan</option>
+                                    <option value="client">Client</option>
+                                </select>
+                                {errors.role && <p className="text-red-500 text-sm">{errors.role}</p>}
+                            </div>
+                        </>
+                    )}
 
                     <div>
                         <label htmlFor="password" className="block text-sm font-medium text-gray-700">Mot de passe</label>

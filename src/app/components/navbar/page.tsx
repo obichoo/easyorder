@@ -3,14 +3,15 @@
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { FaUserCircle, FaSearch, FaShoppingCart } from 'react-icons/fa';
-import { useRouter } from 'next/navigation'; // Import de useRouter
+import {usePathname, useRouter} from "next/navigation";
 
 const Navbar = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [user, setUser] = useState<any>(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const router = useRouter(); // Utiliser useRouter pour détecter les changements de route
+    const pathname = usePathname();
+    const router = useRouter();
 
     // Fonction pour récupérer l'utilisateur depuis le localStorage
     const fetchUserFromLocalStorage = () => {
@@ -18,8 +19,8 @@ const Navbar = () => {
         if (storedData) {
             const parsedData = JSON.parse(storedData);
             // Vérifier si les données contiennent un utilisateur
-            if (parsedData && parsedData.user) {
-                setUser(parsedData.user); // Utiliser les données de l'utilisateur
+            if (parsedData) {
+                setUser(parsedData); // Utiliser les données de l'utilisateur
                 setIsLoggedIn(true);
             } else {
                 setIsLoggedIn(false);
@@ -34,7 +35,7 @@ const Navbar = () => {
     // Utilisation de useEffect pour charger l'utilisateur à l'initialisation et à chaque changement de route
     useEffect(() => {
         fetchUserFromLocalStorage();
-    }, [router]); // Dépendance au changement de route pour déclencher la mise à jour
+    }, [pathname]);
 
     // Gérer le clic extérieur pour fermer le dropdown
     useEffect(() => {
