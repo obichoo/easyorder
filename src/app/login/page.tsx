@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from 'next/navigation'; // Import du router pour redirection
-import UserService from "@/services/user.service"; // Import du service utilisateur
+import UserService from "@/services/user.service";
 import { FaSpinner } from 'react-icons/fa'; // Loader icon
 
 type LoginType = 'signin' | 'signup';
