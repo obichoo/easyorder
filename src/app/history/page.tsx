@@ -46,7 +46,7 @@ const Historique = () => {
 
                     {/* Titre */}
                     <h2 className="text-4xl font-semibold text-center text-gray-800 mb-12">
-                        {role === "artisant" ? "Historique des Achats / Ventes" : "Historique des Achats"}
+                        {role === "artisan" ? "Historique des Achats / Ventes" : "Historique des Achats"}
                     </h2>
 
                     {/* Liste des achats */}

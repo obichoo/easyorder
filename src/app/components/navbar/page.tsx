@@ -112,7 +112,7 @@ const Navbar = () => {
                                     <ul className="py-1">
                                         <li>
                                             <Link
-                                                href={user.role === 'artisant' ? "/my-account/shopkeeper" : "/my-account/customer"}
+                                                href={user.role === 'artisan' ? "/my-account/shopkeeper" : "/my-account/customer"}
                                                 className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                                             >
                                                 Mon profil
@@ -123,7 +123,7 @@ const Navbar = () => {
                                                 Historique
                                             </Link>
                                         </li>
-                                        {user.role === 'artisant' && (
+                                        {user.role === 'artisan' && (
                                             <li>
                                                 <Link href="/stock" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                                                     Gérer le stock
