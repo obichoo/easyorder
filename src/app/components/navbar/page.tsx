@@ -1,11 +1,27 @@
-"use client";
+'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FaUserCircle, FaSearch } from 'react-icons/fa'; // Icônes utilisateur et loupe
 
 const Navbar = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(true); // Simulating a logged-in user
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State for controlling dropdown
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    // Handle outside click to close the dropdown
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [dropdownRef]);
 
     return (
         <div className={'bg-gray-100 border-b border-gray-300 p-4'}>
@@ -42,12 +58,50 @@ const Navbar = () => {
                 </div>
 
                 {/* Section utilisateur avec icône */}
-                <div className="flex items-center space-x-4">
-                    <FaUserCircle size={40} className="text-gray-700"/>
+                <div className="relative flex items-center space-x-4">
                     {isLoggedIn ? (
-                        <Link href="/profil" className="text-gray-700 hover:text-gray-900">
-                            Mon profil
-                        </Link>
+                        <div className="relative" ref={dropdownRef}>
+                            <button
+                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                className="text-gray-700 hover:text-gray-900 flex items-center"
+                            >
+                                <FaUserCircle size={40} className="text-gray-700"/>
+                            </button>
+
+                            {isDropdownOpen && (
+                                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg z-50">
+                                    <ul className="py-1">
+                                        <li>
+                                            <Link href="/my-account" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                                Mon profil
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <Link href="/history" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                                Historique
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <Link href="/stock" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                                Gérer le stock
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <button
+                                                onClick={() => {
+                                                    setIsLoggedIn(false);
+                                                    setIsDropdownOpen(false);
+                                                    // Log out functionality here
+                                                }}
+                                                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                                            >
+                                                Déconnexion
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
                     ) : (
                         <div>
                             <Link href="/login" className="text-gray-700 hover:text-gray-900">
