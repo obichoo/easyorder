@@ -1,3 +1,4 @@
+/* eslint-disable */
 'use client';
 import { useState, useEffect } from 'react';
 import { FaUserCircle } from 'react-icons/fa';
@@ -11,7 +12,7 @@ export default function ProfileEditPage() {
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState('/default-profile.png');
   const [updateMessage, setUpdateMessage] = useState('');
-  const [userId, setUserId] = useState<string | null>(null); // ID de l'utilisateur
+  const [userId, setUserId] = useState<number | null>(null); // ID de l'utilisateur
 
   // Charger les informations de l'utilisateur depuis le localStorage
   useEffect(() => {
@@ -48,9 +49,10 @@ export default function ProfileEditPage() {
       }
 
       // Mise à jour des autres informations utilisateur (email, nom, mot de passe)
-      const updatedUser = { name, email };
-      if (password) {
-        updatedUser.password = password; // Si le mot de passe est modifié
+      const updatedUser: { name: string; email: string, password: string} = {
+        name,
+        email,
+        password
       }
 
       if (userId) {

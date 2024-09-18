@@ -16,8 +16,8 @@ const EditProfile = () => {
     const [categories, setCategories] = useState<any[]>([]);
     const [products, setProducts] = useState<any[]>([]);
     const [isEditingCompanyName, setIsEditingCompanyName] = useState<boolean>(false);
-    const [selectedCategories, setSelectedCategories] = useState<any[]>(categories);
-    const [selectedProducts, setSelectedProducts] = useState<any[]>(products);
+    const [selectedCategories, setSelectedCategories] = useState<any>(categories);
+    const [selectedProducts, setSelectedProducts] = useState<any>(products);
 
     // Options for the categories and products
     const categoryOptions = [

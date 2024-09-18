@@ -65,7 +65,7 @@ const FavoriteItem = ({favorite, remove}: { favorite: FavoriteProduct, remove: F
     }
 
     const handleProductClick = (event: any) => {
-        router.push(`/products/${favorite.products?.id}`)
+        router.push(`/products/${favorite.products[0]}`)
     }
 
 
@@ -77,7 +77,7 @@ const FavoriteItem = ({favorite, remove}: { favorite: FavoriteProduct, remove: F
         >
             <img className={'rounded-xl '} src="https://picsum.photos/224/200" alt=""/>
             <div className={'flex justify-between mt-1'}>
-                <p className={'text-center'}>{favorite.product?.name}</p>
+                <p className={'text-center'}>{favorite.products[0]}</p>
                 <div>
                     <RemoveFavoriteModal favorite={favorite} confirm={handleRemoveFavorite}></RemoveFavoriteModal>
                 </div>

@@ -1,5 +1,5 @@
-import {AxiosInstance} from "axios";
 import {Message} from "@/models/message.model";
+import AxiosInstance from "@/services/axios.service";
 
 class MessageService {
     // Get all messages

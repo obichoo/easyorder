@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import {useState, useEffect, Suspense} from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FaSearch } from 'react-icons/fa';
 
@@ -35,7 +35,7 @@ const allProducts = [
   },
 ];
 
-export default function ProductSearchPage() {
+const ProductSearchPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -44,16 +44,16 @@ export default function ProductSearchPage() {
   const [searchTerm, setSearchTerm] = useState(query); // Initialise avec la valeur
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string>('');
 
   useEffect(() => {
     if (query) {
       setLoading(true);
-      setError(null);
+      setError('');
 
       try {
         // Filtrer les produits
-        const filteredProducts = allProducts.filter((product) =>
+        const filteredProducts: any = allProducts.filter((product) =>
           product.name.toLowerCase().includes(query.toLowerCase())
         );
         setProducts(filteredProducts);
@@ -65,7 +65,7 @@ export default function ProductSearchPage() {
     }
   }, [query]);
 
-  const handleSearch = (e) => {
+  const handleSearch = (e: any) => {
     e.preventDefault();
 
     if (searchTerm.trim()) {
@@ -74,7 +74,7 @@ export default function ProductSearchPage() {
     }
   };
 
-  const handleProductClick = (id) => {
+  const handleProductClick = (id: number) => {
     // Rediriger vers la page de détails du produit
     router.push(`/products/${id}`);
   };
@@ -104,7 +104,7 @@ export default function ProductSearchPage() {
       {error && <p className="text-center text-red-500">{error}</p>}
       {products.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => (
+          {products.map((product: any) => (
             <div 
               key={product.id} 
               className="bg-white shadow-md rounded-lg p-4 cursor-pointer hover:shadow-lg transition"
@@ -123,3 +123,13 @@ export default function ProductSearchPage() {
     </div>
   );
 }
+
+const Page = () => {
+  return (
+      <Suspense>
+        <ProductSearchPage />
+      </Suspense>
+  )
+}
+
+export default Page;

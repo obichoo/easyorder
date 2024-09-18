@@ -38,7 +38,7 @@ export default function FAQPage() {
   const [openIndex, setOpenIndex] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const toggleAnswer = (index) => {
+  const toggleAnswer = (index: any) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 

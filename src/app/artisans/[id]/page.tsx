@@ -1,6 +1,6 @@
 import { FaInstagram, FaSnapchat, FaTwitter, FaGlobe, FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 
-async function fetchArtisanById(id) {
+async function fetchArtisanById(id: string) {
   const artisans = [
     {
       id: 1,
@@ -40,7 +40,7 @@ async function fetchArtisanById(id) {
 }
 
 // Fonction pour afficher les étoiles en fonction de la note
-const RatingStars = ({ rating }) => {
+const RatingStars = ({ rating }: any) => {
   const fullStars = Math.floor(rating);
   const hasHalfStar = rating % 1 >= 0.5;
   const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
@@ -58,7 +58,7 @@ const RatingStars = ({ rating }) => {
   );
 };
 
-export default async function Page({ params }) {
+export default async function Page({ params }: any) {
   const { id } = params; // Récupérer l'ID de l'URL
   const artisan = await fetchArtisanById(id);
 

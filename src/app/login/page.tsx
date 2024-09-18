@@ -4,11 +4,12 @@ import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { FaUserCircle, FaSearch } from 'react-icons/fa';
 import UserService from '@/services/user.service';
+import {User} from "@/models/user.model";
 
 const Navbar = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(true);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState<User | null>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     // Fonction pour récupérer n'importe quel utilisateur

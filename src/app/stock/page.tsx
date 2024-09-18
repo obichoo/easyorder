@@ -77,7 +77,7 @@ export default function StockManagementPage() {
   }, []);
 
   // Gestion de la recherche de produits
-  const handleSearch = (e) => {
+  const handleSearch = (e: any) => {
     e.preventDefault();
     setLoading(true);
 

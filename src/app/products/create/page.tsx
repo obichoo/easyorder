@@ -10,15 +10,15 @@ const CreateProduct = () => {
     const [dimensions, setDimensions] = useState('');
     const [price, setPrice] = useState('');
     const [stock, setStock] = useState('');
-    const [photos, setPhotos] = useState([]);
+    const [photos, setPhotos] = useState<any>([]);
     const [selectedCategory, setSelectedCategory] = useState('');
 
     const categories = ["Poterie", "Sculptures", "Bijoux", "Vêtements", "Verres", "Décoration"]; // Exemples de catégories
 
-    const handleAddPhoto = (event) => {
+    const handleAddPhoto = (event: any) => {
         const file = event.target.files[0];
         if (file) {
-            setPhotos((prevPhotos) => [...prevPhotos, window.URL.createObjectURL(file)]);
+            setPhotos((prevPhotos: any) => [...prevPhotos, window.URL.createObjectURL(file)]);
         }
     };
 
@@ -38,7 +38,7 @@ const CreateProduct = () => {
         setPhotos([]);
     };
 
-    const selectCategory = (category) => {
+    const selectCategory = (category: any) => {
         setSelectedCategory(category);
     };
 
@@ -137,7 +137,7 @@ const CreateProduct = () => {
                             className="mb-3"
                         />
                         <div className="flex flex-wrap gap-4">
-                            {photos.map((photo, index) => (
+                            {photos.map((photo: any, index: any) => (
                                 <img
                                     key={index}
                                     src={photo}
