@@ -2,6 +2,11 @@ import AxiosInstance from "@/services/axios.service";
 import {User} from "@/models/user.model";
 
 class UserService {
+    // Login
+    login(email: string, password: string) {
+        return AxiosInstance.post("/login", {email, password});
+    }
+
     // Get all users
     getAllUsers() {
         return AxiosInstance.get("/user");
