@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
-import { FaUserCircle, FaSearch } from 'react-icons/fa';
+import { FaUserCircle, FaSearch, FaShoppingCart } from 'react-icons/fa';
 import { useRouter } from 'next/navigation'; // Import de useRouter
 
 const Navbar = () => {
@@ -86,6 +86,10 @@ const Navbar = () => {
 
                 {/* Section utilisateur avec photo de profil ou icône */}
                 <div className="relative flex items-center space-x-4">
+                                       {/* Icône Panier */}
+                                       <Link href="/cart">
+                        <FaShoppingCart size={32} className="text-gray-700 hover:text-gray-900 mr-8" />
+                    </Link>
                     {isLoggedIn && user ? (
                         <div className="relative flex items-center" ref={dropdownRef}>
                             <button

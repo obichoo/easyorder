@@ -1,12 +1,16 @@
+'use client';
 import React from 'react';
-import { FaHeart } from 'react-icons/fa';
+import { FaHeart, FaShoppingCart } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
 
 export default function Page() {
+  const router = useRouter(); // Utilisation du hook useRouter
+
   return (
     <div>
       <div className="w-full h-16 bg-easyorder-gray mb-4"></div>
-        {/* Nom du produit */}
-        <h1 className="text-center text-3xl font-bold mb-12">Nom du Produit</h1>
+      {/* Nom du produit */}
+      <h1 className="text-center text-3xl font-bold mb-12">Nom du Produit</h1>
       <div className="container mx-auto">
         <div className="flex">
           {/* Carousel */}
@@ -36,13 +40,38 @@ export default function Page() {
               <h2 className="text-xl font-semibold mb-2">Prix</h2>
               <p>100 €</p>
             </div>
+
+            {/* Boutons avec redirections */}
             <div className="flex space-x-4">
-              <button className="flex items-center bg-red-400 text-white px-4 py-2 rounded">
+              <button
+                className="flex items-center bg-red-400 text-white px-4 py-2 rounded"
+                onClick={() => router.push('/favorites')} // Redirection vers la page des favoris
+              >
                 <FaHeart className="h-6 w-6 text-red-600 mr-2" />
                 Favoris
               </button>
-              <button className="bg-easyorder-black text-white px-4 py-2 rounded">Contacter l'artisan</button>
-              <button className="bg-easyorder-green text-white px-4 py-2 rounded">Acheter</button>
+
+              <button
+                className="bg-easyorder-black text-white px-4 py-2 rounded"
+                onClick={() => router.push('/chat')} // Redirection vers la page de contact
+              >
+                Contacter l'artisan
+              </button>
+
+              <button
+                className="flex items-center bg-easyorder-green text-white px-4 py-2 rounded"
+                onClick={() => router.push('/cart')} // Redirection vers la page du panier
+              >
+                <FaShoppingCart className="h-6 w-6 text-easyorder-black mr-2" />
+                Ajouter au panier
+              </button>
+
+              <button
+                className="bg-easyorder-green text-white px-4 py-2 rounded"
+                onClick={() => router.push('/checkout')} // Redirection vers la page d'achat
+              >
+                Acheter
+              </button>
             </div>
           </div>
         </div>
