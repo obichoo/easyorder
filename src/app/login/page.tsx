@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import UserService from "@/services/user.service"; // Import du service utilisateur
 
 type LoginType = 'signin' | 'signup';
 
@@ -33,24 +34,23 @@ const Login = () => {
         }
 
         try {
-            // Simuler une requête vers le backend
-            const response = await fetch('/api/auth', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password, name }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                setErrors({ server: errorData.message || "Une erreur est survenue lors de la connexion." });
+            let response;
+            if (type === 'signin') {
+                // Utilisation du service pour la connexion
+                response = await UserService.login(email, password);
             } else {
-                // Traitement en cas de succès
-                alert(type === 'signin' ? 'Connexion réussie' : 'Inscription réussie');
+                // Utilisation du service pour l'inscription
+                const user = { email, password, name };
+                response = await UserService.createUser(user);
             }
-        } catch (error) {
-            setErrors({ server: "Erreur serveur. Veuillez réessayer plus tard." });
+
+            if (response.status === 200) {
+                alert(type === 'signin' ? 'Connexion réussie' : 'Inscription réussie');
+                // Ici, rediriger ou traiter après succès (stocker un token, redirection, etc.)
+            }
+        } catch (error: any) {
+            const serverError = error.response?.data?.message || "Une erreur est survenue lors de la connexion.";
+            setErrors({ server: serverError });
         }
 
         setLoading(false);

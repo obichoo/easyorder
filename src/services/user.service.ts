@@ -4,7 +4,7 @@ import {User} from "@/models/user.model";
 class UserService {
     // Login
     login(email: string, password: string) {
-        return AxiosInstance.post("/login", {email, password});
+        return AxiosInstance.post("/user/login", {email, password});
     }
 
     // Get all users
