@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import StripeButton from "@/app/components/stripe-button/page";
 
 const Cart = () => {
     const [cartItems, setCartItems] = useState<any[]>([]);
@@ -12,14 +13,14 @@ const Cart = () => {
                 id: 1,
                 name: 'Produit A',
                 quantity: 2,
-                price: 20,
+                price: 20.50,
                 image: '/produitA.jpg'
             },
             {
                 id: 2,
                 name: 'Produit B',
                 quantity: 1,
-                price: 50,
+                price: 50.49,
                 image: '/produitB.jpg'
             }
         ];
@@ -57,7 +58,7 @@ const Cart = () => {
                                 <th className="p-2 text-left">Quantité</th>
                                 <th className="p-2 text-left">Prix unitaire</th>
                                 <th className="p-2 text-left">Total</th>
-                                <th className="p-2 text-left">Actions</th> {/* Colonne pour les actions */}
+                                <th className="p-2 text-left">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -90,7 +91,7 @@ const Cart = () => {
                                     <td className="p-2">
                                         <button
                                             className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded"
-                                            onClick={() => removeItem(item.id)} // Suppression de l'article
+                                            onClick={() => removeItem(item.id)}
                                         >
                                             Supprimer
                                         </button>
@@ -110,9 +111,7 @@ const Cart = () => {
                         <Link href="/home" className="bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded-md">
                             Continuer vos achats
                         </Link>
-                        <button className="bg-teal-500 hover:bg-teal-600 text-white py-2 px-6 rounded-md">
-                            Procéder au paiement
-                        </button>
+                        <StripeButton amount={calculateTotal()*100}></StripeButton>
                     </div>
                 </div>
             )}

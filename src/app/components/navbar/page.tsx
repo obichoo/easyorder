@@ -67,12 +67,18 @@ const Navbar = () => {
                     <li>
                         <Link href="/artisans" className="text-gray-700 hover:text-gray-900">Les artisans</Link>
                     </li>
-                    <li>
-                        <Link href="/favorites" className="text-gray-700 hover:text-gray-900">Mes favoris</Link>
-                    </li>
-                    <li>
-                        <Link href="/chat" className="text-gray-700 hover:text-gray-900">Messagerie</Link>
-                    </li>
+                    {
+                        isLoggedIn && (
+                            <>
+                                <li>
+                                    <Link href="/favorites" className="text-gray-700 hover:text-gray-900">Mes favoris</Link>
+                                </li>
+                                <li>
+                                    <Link href="/chat" className="text-gray-700 hover:text-gray-900">Messagerie</Link>
+                                </li>
+                            </>
+                        )
+                    }
                 </ul>
 
                 {/* Barre de recherche centrée */}
@@ -87,72 +93,73 @@ const Navbar = () => {
 
                 {/* Section utilisateur avec photo de profil ou icône */}
                 <div className="relative flex items-center space-x-4">
-                                       {/* Icône Panier */}
-                                       <Link href="/cart">
-                        <FaShoppingCart size={32} className="text-gray-700 hover:text-gray-900 mr-8" />
-                    </Link>
                     {isLoggedIn && user ? (
-                        <div className="relative flex items-center" ref={dropdownRef}>
-                            <button
-                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                className="text-gray-700 hover:text-gray-900 flex items-center"
-                            >
-                                {user.profile_pic ? (
-                                    <img
-                                        src={user.profile_pic}
-                                        alt="Photo de profil"
-                                        className="w-10 h-10 rounded-full object-cover"
-                                    />
-                                ) : (
-                                    <FaUserCircle size={40} className="text-gray-700" />
-                                )}
-                                {/* Affichage du nom de l'utilisateur */}
-                                <span className="ml-2 text-gray-700 font-medium">
-                                    {user.name}
-                                </span>
-                            </button>
+                        <>
+                            <Link href="/cart">
+                                <FaShoppingCart size={32} className="text-gray-700 hover:text-gray-900 mr-8" />
+                            </Link>
+                            <div className="relative flex items-center" ref={dropdownRef}>
+                                <button
+                                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                    className="text-gray-700 hover:text-gray-900 flex items-center"
+                                >
+                                    {user.profile_pic ? (
+                                        <img
+                                            src={user.profile_pic}
+                                            alt="Photo de profil"
+                                            className="w-10 h-10 rounded-full object-cover"
+                                        />
+                                    ) : (
+                                        <FaUserCircle size={40} className="text-gray-700" />
+                                    )}
+                                    {/* Affichage du nom de l'utilisateur */}
+                                    <span className="ml-2 text-gray-700 font-medium">
+                                        {user.name}
+                                    </span>
+                                </button>
 
-                            {isDropdownOpen && (
-                                <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg z-50">
-                                    <ul className="py-1">
-                                        <li>
-                                            <Link
-                                                href={user.role === 'artisan' ? "/my-account/shopkeeper" : "/my-account/customer"}
-                                                className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                                            >
-                                                Mon profil
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link href="/history" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-                                                Historique
-                                            </Link>
-                                        </li>
-                                        {user.role === 'artisan' && (
+                                {isDropdownOpen && (
+                                    <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg z-50">
+                                        <ul className="py-1">
                                             <li>
-                                                <Link href="/stock" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-                                                    Gérer le stock
+                                                <Link
+                                                    href={user.role === 'artisan' ? "/my-account/shopkeeper" : "/my-account/customer"}
+                                                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                                                >
+                                                    Mon profil
                                                 </Link>
                                             </li>
-                                        )}
-                                        <li>
-                                            <button
-                                                onClick={() => {
-                                                    setIsLoggedIn(false);
-                                                    setUser(null);
-                                                    setIsDropdownOpen(false);
-                                                    localStorage.removeItem("user"); // Déconnexion
-                                                    router.push('/home'); // Redirection vers la page d'accueil
-                                                }}
-                                                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-                                            >
-                                                Déconnexion
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </div>
-                            )}
-                        </div>
+                                            <li>
+                                                <Link href="/history" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                                    Historique
+                                                </Link>
+                                            </li>
+                                            {user.role === 'artisan' && (
+                                                <li>
+                                                    <Link href="/stock" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                                        Gérer le stock
+                                                    </Link>
+                                                </li>
+                                            )}
+                                            <li>
+                                                <button
+                                                    onClick={() => {
+                                                        setIsLoggedIn(false);
+                                                        setUser(null);
+                                                        setIsDropdownOpen(false);
+                                                        localStorage.removeItem("user"); // Déconnexion
+                                                        router.push('/home'); // Redirection vers la page d'accueil
+                                                    }}
+                                                    className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                                                >
+                                                    Déconnexion
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
+                        </>
                     ) : (
                         <div>
                             <Link href="/login" className="text-gray-700 hover:text-gray-900">

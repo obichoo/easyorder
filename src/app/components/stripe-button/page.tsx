@@ -1,14 +1,24 @@
 'use client';
 
 import StripeService from "@/services/stripe.service";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import {User} from "@/models/user.model";
 
 const StripeButton = ({ amount }: { amount: number }) => {
     const [loading, setLoading] = useState<boolean>(false);
+    const [stripeId, setStripeId] = useState<string>('');
+
+    useEffect(() => {
+        const userJson = localStorage.getItem('user');
+        if (userJson) {
+            const user: User = JSON.parse(userJson);
+            setStripeId(user.stripe_id as string);
+        }
+    }, [])
 
     const handleCheckout = async () => {
         setLoading(true);
-        StripeService.createPayment(amount).then(() => {
+        StripeService.createPayment(amount, stripeId).then(() => {
             setLoading(false);
         })
     };
