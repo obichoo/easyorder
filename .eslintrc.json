@@ -10,6 +10,15 @@
     "@typescript-eslint/ban-types": "off",
     "jsx-a11y/alt-text": "off",
     "@typescript-eslint/no-implicit-any": "off",
-    "prefer-const": "off"
+    "prefer-const": "off",
+    "@typescript-eslint/no-namespace": "off",
+    "react/display-name": "off",
+    "react/prop-types": "off",
+    "no-undef": "off",
+    "no-unused-vars": "off",
+    "no-constant-condition": "off",
+    "no-prototype-builtins": "off",
+    "no-useless-escape": "off",
+    "no-irregular-whitespace": "off"
   }
 }

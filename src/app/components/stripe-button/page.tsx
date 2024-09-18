@@ -57,7 +57,7 @@ const CheckoutForm = ({clientSecret, resetClientSecret}: any) => {
     )
 }
 
-const StripeButton = ({amount}: { amount: number }) => {
+const StripeButton = ({amount}: any) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [stripeId, setStripeId] = useState<string>('');
     const [clientSecret, setClientSecret] = useState<string>('');
