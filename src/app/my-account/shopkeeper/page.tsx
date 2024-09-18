@@ -18,6 +18,12 @@ const EditProfile = () => {
     const [isEditingCompanyName, setIsEditingCompanyName] = useState<boolean>(false);
     const [selectedCategories, setSelectedCategories] = useState<any>(categories);
     const [selectedProducts, setSelectedProducts] = useState<any>(products);
+    const [address, setAddress] = useState<string>(""); 
+    const [postalCode, setPostalCode] = useState<string>(""); 
+    const [city, setCity] = useState<string>(""); 
+    const [email, setEmail] = useState<string>(""); 
+    const [password, setPassword] = useState<string>(""); 
+    const [confirmPassword, setConfirmPassword] = useState<string>(""); 
 
     // Options for the categories and products
     const categoryOptions = [
@@ -62,6 +68,11 @@ const EditProfile = () => {
         setProducts(selectedProducts);
         closeProductModal();
     };
+      
+        // Fonction pour rediriger vers la page de souscription
+        const handleSubscribeClick = () => {
+          router.push('/subscription'); // Redirection vers la page subscription
+        };
 
     return (
         <div className="container mx-auto p-8">
@@ -82,6 +93,12 @@ const EditProfile = () => {
                 >
                     <FaEdit className="mr-2" /> {isEditingCompanyName ? "Enregistrer" : "Modifier"}
                 </button>
+                <button
+      onClick={handleSubscribeClick}
+      className="bg-easyorder-green text-white font-semibold py-2 px-4 rounded-lg hover:bg-easyorder-black transition duration-300 ml-4"
+    >
+      Souscrire à l'abonnnement Premium
+    </button>
             </div>
 
             {/* Bannière */}
@@ -140,6 +157,70 @@ const EditProfile = () => {
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Description de l'entreprise"
+                    />
+                </div>
+            </div>
+
+{/* Formulaire d'informations sur l'entreprise */}
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div className="flex flex-col">
+                    <label className="font-semibold">Adresse</label>
+                    <input
+                        type="text"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        className="border p-2 rounded-md outline-none"
+                        placeholder="Adresse de l'entreprise"
+                    />
+                </div>
+                <div className="flex flex-col">
+                    <label className="font-semibold">Code Postal</label>
+                    <input
+                        type="text"
+                        value={postalCode}
+                        onChange={(e) => setPostalCode(e.target.value)}
+                        className="border p-2 rounded-md outline-none"
+                        placeholder="Code postal"
+                    />
+                </div>
+                <div className="flex flex-col">
+                    <label className="font-semibold">Ville</label>
+                    <input
+                        type="text"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        className="border p-2 rounded-md outline-none"
+                        placeholder="Ville"
+                    />
+                </div>
+                <div className="flex flex-col">
+                    <label className="font-semibold">Email</label>
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="border p-2 rounded-md outline-none"
+                        placeholder="Email de l'entreprise"
+                    />
+                </div>
+                <div className="flex flex-col">
+                    <label className="font-semibold">Mot de passe</label>
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="border p-2 rounded-md outline-none"
+                        placeholder="Mot de passe"
+                    />
+                </div>
+                <div className="flex flex-col">
+                    <label className="font-semibold">Confirmer mot de passe</label>
+                    <input
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className="border p-2 rounded-md outline-none"
+                        placeholder="Confirmer le mot de passe"
                     />
                 </div>
             </div>
