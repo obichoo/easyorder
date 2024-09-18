@@ -1,14 +1,42 @@
 import { FaInstagram, FaSnapchat, FaTwitter, FaGlobe, FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
-import UserService from '@/services/user.service'; // Import du service pour appeler l'API
+import UserService from '@/services/user.service'; // Import du service pour les artisans
+import ProductService from '@/services/product.service'; // Import du service pour les produits
+import CommentService from '@/services/comment.service'; // Import du service pour les commentaires
 
 // Fonction pour récupérer un artisan par ID
 async function fetchArtisanById(id: string) {
   try {
-    const response = await UserService.getUserById(id); // Appel à l'API avec l'ID
+    const response = await UserService.getUserById(id);
     return response.data;
   } catch (error) {
     console.error("Erreur lors de la récupération de l'artisan :", error);
     return null;
+  }
+}
+
+// Fonction pour récupérer tous les produits et filtrer par ID d'artisan
+async function fetchProductsByArtisanId(artisanId: string) {
+  try {
+    const response = await ProductService.getAllProducts();
+    // Filtrer les produits pour ne garder que ceux correspondant à l'ID de l'artisan
+    const products = response.data.filter((product: any) => product.artisan_id === artisanId);
+    return products;
+  } catch (error) {
+    console.error("Erreur lors de la récupération des produits :", error);
+    return [];
+  }
+}
+
+// Fonction pour récupérer les commentaires filtrés par recipient_id
+async function fetchCommentsByRecipientId(recipientId: string) {
+  try {
+    const response = await CommentService.getAllComments();
+    // Filtrer les commentaires pour ne garder que ceux correspondant à recipient_id
+    const comments = response.data.filter((comment: any) => comment.recipient_id === recipientId);
+    return comments;
+  } catch (error) {
+    console.error("Erreur lors de la récupération des commentaires :", error);
+    return [];
   }
 }
 
@@ -34,7 +62,9 @@ const RatingStars = ({ rating }: any) => {
 export default async function Page({ params }: any) {
   const { id } = params; // Récupérer l'ID de l'URL
   const artisan = await fetchArtisanById(id);
-
+  const products = await fetchProductsByArtisanId(id);
+  const comments = await fetchCommentsByRecipientId(id);
+  
   if (!artisan) {
     return <div>Artisan non trouvé.</div>;
   }
@@ -68,12 +98,12 @@ export default async function Page({ params }: any) {
       <div className="container mx-auto mt-12">
         <h2 className="text-2xl font-semibold mb-4 text-center">Nos Produits</h2>
         <div className="flex overflow-x-auto space-x-4 p-4">
-          {artisan.products && artisan.products.length > 0 ? (
-            artisan.products.map((product: any, index: number) => (
-              <div key={index} className="min-w-[200px] p-4 bg-white shadow-md rounded-lg">
+          {products.length > 0 ? (
+            products.map((product: any) => (
+              <div key={product.id} className="min-w-[200px] p-4 bg-white shadow-md rounded-lg">
                 <img src={product.image} alt={product.name} className="w-full h-48 object-cover mb-2" />
                 <p className="text-center font-semibold">{product.name}</p>
-                <p className="text-center text-gray-500">{product.price} €</p>
+                <p className="text-center text-gray-500">{(product.price_in_cent / 100).toFixed(2)} €</p>
               </div>
             ))
           ) : (
@@ -83,41 +113,22 @@ export default async function Page({ params }: any) {
       </div>
 
       {/* Commentaires */}
-      <div className="container mx-auto mt-12">
+      <div className="container mx-auto mt-12 mb-12">
         <h2 className="text-2xl font-semibold mb-4 text-center">Avis Clients</h2>
         <div className="space-y-4">
-          {artisan.reviews && artisan.reviews.length > 0 ? (
-            artisan.reviews.map((review: any, index: number) => (
+          {comments.length > 0 ? (
+            comments.map((comment: any, index: number) => (
               <div key={index} className="p-4 bg-white shadow-md rounded-lg">
-                <p className="font-semibold">{review.name}</p>
-                <RatingStars rating={review.rating} />
-                <p className="mt-2">{review.comment}</p>
+                <p className="font-semibold">{comment.sender_id}</p>
+                <RatingStars rating={comment.rate} />
+                <p className="mt-2">{comment.content}</p>
               </div>
             ))
           ) : (
             <p className="text-center w-full text-gray-500">Aucun avis disponible.</p>
           )}
         </div>
-      </div>
-
-      {/* Réseaux sociaux */}
-      <div className="container mx-auto mt-12 mb-6 text-center">
-        <h2 className="text-xl font-semibold mb-4">Suivez-nous sur les réseaux sociaux</h2>
-        <div className="flex justify-center space-x-6">
-          <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer">
-            <FaInstagram className="w-8 h-8 text-gray-700 hover:text-gray-900" />
-          </a>
-          <a href="https://www.snapchat.com" target="_blank" rel="noopener noreferrer">
-            <FaSnapchat className="w-8 h-8 text-gray-700 hover:text-gray-900" />
-          </a>
-          <a href="https://www.twitter.com" target="_blank" rel="noopener noreferrer">
-            <FaTwitter className="w-8 h-8 text-gray-700 hover:text-gray-900" />
-          </a>
-          <a href="https://www.companywebsite.com" target="_blank" rel="noopener noreferrer">
-            <FaGlobe className="w-8 h-8 text-gray-700 hover:text-gray-900" />
-          </a>
-        </div>
-      </div>
+      </div>  
     </div>
   );
 }
