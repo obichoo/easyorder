@@ -55,7 +55,7 @@ export default function ArtisansList() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {filteredArtisans.length > 0 ? (
             filteredArtisans.map((artisan) => (
-              <Link key={artisan.id} href={`/detailsArtisan/${artisan.id}`} passHref>
+              <Link key={artisan.id} href={`/artisans/${artisan.id}`} passHref>
                 <div className="bg-white shadow-lg rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 transition">
                   {/* Logo de l'artisan */}
                   <img
