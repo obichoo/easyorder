@@ -19,12 +19,6 @@ const EditProfile = () => {
     const [selectedCategories, setSelectedCategories] = useState<any[]>(categories);
     const [selectedProducts, setSelectedProducts] = useState<any[]>(products);
 
-    useEffect(() => {
-        UserService.getAllUsers().then((response) => {
-            console.log(response.data);
-        });
-    }, []);
-
     // Options for the categories and products
     const categoryOptions = [
         { value: 'Mode', label: 'Mode' },

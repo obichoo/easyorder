@@ -1,11 +1,11 @@
 'use client';
 
-import { favoriteProducts } from "@/app/favorites/fake-favorites";
 import { MdFavorite } from "react-icons/md";
 import {useRouter} from "next/navigation";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure} from "@nextui-org/modal";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {FavoriteProduct} from "@/models/favorite-product.model";
+import FavoriteProductService from "@/services/favorite-product.service";
 
 const RemoveFavoriteModal = ({confirm, favorite }: { confirm: Function, favorite: FavoriteProduct }) => {
     const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
@@ -87,7 +87,13 @@ const FavoriteItem = ({favorite, remove}: { favorite: FavoriteProduct, remove: F
 }
 
 const FavoriteProducts = () => {
-    const [favorites, setFavorites] = useState<FavoriteProduct[]>(favoriteProducts)
+    const [favorites, setFavorites] = useState<FavoriteProduct[]>([])
+
+    useEffect(() => {
+        FavoriteProductService.getAllFavorites().then(res => {
+            setFavorites(res.data)
+        })
+    }, [])
 
     const handleRemove = (favorite: FavoriteProduct) => {
         setFavorites(favorites.filter(fav => fav.id !== favorite.id))
@@ -96,10 +102,13 @@ const FavoriteProducts = () => {
     return (
         <div>
             <h2 className={'text-2xl mt-16 mb-8'}>Mes produits favoris</h2>
-            <div className={'w-full grid grid-cols-5 gap-10'}>
-                {favorites.map(favorite => (
+            <div className={'w-full flex gap-10'}>
+                {favorites?.length > 0 && favorites.map(favorite => (
                     <FavoriteItem key={favorite.id} favorite={favorite} remove={() => handleRemove(favorite)}/>
                 ))}
+                {!favorites?.length && (
+                    <p>Vous n'avez pas encore de produits favoris</p>
+                )}
             </div>
         </div>
     );

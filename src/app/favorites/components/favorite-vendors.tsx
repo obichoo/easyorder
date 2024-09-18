@@ -1,10 +1,11 @@
 'use client';
-import { favoriteVendors } from "@/app/favorites/fake-favorites";
+
 import { MdFavorite } from "react-icons/md";
 import {useRouter} from "next/navigation";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure} from "@nextui-org/modal";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {FavoriteVendor} from "@/models/favorite-vendor.model";
+import FavoriteVendorService from "@/services/favorite-vendor.service";
 
 const RemoveFavoriteModal = ({confirm, favorite }: { confirm: Function, favorite: FavoriteVendor }) => {
     const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
@@ -84,8 +85,14 @@ const FavoriteItem = ({favorite, remove}: { favorite: FavoriteVendor, remove: Fu
     );
 }
 
-const FavoriteShopKeepers = () => {
-    const [favorites, setFavorites] = useState<FavoriteVendor[]>(favoriteVendors)
+const FavoriteVendors = () => {
+    const [favorites, setFavorites] = useState<FavoriteVendor[]>([])
+
+    useEffect(() => {
+        FavoriteVendorService.getAllFavorites().then(res => {
+            setFavorites(res.data)
+        })
+    }, [])
 
     const handleRemove = (favorite: FavoriteVendor) => {
         setFavorites(favorites.filter(fav => fav.id !== favorite.id))
@@ -94,13 +101,16 @@ const FavoriteShopKeepers = () => {
     return (
         <div>
             <h2 className={'text-2xl mt-16 mb-8'}>Mes artisans favoris</h2>
-            <div className={'w-full grid grid-cols-5 gap-10'}>
-                {favorites.map(favorite => (
+            <div className={'w-full flex gap-10'}>
+                {favorites?.length > 0 && favorites.map(favorite => (
                     <FavoriteItem key={favorite.id} favorite={favorite} remove={() => handleRemove(favorite)}/>
                 ))}
+                {favorites?.length === 0 && (
+                    <p>Vous n'avez pas encore d'artisan favori</p>
+                )}
             </div>
         </div>
     );
 }
 
-export default FavoriteShopKeepers;
+export default FavoriteVendors;
