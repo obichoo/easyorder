@@ -2,12 +2,35 @@
 
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
-import { FaUserCircle, FaSearch } from 'react-icons/fa'; // Icônes utilisateur et loupe
+import { FaUserCircle, FaSearch } from 'react-icons/fa';
+import UserService from '@/services/user.service';
 
 const Navbar = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(true); // Simulating a logged-in user
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State for controlling dropdown
+    const [isLoggedIn, setIsLoggedIn] = useState(true);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [user, setUser] = useState(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
+
+    // Fonction pour récupérer n'importe quel utilisateur (simule la connexion)
+    const fetchAnyUser = async () => {
+        try {
+            const response = await UserService.getAllUsers();
+            const users = response.data;
+
+            if (users.length > 0) {
+                setUser(users[0]); // Utilise le premier utilisateur trouvé
+                setIsLoggedIn(true); // Simule que l'utilisateur est connecté
+            }
+        } catch (error) {
+            console.error('Erreur lors de la récupération des utilisateurs', error);
+            setIsLoggedIn(false);
+        }
+    };
+
+    // Utilisation de useEffect pour récupérer un utilisateur à l'initialisation
+    useEffect(() => {
+        fetchAnyUser();
+    }, []);
 
     // Handle outside click to close the dropdown
     useEffect(() => {
@@ -59,7 +82,7 @@ const Navbar = () => {
 
                 {/* Section utilisateur avec icône */}
                 <div className="relative flex items-center space-x-4">
-                    {isLoggedIn ? (
+                    {isLoggedIn && user ? (
                         <div className="relative" ref={dropdownRef}>
                             <button
                                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -72,7 +95,10 @@ const Navbar = () => {
                                 <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg z-50">
                                     <ul className="py-1">
                                         <li>
-                                            <Link href="/my-account" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                            <Link
+                                                href={user.role === 'artisant' ? "/my-account/shopkeeper" : "/my-account/customer"}
+                                                className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                                            >
                                                 Mon profil
                                             </Link>
                                         </li>
@@ -81,11 +107,13 @@ const Navbar = () => {
                                                 Historique
                                             </Link>
                                         </li>
-                                        <li>
-                                            <Link href="/stock" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-                                                Gérer le stock
-                                            </Link>
-                                        </li>
+                                        {user.role === 'artisant' && (
+                                            <li>
+                                                <Link href="/stock" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                                    Gérer le stock
+                                                </Link>
+                                            </li>
+                                        )}
                                         <li>
                                             <button
                                                 onClick={() => {
