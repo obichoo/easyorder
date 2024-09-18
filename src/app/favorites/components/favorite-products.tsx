@@ -1,12 +1,13 @@
 'use client';
-import {IFavoriteProduct} from "@/models/favorite.model";
+
 import { favoriteProducts } from "@/app/favorites/fake-favorites";
 import { MdFavorite } from "react-icons/md";
 import {useRouter} from "next/navigation";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure} from "@nextui-org/modal";
 import {useState} from "react";
+import {FavoriteProduct} from "@/models/favorite-product.model";
 
-const RemoveFavoriteModal = ({confirm, favorite }: { confirm: Function, favorite: IFavoriteProduct }) => {
+const RemoveFavoriteModal = ({confirm, favorite }: { confirm: Function, favorite: FavoriteProduct }) => {
     const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
 
     const handleOpen = (event: any) => {
@@ -56,7 +57,7 @@ const RemoveFavoriteModal = ({confirm, favorite }: { confirm: Function, favorite
     );
 }
 
-const FavoriteItem = ({favorite, remove}: { favorite: IFavoriteProduct, remove: Function }) => {
+const FavoriteItem = ({favorite, remove}: { favorite: FavoriteProduct, remove: Function }) => {
     const router = useRouter()
 
     const handleRemoveFavorite = () => {
@@ -64,7 +65,7 @@ const FavoriteItem = ({favorite, remove}: { favorite: IFavoriteProduct, remove: 
     }
 
     const handleProductClick = (event: any) => {
-        router.push(`/products/${favorite.product?.id}`)
+        router.push(`/products/${favorite.products?.id}`)
     }
 
 
@@ -86,9 +87,9 @@ const FavoriteItem = ({favorite, remove}: { favorite: IFavoriteProduct, remove: 
 }
 
 const FavoriteProducts = () => {
-    const [favorites, setFavorites] = useState<IFavoriteProduct[]>(favoriteProducts)
+    const [favorites, setFavorites] = useState<FavoriteProduct[]>(favoriteProducts)
 
-    const handleRemove = (favorite: IFavoriteProduct) => {
+    const handleRemove = (favorite: FavoriteProduct) => {
         setFavorites(favorites.filter(fav => fav.id !== favorite.id))
     }
 

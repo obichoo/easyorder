@@ -1,12 +1,12 @@
 'use client';
-import {IFavoriteShopKeeper} from "@/models/favorite.model";
-import { favoriteShopKeepers } from "@/app/favorites/fake-favorites";
+import { favoriteVendors } from "@/app/favorites/fake-favorites";
 import { MdFavorite } from "react-icons/md";
 import {useRouter} from "next/navigation";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure} from "@nextui-org/modal";
 import {useState} from "react";
+import {FavoriteVendor} from "@/models/favorite-vendor.model";
 
-const RemoveFavoriteModal = ({confirm, favorite }: { confirm: Function, favorite: IFavoriteShopKeeper }) => {
+const RemoveFavoriteModal = ({confirm, favorite }: { confirm: Function, favorite: FavoriteVendor }) => {
     const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
 
     const handleOpen = (event: any) => {
@@ -30,7 +30,7 @@ const RemoveFavoriteModal = ({confirm, favorite }: { confirm: Function, favorite
             <button onClick={(e) => handleOpen(e)}>
                 <MdFavorite className={'text-red-500 text-2xl'} />
             </button>
-            <Modal  isOpen={isOpen} onOpenChange={onOpenChange} >
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange} >
                 <ModalContent>
                     {(onClose) => (
                         <>
@@ -56,7 +56,7 @@ const RemoveFavoriteModal = ({confirm, favorite }: { confirm: Function, favorite
     );
 }
 
-const FavoriteItem = ({favorite, remove}: { favorite: IFavoriteShopKeeper, remove: Function }) => {
+const FavoriteItem = ({favorite, remove}: { favorite: FavoriteVendor, remove: Function }) => {
     const router = useRouter()
 
     const handleRemoveFavorite = () => {
@@ -67,7 +67,6 @@ const FavoriteItem = ({favorite, remove}: { favorite: IFavoriteShopKeeper, remov
         router.push(`/shopkeepers/${favorite.user_id}`)
     }
 
-
     return (
         <div
             className={'w-60 h-60 shadow mx-auto rounded-2xl p-3 duration-100 bg-white cursor-pointer hover:scale-105'}
@@ -76,7 +75,7 @@ const FavoriteItem = ({favorite, remove}: { favorite: IFavoriteShopKeeper, remov
         >
             <img className={'rounded-xl '} src="https://picsum.photos/224/200" alt=""/>
             <div className={'flex justify-between mt-1'}>
-                <p className={'text-center'}>{favorite.user?.name}</p>
+                <p className={'text-center'}>{favorite.vendor}</p>
                 <div>
                     <RemoveFavoriteModal favorite={favorite} confirm={handleRemoveFavorite}></RemoveFavoriteModal>
                 </div>
@@ -86,9 +85,9 @@ const FavoriteItem = ({favorite, remove}: { favorite: IFavoriteShopKeeper, remov
 }
 
 const FavoriteShopKeepers = () => {
-    const [favorites, setFavorites] = useState<IFavoriteShopKeeper[]>(favoriteShopKeepers)
+    const [favorites, setFavorites] = useState<FavoriteVendor[]>(favoriteVendors)
 
-    const handleRemove = (favorite: IFavoriteShopKeeper) => {
+    const handleRemove = (favorite: FavoriteVendor) => {
         setFavorites(favorites.filter(fav => fav.id !== favorite.id))
     }
 

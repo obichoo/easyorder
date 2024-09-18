@@ -1,10 +1,12 @@
-export interface IProduct {
-    id: number;
+import {User} from "@/models/user.model";
+
+export interface Product {
+    id?: number;
     name: string;
-    description?: string;
-    price?: number;
-    stock?: number;
-    user_id?: number;
-    created_at?: string;
-    updated_at?: string;
+    description: string;
+    price_in_cent?: number;
+    stock: number;
+    artisan_id: User['id'];
+    created_at: Date;
+    updated_at: Date;
 }

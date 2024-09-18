@@ -9,8 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@next/env": "^14.2.12",
     "@nextui-org/modal": "^2.0.41",
     "@nextui-org/react": "^2.4.8",
+    "axios": "^1.7.7",
     "chart.js": "^4.4.4",
     "next": "14.2.11",
     "react": "^18",

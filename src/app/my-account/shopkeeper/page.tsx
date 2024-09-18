@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useRef } from "react";
+import {useState, useRef, useEffect} from "react";
 import { FaUpload, FaPlus, FaSave, FaTimes, FaEdit, FaList } from 'react-icons/fa';
 import { useRouter } from 'next/navigation'; // For redirection to product creation page
 import Select from 'react-select'; // Import React Select
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/modal";
+import UserService from "@/services/user.service";
 
 const EditProfile = () => {
     const router = useRouter(); // Used for redirection
@@ -17,6 +18,12 @@ const EditProfile = () => {
     const [isEditingCompanyName, setIsEditingCompanyName] = useState<boolean>(false);
     const [selectedCategories, setSelectedCategories] = useState<any[]>(categories);
     const [selectedProducts, setSelectedProducts] = useState<any[]>(products);
+
+    useEffect(() => {
+        UserService.getAllUsers().then((response) => {
+            console.log(response.data);
+        });
+    }, []);
 
     // Options for the categories and products
     const categoryOptions = [
@@ -144,7 +151,7 @@ const EditProfile = () => {
             </div>
 
             {/* Catégories */}
-            <div className="flex mb-8">
+            <div className="flex mb-4">
                 <button
                     onClick={openCategoryModal}
                     className="bg-easyorder-green text-white px-4 py-2 rounded-md hover:bg-easyorder-black transition mr-2 flex items-center"
@@ -152,7 +159,7 @@ const EditProfile = () => {
                     <FaList className="mr-2" /> Modifier la liste des catégories
                 </button>
             </div>
-            <div className="bg-gray-200 p-4 rounded-md mb-8">
+            <div className="bg-gray-200 rounded-md mb-8">
                 <h3 className="font-bold mb-2">Liste des catégories pour être référencé</h3>
                 <ul>
                     {categories.length > 0 ? (
@@ -164,7 +171,7 @@ const EditProfile = () => {
             </div>
 
             {/* Produits */}
-            <div className="flex mb-8">
+            <div className="flex mb-4">
                 <button
                     onClick={openProductModal}
                     className="bg-easyorder-green text-white px-4 py-2 rounded-md hover:bg-easyorder-black transition mr-2 flex items-center"
@@ -178,7 +185,7 @@ const EditProfile = () => {
                     <FaPlus className="mr-2" /> Ajouter un produit
                 </button>
             </div>
-            <div className="bg-gray-200 p-4 rounded-md mb-8">
+            <div className="bg-gray-200 rounded-md mb-8">
                 <h3 className="font-bold mb-2">Liste des produits ajoutés</h3>
                 <ul>
                     {products.length > 0 ? (
@@ -191,11 +198,11 @@ const EditProfile = () => {
 
             {/* Boutons d'action */}
             <div className="flex justify-end gap-4">
-                <button className="bg-easyorder-green text-white px-4 py-2 rounded-md hover:bg-easyorder-black transition flex items-center">
-                    <FaSave className="mr-2" /> Enregistrer
-                </button>
                 <button className="bg-red-400 text-white px-4 py-2 rounded-md hover:bg-easyorder-black transition flex items-center">
                     <FaTimes className="mr-2" /> Annuler
+                </button>
+                <button className="bg-easyorder-green text-white px-4 py-2 rounded-md hover:bg-easyorder-black transition flex items-center">
+                    <FaSave className="mr-2" /> Enregistrer
                 </button>
             </div>
 
