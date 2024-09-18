@@ -1,5 +1,5 @@
-import Navbar from '@/app/components/navbar/page';
 import React from 'react';
+// import Stripe from 'stripe';
 
 export default function SubscriptionPage() {
   return (

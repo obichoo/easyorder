@@ -2,9 +2,7 @@
 
 import Link from 'next/link';
 import { FaCalendarAlt, FaBox, FaUser, FaTag } from 'react-icons/fa';
-import Navbar from '../components/navbar/page';
-import { useEffect, useState } from 'react';
-import UserService from '@/services/user.service'; // Import du service utilisateur
+import { useState } from 'react';
 
 const Historique = () => {
     // Fake data pour les achats avec images générées par picsum.photos
