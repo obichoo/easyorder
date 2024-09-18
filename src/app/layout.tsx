@@ -9,11 +9,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="bg-easyorder-gray">
         <body className="antialiased">
             <NextUIProvider className="relative easyorder-container h-screen grid">
                 <Navbar />
-                <div className="container flex flex-col bg-easyorder-gray">
+                <div className="container flex flex-col">
                   {children}
                 </div>
                 <Footer />
