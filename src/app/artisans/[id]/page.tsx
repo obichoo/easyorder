@@ -1,42 +1,15 @@
 import { FaInstagram, FaSnapchat, FaTwitter, FaGlobe, FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
+import UserService from '@/services/user.service'; // Import du service pour appeler l'API
 
+// Fonction pour récupérer un artisan par ID
 async function fetchArtisanById(id: string) {
-  const artisans = [
-    {
-      id: 1,
-      name: 'Entreprise 1',
-      address: '123 Rue des Artisans, Ville, Pays',
-      description: 'Description de l\'entreprise 1',
-      logo: '/path/to/logo1.png',
-      banner: '/path/to/logo1.png',
-      products: [
-        { name: 'Produit 1', price: 50, image: '/path/to/product1.jpg' },
-        { name: 'Produit 2', price: 75, image: '/path/to/product2.jpg' },
-      ],
-      reviews: [
-        { name: 'Client 1', comment: 'Super service!', rating: 4.5 },
-        { name: 'Client 2', comment: 'Produits de qualité!', rating: 5 }
-      ],
-    },
-    {
-      id: 2,
-      name: 'Entreprise 2',
-      address: '456 Avenue du Travail, Ville, Pays',
-      description: 'Description de l\'entreprise 2',
-      logo: '/path/to/logo2.png',
-      banner: '/path/to/logo1.png',
-      products: [
-        { name: 'Produit A', price: 100, image: '/path/to/productA.jpg' },
-        { name: 'Produit B', price: 150, image: '/path/to/productB.jpg' },
-      ],
-      reviews: [
-        { name: 'Client A', comment: 'Excellent!', rating: 5 },
-        { name: 'Client B', comment: 'Très satisfait!', rating: 4 }
-      ],
-    }
-  ];
-
-  return artisans.find((artisan) => artisan.id === parseInt(id));
+  try {
+    const response = await UserService.getUserById(id); // Appel à l'API avec l'ID
+    return response.data;
+  } catch (error) {
+    console.error("Erreur lors de la récupération de l'artisan :", error);
+    return null;
+  }
 }
 
 // Fonction pour afficher les étoiles en fonction de la note
@@ -69,22 +42,24 @@ export default async function Page({ params }: any) {
   return (
     <div>
       {/* Bannière */}
-      <div className="h-48 bg-gray-400 flex items-center justify-center">
-      <img
-          src={artisan.banner}
+      <div className="w-full h-44 bg-gray-400 overflow-hidden flex items-center">
+        <img
+          src={artisan.banner || artisan.profile_pic}
+          alt={`Bannière de ${artisan.name}`}
+          className="w-full h-full object-cover"
         />
       </div>
 
       {/* Logo et nom */}
       <div className="container mx-auto mt-6 flex items-center justify-center">
         <img
-          src={artisan.logo}
+          src={artisan.profile_pic}
           alt={`Logo de ${artisan.name}`}
           className="w-24 h-24 mr-4 rounded-full"
         />
         <div>
           <h1 className="text-3xl font-bold">{artisan.name}</h1>
-          <p className="text-gray-600 text-sm">{artisan.address}</p>
+          <p className="text-gray-600 text-sm">{artisan.company || artisan.address}</p>
           <p className="text-lg mt-4">{artisan.description}</p>
         </div>
       </div>
@@ -93,13 +68,17 @@ export default async function Page({ params }: any) {
       <div className="container mx-auto mt-12">
         <h2 className="text-2xl font-semibold mb-4 text-center">Nos Produits</h2>
         <div className="flex overflow-x-auto space-x-4 p-4">
-          {artisan.products.map((product, index) => (
-            <div key={index} className="min-w-[200px] p-4 bg-white shadow-md rounded-lg">
-              <img src={product.image} alt={product.name} className="w-full h-48 object-cover mb-2" />
-              <p className="text-center font-semibold">{product.name}</p>
-              <p className="text-center text-gray-500">{product.price} €</p>
-            </div>
-          ))}
+          {artisan.products && artisan.products.length > 0 ? (
+            artisan.products.map((product: any, index: number) => (
+              <div key={index} className="min-w-[200px] p-4 bg-white shadow-md rounded-lg">
+                <img src={product.image} alt={product.name} className="w-full h-48 object-cover mb-2" />
+                <p className="text-center font-semibold">{product.name}</p>
+                <p className="text-center text-gray-500">{product.price} €</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-center w-full text-gray-500">Pas de produits disponibles.</p>
+          )}
         </div>
       </div>
 
@@ -107,13 +86,17 @@ export default async function Page({ params }: any) {
       <div className="container mx-auto mt-12">
         <h2 className="text-2xl font-semibold mb-4 text-center">Avis Clients</h2>
         <div className="space-y-4">
-          {artisan.reviews.map((review, index) => (
-            <div key={index} className="p-4 bg-white shadow-md rounded-lg">
-              <p className="font-semibold">{review.name}</p>
-              <RatingStars rating={review.rating} />
-              <p className="mt-2">{review.comment}</p>
-            </div>
-          ))}
+          {artisan.reviews && artisan.reviews.length > 0 ? (
+            artisan.reviews.map((review: any, index: number) => (
+              <div key={index} className="p-4 bg-white shadow-md rounded-lg">
+                <p className="font-semibold">{review.name}</p>
+                <RatingStars rating={review.rating} />
+                <p className="mt-2">{review.comment}</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-center w-full text-gray-500">Aucun avis disponible.</p>
+          )}
         </div>
       </div>
 
