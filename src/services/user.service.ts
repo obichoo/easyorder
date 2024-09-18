@@ -13,7 +13,7 @@ class UserService {
     }
 
     // Get user by ID
-    getUserById(userId: number) {
+    getUserById(userId: string) {
         return AxiosInstance.get(`/user/${userId}`);
     }
 
@@ -39,7 +39,7 @@ class UserService {
 
     // Get all artisans
     getAllArtisans() {
-        return AxiosInstance.get("/artisans");
+        return AxiosInstance.get("/user/artisans");
     }
 
     // Get all clients

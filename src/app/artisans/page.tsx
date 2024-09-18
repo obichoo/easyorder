@@ -1,31 +1,29 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FaSearch } from 'react-icons/fa';
+import UserService from '@/services/user.service'; // Import du service
 
 export default function ArtisansList() {
-  const artisans = [
-    {
-      id: 1,
-      logo: '/path/to/logo1.png',
-      name: 'Entreprise 1',
-      address: '123 Rue des Artisans, Ville, Pays',
-    },
-    {
-      id: 2,
-      logo: '/path/to/logo2.png',
-      name: 'Entreprise 2',
-      address: '456 Avenue du Travail, Ville, Pays',
-    },
-    {
-      id: 3,
-      logo: '/path/to/logo3.png',
-      name: 'Entreprise 3',
-      address: '789 Boulevard de la Création, Ville, Pays',
-    },
-  ];
-
+  const [artisans, setArtisans] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  // Appel à l'API pour récupérer les artisans
+  useEffect(() => {
+    const fetchArtisans = async () => {
+      try {
+        const response = await UserService.getAllArtisans();
+        setArtisans(response.data);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des artisans :', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchArtisans();
+  }, []);
 
   // Fonction pour filtrer les artisans en fonction de la recherche
   const filteredArtisans = artisans.filter((artisan) =>
@@ -51,29 +49,33 @@ export default function ArtisansList() {
           </div>
         </div>
 
-        {/* Grid des artisans */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-          {filteredArtisans.length > 0 ? (
-            filteredArtisans.map((artisan) => (
-              <Link key={artisan.id} href={`/artisans/${artisan.id}`} passHref>
-                <div className="bg-white shadow-lg rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 transition">
-                  {/* Logo de l'artisan */}
-                  <img
-                    src={artisan.logo}
-                    alt={`Logo de ${artisan.name}`}
-                    className="w-24 h-24 mx-auto rounded-full mb-4"
-                  />
-                  {/* Nom */}
-                  <h2 className="text-xl font-semibold mb-2">{artisan.name}</h2>
-                  {/* Adresse */}
-                  <p className="text-gray-600">{artisan.address}</p>
-                </div>
-              </Link>
-            ))
-          ) : (
-            <p className="text-center col-span-3 text-gray-500">Aucun artisan trouvé.</p>
-          )}
-        </div>
+        {/* Affichage pendant le chargement */}
+        {loading ? (
+          <p className="text-center">Chargement des artisans...</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+            {filteredArtisans.length > 0 ? (
+              filteredArtisans.map((artisan) => (
+                <Link key={artisan._id} href={`/artisans/${artisan._id}`} passHref>
+                  <div className="bg-white shadow-lg rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 transition">
+                    {/* Logo de l'artisan */}
+                    <img
+                      src={artisan.profile_pic}
+                      alt={`Logo de ${artisan.name}`}
+                      className="w-24 h-24 mx-auto rounded-full mb-4"
+                    />
+                    {/* Nom */}
+                    <h2 className="text-xl font-semibold mb-2">{artisan.name}</h2>
+                    {/* Adresse */}
+                    <p className="text-gray-600">{artisan.company}</p>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <p className="text-center col-span-3 text-gray-500">Aucun artisan trouvé.</p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
