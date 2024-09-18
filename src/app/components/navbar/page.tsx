@@ -84,15 +84,23 @@ const Navbar = () => {
                     <FaSearch className="text-gray-500"/>
                 </div>
 
-                {/* Section utilisateur avec icône */}
+                {/* Section utilisateur avec photo de profil ou icône */}
                 <div className="relative flex items-center space-x-4">
                     {isLoggedIn && user ? (
-                        <div className="relative" ref={dropdownRef}>
+                        <div className="relative flex items-center" ref={dropdownRef}>
                             <button
                                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                 className="text-gray-700 hover:text-gray-900 flex items-center"
                             >
-                                <FaUserCircle size={40} className="text-gray-700" />
+                                {user.profile_pic ? (
+                                    <img
+                                        src={user.profile_pic}
+                                        alt="Photo de profil"
+                                        className="w-10 h-10 rounded-full object-cover"
+                                    />
+                                ) : (
+                                    <FaUserCircle size={40} className="text-gray-700" />
+                                )}
                                 {/* Affichage du nom de l'utilisateur */}
                                 <span className="ml-2 text-gray-700 font-medium">
                                     {user.name}
