@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Axios Interceptor Instance
 const AxiosInstance = axios.create({
-    baseURL: "https://easyorder-back.onrender.com/easyorder/v1"
+    baseURL: process.env.NEXT_PUBLIC_API_URL
 });
 
 AxiosInstance.interceptors.request.use(
