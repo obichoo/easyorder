@@ -66,7 +66,7 @@ class UserService {
     updateProfilePicture(userId: number, profilePicture: File) {
         const formData = new FormData();
         formData.append("profile_pic", profilePicture);
-        return AxiosInstance.post(`/${userId}/profile_pic`, formData);
+        return AxiosInstance.post(`/user/${userId}/profile_pic`, formData);
     }
 }
 
