@@ -6,6 +6,7 @@ import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure}
 import {useEffect, useState} from "react";
 import {FavoriteVendor} from "@/models/favorite-vendor.model";
 import FavoriteVendorService from "@/services/favorite-vendor.service";
+import getUser from "@/utils/get-user";
 
 const RemoveFavoriteModal = ({confirm, favorite }: { confirm: Function, favorite: FavoriteVendor }) => {
     const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
@@ -65,7 +66,7 @@ const FavoriteItem = ({favorite, vendor, remove}: { favorite: FavoriteVendor, ve
     }
 
     const handleProductClick = (event: any) => {
-        router.push(`/shopkeepers/${vendor._id}`)
+        router.push(`/artisans/${vendor._id}`)
     }
 
     return (
@@ -87,14 +88,16 @@ const FavoriteItem = ({favorite, vendor, remove}: { favorite: FavoriteVendor, ve
 
 const FavoriteVendors = () => {
     const [favorites, setFavorites] = useState<FavoriteVendor[]>([])
-    const userId = "66eae5edb2951e42ef380f33";
-
+    const user = getUser();
+    
     useEffect(() => {
-        FavoriteVendorService.getAllFavorites().then(res => {
-            const userFavorites = res.data.filter((favorite: FavoriteVendor) => favorite.user_id._id === userId);
-            setFavorites(userFavorites);
-        })
-    }, [userId])
+        if (user && user._id) {
+            FavoriteVendorService.getAllFavorites().then(res => {
+                const userFavorites = res.data.filter((favorite: FavoriteVendor) => favorite.user_id._id === user._id);
+                setFavorites(userFavorites);
+            });
+        }
+    }, [user]);
 
     const handleRemove = (favorite: FavoriteVendor) => {
         setFavorites(favorites.filter(fav => fav._id !== favorite._id))

@@ -6,6 +6,7 @@ import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure}
 import {useEffect, useState} from "react";
 import {FavoriteProduct} from "@/models/favorite-product.model";
 import FavoriteProductService from "@/services/favorite-product.service";
+import getUser from "@/utils/get-user";
 
 const RemoveFavoriteModal = ({confirm, favorite }: { confirm: Function, favorite: FavoriteProduct }) => {
     const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
@@ -88,14 +89,16 @@ const FavoriteItem = ({favorite, product, remove}: { favorite: FavoriteProduct, 
 
 const FavoriteProducts = () => {
     const [favorites, setFavorites] = useState<FavoriteProduct[]>([])
-    const userId = "66eae5edb2951e42ef380f33";
+    const user = getUser();
 
     useEffect(() => {
+        if (user && user._id) {
         FavoriteProductService.getAllFavorites().then(res => {
-             const userFavorites = res.data.filter((favorite: FavoriteProduct) => favorite.user_id._id === userId);
+             const userFavorites = res.data.filter((favorite: FavoriteProduct) => favorite.user_id._id === user._id);
             setFavorites(userFavorites);
-        })
-    }, [userId])
+        });
+    }
+    }, [user])
 
     const handleRemove = (favorite: FavoriteProduct) => {
         setFavorites(favorites.filter(fav => fav._id !== favorite._id))
