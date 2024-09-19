@@ -26,6 +26,16 @@ class ProductService {
     deleteProduct(productId: Product['_id']) {
         return AxiosInstance.delete(`/product/${productId}`);
     }
+
+    // Get new products
+    getNewProducts() {
+        return AxiosInstance.get("/product/newProduct");
+    }
+
+    // Get products by user id
+    getProductsByUserId(userId: Product['artisan_id']) {
+        return AxiosInstance.get(`/product/userProduct/${userId}`);
+    }
 }
 
 export default new ProductService();
