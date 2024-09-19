@@ -57,7 +57,7 @@ const RemoveFavoriteModal = ({confirm, favorite }: { confirm: Function, favorite
     );
 }
 
-const FavoriteItem = ({favorite, remove}: { favorite: FavoriteProduct, remove: Function }) => {
+const FavoriteItem = ({favorite, product, remove}: { favorite: FavoriteProduct, product: any, remove: Function }) => {
     const router = useRouter()
 
     const handleRemoveFavorite = () => {
@@ -65,7 +65,7 @@ const FavoriteItem = ({favorite, remove}: { favorite: FavoriteProduct, remove: F
     }
 
     const handleProductClick = (event: any) => {
-        router.push(`/products/${favorite.products[0]}`)
+        router.push(`/products/${product._id}`)
     }
 
 
@@ -77,7 +77,7 @@ const FavoriteItem = ({favorite, remove}: { favorite: FavoriteProduct, remove: F
         >
             <img className={'rounded-xl '} src="https://picsum.photos/224/200" alt=""/>
             <div className={'flex justify-between mt-1'}>
-                <p className={'text-center'}>{favorite.products[0]}</p>
+                <p className={'text-center'}>{product.name}</p>
                 <div>
                     <RemoveFavoriteModal favorite={favorite} confirm={handleRemoveFavorite}></RemoveFavoriteModal>
                 </div>
@@ -88,12 +88,14 @@ const FavoriteItem = ({favorite, remove}: { favorite: FavoriteProduct, remove: F
 
 const FavoriteProducts = () => {
     const [favorites, setFavorites] = useState<FavoriteProduct[]>([])
+    const userId = "66eae5edb2951e42ef380f33";
 
     useEffect(() => {
         FavoriteProductService.getAllFavorites().then(res => {
-            setFavorites(res.data)
+             const userFavorites = res.data.filter((favorite: FavoriteProduct) => favorite.user_id._id === userId);
+            setFavorites(userFavorites);
         })
-    }, [])
+    }, [userId])
 
     const handleRemove = (favorite: FavoriteProduct) => {
         setFavorites(favorites.filter(fav => fav._id !== favorite._id))
@@ -101,16 +103,23 @@ const FavoriteProducts = () => {
 
     return (
         <div>
-            <h2 className={'text-2xl mt-16 mb-8'}>Mes produits favoris</h2>
-            <div className={'w-full flex gap-10'}>
-                {favorites?.length > 0 && favorites.map(favorite => (
-                    <FavoriteItem key={favorite._id} favorite={favorite} remove={() => handleRemove(favorite)}/>
-                ))}
-                {!favorites?.length && (
-                    <p>Vous n'avez pas encore de produits favoris</p>
-                )}
-            </div>
+        <h2 className={'text-2xl mt-16 mb-8'}>Mes produits favoris</h2>
+        <div className={'w-full grid grid-cols-4 gap-4'}>
+            {favorites?.length > 0 && favorites.map(favorite => (
+                favorite.products.map(product => (
+                    <FavoriteItem
+                        key={product._id}
+                        favorite={favorite}
+                        product={product}
+                        remove={() => handleRemove(favorite)}
+                    />
+                ))
+            ))}
+            {!favorites?.length && (
+                <p>Vous n'avez pas encore de produits favoris</p>
+            )}
         </div>
+    </div>
     );
 }
 
