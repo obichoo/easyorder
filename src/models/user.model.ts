@@ -1,3 +1,5 @@
+import {Company} from "@/models/company.model";
+
 export interface User {
     _id?: string;
     stripe_id?: string;
@@ -5,7 +7,7 @@ export interface User {
     password?: string;
     name?: string;
     role?: string | 'artisan' | 'client';
-    company?: string;
+    company?: Company;
     rating?: number;
     subscriber?: boolean;
     rate_amount?: number;

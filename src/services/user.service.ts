@@ -13,7 +13,7 @@ class UserService {
     }
 
     // Get user by ID
-    getUserById(userId: string) {
+    getUserById(userId: User['_id']) {
         return AxiosInstance.get(`/user/${userId}`);
     }
 
@@ -28,7 +28,7 @@ class UserService {
     }
 
     // Delete user
-    deleteUser(userId: number) {
+    deleteUser(userId: User['_id']) {
         return AxiosInstance.delete(`/user/${userId}`);
     }
 
@@ -63,10 +63,15 @@ class UserService {
     }
 
     // Update profile picture
-    updateProfilePicture(userId: number, profilePicture: File) {
+    updateProfilePicture(userId: User['_id'], profilePicture: File) {
         const formData = new FormData();
         formData.append("profile_pic", profilePicture);
         return AxiosInstance.post(`/user/${userId}/profile_pic`, formData);
+    }
+
+    // Add company to user
+    addCompanyToUser(userId: User['_id'], companyId: User['_id']) {
+        return AxiosInstance.post(`/user/addCompany`);
     }
 }
 
