@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import Navbar from '../components/navbar/page';
+import axios from 'axios';
 
 export default function Page() {
 
@@ -10,6 +10,12 @@ export default function Page() {
     message: '',
   });
 
+  const [status, setStatus] = useState({
+    submitted: false,
+    submitting: false,
+    info: { error: false, msg: null },
+  });
+
   const handleChange = (e: any) => {
     setFormData({
       ...formData,
@@ -17,9 +23,33 @@ export default function Page() {
     });
   };
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+    setStatus({ ...status, submitting: true });
+
+    try {
+      const response = await axios({
+        method: 'POST',
+        url: 'https://formspree.io/f/[your-formspree-endpoint]', // Remplace [your-formspree-endpoint] par ton propre endpoint
+        data: formData,
+      });
+      setStatus({
+        submitted: true,
+        submitting: false,
+        info: { error: false, msg: 'Merci, votre message a été envoyé.' },
+      });
+      setFormData({
+        name: '',
+        email: '',
+        message: '',
+      });
+    } catch (error) {
+      setStatus({
+        submitted: false,
+        submitting: false,
+        info: { error: true, msg: "Une erreur est survenue lors de l'envoi du message." },
+      });
+    }
   };
 
   return (
@@ -67,7 +97,7 @@ export default function Page() {
               <div className="flex flex-col items-center">
                 <input
                   type="email"
-                  name="email"
+                  name="_replyto"
                   id="email"
                   value={formData.email}
                   onChange={handleChange}
@@ -92,11 +122,18 @@ export default function Page() {
               <div className="flex justify-center">
                 <button
                   type="submit"
+                  disabled={status.submitting}
                   className="inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-black bg-easyorder-green hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-easyorder-green"
                 >
-                  Envoyer
+                  {status.submitting ? 'Envoi...' : status.submitted ? 'Envoyé' : 'Envoyer'}
                 </button>
               </div>
+              {status.info.error && (
+                <div className="text-red-500 text-center mt-4">Erreur : {status.info.msg}</div>
+              )}
+              {!status.info.error && status.info.msg && (
+                <div className="text-green-500 text-center mt-4">{status.info.msg}</div>
+              )}
             </form>
           </div>
         </div>
