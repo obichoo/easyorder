@@ -8,7 +8,7 @@ class OrderService {
     }
 
     // Get order by ID
-    getOrderById(orderId: Order['id']) {
+    getOrderById(orderId: Order['_id']) {
         return AxiosInstance.get(`/order/${orderId}`);
     }
 
@@ -19,11 +19,11 @@ class OrderService {
 
     // Update order
     updateOrder(order: Order) {
-        return AxiosInstance.put(`/order/${order.id}`, order);
+        return AxiosInstance.put(`/order/${order._id}`, order);
     }
 
     // Delete order
-    deleteOrder(orderId: Order['id']) {
+    deleteOrder(orderId: Order['_id']) {
         return AxiosInstance.delete(`/order/${orderId}`);
     }
 }

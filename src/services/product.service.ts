@@ -8,7 +8,7 @@ class ProductService {
     }
 
     // Get product by ID
-    getProductById(productId: Product['id']) {
+    getProductById(productId: Product['_id']) {
         return AxiosInstance.get(`/product/${productId}`);
     }
 
@@ -19,11 +19,11 @@ class ProductService {
 
     // Update product
     updateProduct(product: Product) {
-        return AxiosInstance.put(`/product/${product.id}`, product);
+        return AxiosInstance.put(`/product/${product._id}`, product);
     }
 
     // Delete product
-    deleteProduct(productId: Product['id']) {
+    deleteProduct(productId: Product['_id']) {
         return AxiosInstance.delete(`/product/${productId}`);
     }
 }

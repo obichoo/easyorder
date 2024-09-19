@@ -8,7 +8,7 @@ class PaymentService {
     }
 
     // Get payment by ID
-    getPaymentById(paymentId: Payment['id']) {
+    getPaymentById(paymentId: Payment['_id']) {
         return AxiosInstance.get(`/payment/${paymentId}`);
     }
 
@@ -19,11 +19,11 @@ class PaymentService {
 
     // Update payment
     updatePayment(payment: Payment) {
-        return AxiosInstance.put(`/payment/${payment.id}`, payment);
+        return AxiosInstance.put(`/payment/${payment._id}`, payment);
     }
 
     // Delete payment
-    deletePayment(paymentId: Payment['id']) {
+    deletePayment(paymentId: Payment['_id']) {
         return AxiosInstance.delete(`/payment/${paymentId}`);
     }
 }

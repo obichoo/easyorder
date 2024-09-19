@@ -38,7 +38,7 @@ const Cart = () => {
     };
 
     return (
-        <div className="container mx-auto p-4">
+        <div className="container mt-10">
             <h1 className="text-2xl font-semibold mb-6">Votre Panier</h1>
 
             {cartItems.length === 0 ? (
@@ -51,55 +51,57 @@ const Cart = () => {
             ) : (
                 <div>
                     {/* Tableau des articles du panier */}
-                    <table className="w-full mb-6 border border-gray-200">
-                        <thead>
-                            <tr className="bg-gray-100">
-                                <th className="p-2 text-left">Produit</th>
-                                <th className="p-2 text-left">Quantité</th>
-                                <th className="p-2 text-left">Prix unitaire</th>
-                                <th className="p-2 text-left">Total</th>
-                                <th className="p-2 text-left">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {cartItems.map(item => (
-                                <tr key={item.id} className="border-t">
-                                    <td className="p-2 flex items-center">
-                                        <img src={item.image} alt={item.name} className="h-16 w-16 object-cover mr-4" />
-                                        <span>{item.name}</span>
-                                    </td>
-                                    <td className="p-2">
-                                        <input
-                                            type="number"
-                                            min="1"
-                                            value={item.quantity}
-                                            className="border w-16 p-1 text-center"
-                                            onChange={(e) => {
-                                                const updatedQuantity = parseInt(e.target.value, 10);
-                                                setCartItems(prevItems =>
-                                                    prevItems.map(ci =>
-                                                        ci.id === item.id
-                                                            ? { ...ci, quantity: updatedQuantity }
-                                                            : ci
-                                                    )
-                                                );
-                                            }}
-                                        />
-                                    </td>
-                                    <td className="p-2">{item.price} €</td>
-                                    <td className="p-2">{(item.quantity * item.price).toFixed(2)} €</td>
-                                    <td className="p-2">
-                                        <button
-                                            className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded"
-                                            onClick={() => removeItem(item.id)}
-                                        >
-                                            Supprimer
-                                        </button>
-                                    </td>
+                    <div className="rounded-2xl overflow-hidden border border-easyorder-black">
+                        <table className="w-full mb-6">
+                            <thead>
+                                <tr className="bg-gray-100">
+                                    <th className="p-2 text-left">Produit</th>
+                                    <th className="p-2 text-left">Quantité</th>
+                                    <th className="p-2 text-left">Prix unitaire</th>
+                                    <th className="p-2 text-left">Total</th>
+                                    <th className="p-2 text-left">Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {cartItems.map(item => (
+                                    <tr key={item.id} className="border-t">
+                                        <td className="p-2 flex items-center">
+                                            <img src={item.image} alt={item.name} className="h-16 w-16 object-cover mr-4" />
+                                            <span>{item.name}</span>
+                                        </td>
+                                        <td className="p-2">
+                                            <input
+                                                type="number"
+                                                min="1"
+                                                value={item.quantity}
+                                                className="border w-16 p-1 text-center"
+                                                onChange={(e) => {
+                                                    const updatedQuantity = parseInt(e.target.value, 10);
+                                                    setCartItems(prevItems =>
+                                                        prevItems.map(ci =>
+                                                            ci.id === item.id
+                                                                ? { ...ci, quantity: updatedQuantity }
+                                                                : ci
+                                                        )
+                                                    );
+                                                }}
+                                            />
+                                        </td>
+                                        <td className="p-2">{item.price} €</td>
+                                        <td className="p-2">{(item.quantity * item.price).toFixed(2)} €</td>
+                                        <td className="p-2">
+                                            <button
+                                                className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded"
+                                                onClick={() => removeItem(item.id)}
+                                            >
+                                                Supprimer
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
 
                     {/* Total */}
                     <div className="text-right">

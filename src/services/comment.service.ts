@@ -8,7 +8,7 @@ class CommentService {
     }
 
     // Get comment by ID
-    getCommentById(commentId: Comment['id']) {
+    getCommentById(commentId: Comment['_id']) {
         return AxiosInstance.get(`/comment/${commentId}`);
     }
 
@@ -19,11 +19,11 @@ class CommentService {
 
     // Update comment
     updateComment(comment: Comment) {
-        return AxiosInstance.put(`/comment/${comment.id}`, comment);
+        return AxiosInstance.put(`/comment/${comment._id}`, comment);
     }
 
     // Delete comment
-    deleteComment(commentId: Comment['id']) {
+    deleteComment(commentId: Comment['_id']) {
         return AxiosInstance.delete(`/comment/${commentId}`);
     }
 }

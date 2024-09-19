@@ -8,7 +8,7 @@ class MessageService {
     }
 
     // Get message by ID
-    getMessageById(messageId: Message['id']) {
+    getMessageById(messageId: Message['_id']) {
         return AxiosInstance.get(`/message/${messageId}`);
     }
 
@@ -19,11 +19,11 @@ class MessageService {
 
     // Update message
     updateMessage(message: Message) {
-        return AxiosInstance.put(`/message/${message.id}`, message);
+        return AxiosInstance.put(`/message/${message._id}`, message);
     }
 
     // Delete message
-    deleteMessage(messageId: Message['id']) {
+    deleteMessage(messageId: Message['_id']) {
         return AxiosInstance.delete(`/message/${messageId}`);
     }
 }

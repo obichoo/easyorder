@@ -1,7 +1,7 @@
 import {User} from "@/models/user.model";
 
 export interface Product {
-    id?: number;
+    _id?: string;
     name: string;
     description: string;
     price_in_cent?: number;

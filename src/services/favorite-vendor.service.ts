@@ -8,7 +8,7 @@ class FavoriteVendorService {
     }
 
     // Get favorite by ID
-    getFavoriteById(favoriteId: FavoriteVendor['id']) {
+    getFavoriteById(favoriteId: FavoriteVendor['_id']) {
         return AxiosInstance.get(`/favoriteVendor/${favoriteId}`);
     }
 
@@ -19,11 +19,11 @@ class FavoriteVendorService {
 
     // Update favorite
     updateFavorite(favorite: FavoriteVendor) {
-        return AxiosInstance.put(`/favoriteVendor/${favorite.id}`, favorite);
+        return AxiosInstance.put(`/favoriteVendor/${favorite._id}`, favorite);
     }
 
     // Delete favorite
-    deleteFavorite(favoriteId: FavoriteVendor['id']) {
+    deleteFavorite(favoriteId: FavoriteVendor['_id']) {
         return AxiosInstance.delete(`/favoriteVendor/${favoriteId}`);
     }
 }

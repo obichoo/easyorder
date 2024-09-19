@@ -72,7 +72,7 @@ const FavoriteItem = ({favorite, remove}: { favorite: FavoriteProduct, remove: F
     return (
         <div
             className={'w-60 h-60 shadow mx-auto rounded-2xl p-3 duration-100 bg-white cursor-pointer hover:scale-105'}
-            key={favorite.id}
+            key={favorite._id}
             onClick={(e) => handleProductClick(e)}
         >
             <img className={'rounded-xl '} src="https://picsum.photos/224/200" alt=""/>
@@ -96,7 +96,7 @@ const FavoriteProducts = () => {
     }, [])
 
     const handleRemove = (favorite: FavoriteProduct) => {
-        setFavorites(favorites.filter(fav => fav.id !== favorite.id))
+        setFavorites(favorites.filter(fav => fav._id !== favorite._id))
     }
 
     return (
@@ -104,7 +104,7 @@ const FavoriteProducts = () => {
             <h2 className={'text-2xl mt-16 mb-8'}>Mes produits favoris</h2>
             <div className={'w-full flex gap-10'}>
                 {favorites?.length > 0 && favorites.map(favorite => (
-                    <FavoriteItem key={favorite.id} favorite={favorite} remove={() => handleRemove(favorite)}/>
+                    <FavoriteItem key={favorite._id} favorite={favorite} remove={() => handleRemove(favorite)}/>
                 ))}
                 {!favorites?.length && (
                     <p>Vous n'avez pas encore de produits favoris</p>

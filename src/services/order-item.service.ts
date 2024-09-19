@@ -8,7 +8,7 @@ class OrderItemService {
     }
 
     // Get order item by ID
-    getOrderItemById(orderItemId: OrderItem['id']) {
+    getOrderItemById(orderItemId: OrderItem['_id']) {
         return AxiosInstance.get(`/order_item/${orderItemId}`);
     }
 
@@ -19,11 +19,11 @@ class OrderItemService {
 
     // Update order item
     updateOrderItem(orderItem: OrderItem) {
-        return AxiosInstance.put(`/order_item/${orderItem.id}`, orderItem);
+        return AxiosInstance.put(`/order_item/${orderItem._id}`, orderItem);
     }
 
     // Delete order item
-    deleteOrderItem(orderItemId: OrderItem['id']) {
+    deleteOrderItem(orderItemId: OrderItem['_id']) {
         return AxiosInstance.delete(`/order_item/${orderItemId}`);
     }
 }

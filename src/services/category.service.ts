@@ -8,7 +8,7 @@ export class CategoryService{
     }
 
     // Get category by ID
-    getCategoryById(categoryId: Category['id']) {
+    getCategoryById(categoryId: Category['_id']) {
         return AxiosInstance.get(`/category/${categoryId}`);
     }
 
@@ -19,11 +19,11 @@ export class CategoryService{
 
     // Update category
     updateCategory(category: Category) {
-        return AxiosInstance.put(`/category/${category.id}`, category);
+        return AxiosInstance.put(`/category/${category._id}`, category);
     }
 
     // Delete category
-    deleteCategory(categoryId: Category['id']) {
+    deleteCategory(categoryId: Category['_id']) {
         return AxiosInstance.delete(`/category/${categoryId}`);
     }
 }
