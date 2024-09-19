@@ -97,7 +97,7 @@ export default function Page() {
               <div className="flex flex-col items-center">
                 <input
                   type="email"
-                  name="_replyto"
+                  name="email"
                   id="email"
                   value={formData.email}
                   onChange={handleChange}
