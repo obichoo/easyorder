@@ -1,7 +1,7 @@
 import { FaInstagram, FaSnapchat, FaTwitter, FaGlobe, FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
-import UserService from '@/services/user.service'; // Import du service pour les artisans
-import ProductService from '@/services/product.service'; // Import du service pour les produits
-import CommentService from '@/services/comment.service'; // Import du service pour les commentaires
+import UserService from '@/services/user.service'; 
+import ProductService from '@/services/product.service'; 
+import CommentService from '@/services/comment.service'; 
 
 // Fonction pour récupérer un artisan par ID
 async function fetchArtisanById(id: string) {
@@ -18,7 +18,6 @@ async function fetchArtisanById(id: string) {
 async function fetchProductsByArtisanId(artisanId: string) {
   try {
     const response = await ProductService.getAllProducts();
-    // Filtrer les produits pour ne garder que ceux correspondant à l'ID de l'artisan
     const products = response.data.filter((product: any) => product.artisan_id === artisanId);
     return products;
   } catch (error) {
@@ -31,7 +30,6 @@ async function fetchProductsByArtisanId(artisanId: string) {
 async function fetchCommentsByRecipientId(recipientId: string) {
   try {
     const response = await CommentService.getAllComments();
-    // Filtrer les commentaires pour ne garder que ceux correspondant à recipient_id
     const comments = response.data.filter((comment: any) => comment.recipient_id === recipientId);
     return comments;
   } catch (error) {
@@ -60,7 +58,7 @@ const RatingStars = ({ rating }: any) => {
 };
 
 export default async function Page({ params }: any) {
-  const { id } = params; // Récupérer l'ID de l'URL
+  const { id } = params; 
   const artisan = await fetchArtisanById(id);
   const products = await fetchProductsByArtisanId(id);
   const comments = await fetchCommentsByRecipientId(id);
@@ -71,7 +69,6 @@ export default async function Page({ params }: any) {
 
   return (
     <div>
-      {/* Bannière */}
       <div className="w-full h-44 bg-gray-400 overflow-hidden flex items-center">
         <img
           src={artisan.banner || artisan.profile_pic}
@@ -80,7 +77,6 @@ export default async function Page({ params }: any) {
         />
       </div>
 
-      {/* Logo et nom */}
       <div className="container mx-auto mt-6 flex items-center justify-center">
         <img
           src={artisan.profile_pic}
@@ -89,12 +85,11 @@ export default async function Page({ params }: any) {
         />
         <div>
           <h1 className="text-3xl font-bold">{artisan.name}</h1>
-          <p className="text-gray-600 text-sm">{artisan.company || artisan.address}</p>
+          <p className="text-gray-600 text-sm">{artisan.company?.denomination || artisan.company || artisan.address}</p>
           <p className="text-lg mt-4">{artisan.description}</p>
         </div>
       </div>
 
-      {/* Carrousel de produits */}
       <div className="container mx-auto mt-12">
         <h2 className="text-2xl font-semibold mb-4 text-center">Nos Produits</h2>
         <div className="flex overflow-x-auto space-x-4 p-4">
@@ -112,14 +107,13 @@ export default async function Page({ params }: any) {
         </div>
       </div>
 
-      {/* Commentaires */}
       <div className="container mx-auto mt-12 mb-12">
         <h2 className="text-2xl font-semibold mb-4 text-center">Avis Clients</h2>
         <div className="space-y-4">
           {comments.length > 0 ? (
             comments.map((comment: any, index: number) => (
               <div key={index} className="p-4 bg-white shadow-md rounded-lg">
-                <p className="font-semibold">{comment.sender_id}</p>
+                <p className="font-semibold">{comment.sender_id?.name || comment.sender_id}</p>
                 <RatingStars rating={comment.rate} />
                 <p className="mt-2">{comment.content}</p>
               </div>

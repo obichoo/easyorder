@@ -9,7 +9,6 @@ export default function ArtisansList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // Appel à l'API pour récupérer les artisans
   useEffect(() => {
     const fetchArtisans = async () => {
       try {
@@ -25,9 +24,8 @@ export default function ArtisansList() {
     fetchArtisans();
   }, []);
 
-  // Fonction pour filtrer les artisans en fonction de la recherche
   const filteredArtisans = artisans.filter((artisan) =>
-    artisan.name.toLowerCase().includes(searchTerm.toLowerCase())
+    artisan.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -35,7 +33,6 @@ export default function ArtisansList() {
       <div className="container mx-auto mt-12">
         <h1 className="text-3xl font-bold text-center mb-8">Les Artisans</h1>
 
-        {/* Barre de recherche */}
         <div className="flex justify-center mb-8">
           <div className="relative w-full max-w-md">
             <input
@@ -49,7 +46,6 @@ export default function ArtisansList() {
           </div>
         </div>
 
-        {/* Affichage pendant le chargement */}
         {loading ? (
           <p className="text-center">Chargement des artisans...</p>
         ) : (
@@ -58,16 +54,13 @@ export default function ArtisansList() {
               filteredArtisans.map((artisan) => (
                 <Link key={artisan._id} href={`/artisans/${artisan._id}`} passHref>
                   <div className="bg-white shadow-lg rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 transition">
-                    {/* Logo de l'artisan */}
                     <img
                       src={artisan.profile_pic}
                       alt={`Logo de ${artisan.name}`}
                       className="w-24 h-24 mx-auto rounded-full mb-4"
                     />
-                    {/* Nom */}
                     <h2 className="text-xl font-semibold mb-2">{artisan.name}</h2>
-                    {/* Adresse */}
-                    <p className="text-gray-600">{artisan.company}</p>
+                    <p className="text-gray-600">{artisan.company?.denomination || artisan.company}</p>
                   </div>
                 </Link>
               ))
