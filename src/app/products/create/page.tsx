@@ -1,8 +1,8 @@
-// pages/CreateProduct.tsx
 "use client";
 
-import { useState } from 'react';
-import Navbar from '../../components/navbar/page'; // Import de la navbar
+import { useEffect, useState } from 'react';
+import ProductService from '@/services/product.service'; // Service pour les produits
+import CategoryService from '@/services/category.service'; // Service pour les catégories
 
 const CreateProduct = () => {
     const [productName, setProductName] = useState('');
@@ -10,10 +10,30 @@ const CreateProduct = () => {
     const [dimensions, setDimensions] = useState('');
     const [price, setPrice] = useState('');
     const [stock, setStock] = useState('');
-    const [photos, setPhotos] = useState<any>([]);
-    const [selectedCategory, setSelectedCategory] = useState('');
+    const [photos, setPhotos] = useState<any[]>([]); // Photos ajoutées
+    const [selectedCategory, setSelectedCategory] = useState(''); // Stocker l'ID de la catégorie sélectionnée
+    const [categories, setCategories] = useState<any[]>([]); // Liste des catégories venant de l'API
+    const [newCategory, setNewCategory] = useState(''); // Pour la création d'une nouvelle catégorie
+    const [artisanId, setArtisanId] = useState(''); // ID de l'artisan
 
-    const categories = ["Poterie", "Sculptures", "Bijoux", "Vêtements", "Verres", "Décoration"]; // Exemples de catégories
+    // Simuler la récupération de l'ID de l'utilisateur connecté (artisan)
+    useEffect(() => {
+        const user = { id: '60a6a7cd85695e0a8493bdc1' }; // Simuler un utilisateur
+        setArtisanId(user.id); // Définir l'ID de l'utilisateur (artisan)
+    }, []);
+
+    // Récupérer les catégories depuis l'API lors du chargement de la page
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await CategoryService.getAllCategories();
+                setCategories(response.data);
+            } catch (error) {
+                console.error("Erreur lors du chargement des catégories :", error);
+            }
+        };
+        fetchCategories();
+    }, []);
 
     const handleAddPhoto = (event: any) => {
         const file = event.target.files[0];
@@ -22,31 +42,58 @@ const CreateProduct = () => {
         }
     };
 
-    const handleSubmit = () => {
-        // Logic de soumission
-        console.log("Produit enregistré");
+    const handleSubmit = async () => {
+        // Convertir le prix en centimes avant l'envoi
+        const priceInCent = parseFloat(price) * 100;
+
+        // Préparer les données à envoyer, y compris l'ID de la catégorie
+        const productData = {
+            name: productName,
+            description,
+            dimensions,
+            price_in_cent: priceInCent,
+            stock: parseInt(stock),
+            category: selectedCategory, // Envoyer l'ID de la catégorie sélectionnée
+            artisan_id: artisanId, // Ajouter l'ID de l'artisan à la requête
+            photos, // Gérer ici les images
+        };
+
+        try {
+            await ProductService.createProduct(productData);
+            console.log("Produit créé avec succès");
+        } catch (error) {
+            console.error("Erreur lors de la création du produit :", error);
+        }
     };
 
     const handleCancel = () => {
-        // Reset du formulaire
+        // Réinitialisation du formulaire
         setProductName('');
         setDescription('');
         setDimensions('');
         setPrice('');
         setStock('');
         setSelectedCategory('');
-        setPhotos([]);
+        setPhotos([]); // Réinitialisation des photos
     };
 
-    const selectCategory = (category: any) => {
-        setSelectedCategory(category);
+    const selectCategory = (categoryId: any) => {
+        setSelectedCategory(categoryId); // Enregistrer l'ID de la catégorie sélectionnée
+    };
+
+    const handleAddCategory = async () => {
+        try {
+            const newCategoryData = { name: newCategory };
+            const response = await CategoryService.createCategory(newCategoryData);
+            setCategories([...categories, response.data]); // Ajouter la nouvelle catégorie à la liste
+            setNewCategory('');
+        } catch (error) {
+            console.error("Erreur lors de la création de la catégorie :", error);
+        }
     };
 
     return (
         <div className="min-h-screen bg-easyorder-gray">
-            {/* Navbar */}
-            <Navbar />
-
             {/* Section principale avec espace sous la navbar */}
             <div className="mt-8 px-6 py-8">
                 <h1 className="text-center text-2xl font-semibold text-easyorder-black mb-8">Ajouter un bien</h1>
@@ -87,13 +134,14 @@ const CreateProduct = () => {
                     </div>
 
                     <div className="mb-6">
-                        <label className="block text-easyorder-black font-semibold mb-2">Prix</label>
+                        <label className="block text-easyorder-black font-semibold mb-2">Prix en euros</label>
                         <input
                             type="number"
                             value={price}
                             onChange={(e) => setPrice(e.target.value)}
                             className="w-full p-3 border border-gray-300 rounded-lg"
                             placeholder="Prix"
+                            step="0.01" // Permet d'entrer des centimes
                         />
                     </div>
 
@@ -115,18 +163,36 @@ const CreateProduct = () => {
                         <div className="flex flex-wrap gap-4">
                             {categories.map((category) => (
                                 <span
-                                    key={category}
-                                    onClick={() => selectCategory(category)}
+                                    key={category._id}
+                                    onClick={() => selectCategory(category._id)} // Sélectionner l'ID de la catégorie
                                     className={`cursor-pointer py-2 px-4 rounded-lg ${
-                                        selectedCategory === category
+                                        selectedCategory === category._id
                                             ? 'bg-easyorder-green text-white'
                                             : 'bg-gray-300 text-easyorder-black'
                                     } hover:bg-easyorder-green hover:text-white transition duration-200`}
                                 >
-                  {category}
-                </span>
+                                    {category.name}
+                                </span>
                             ))}
                         </div>
+                    </div>
+
+                    {/* Ajouter une nouvelle catégorie */}
+                    <div className="mb-6">
+                        <label className="block text-easyorder-black font-semibold mb-2">Ajouter une nouvelle catégorie</label>
+                        <input
+                            type="text"
+                            value={newCategory}
+                            onChange={(e) => setNewCategory(e.target.value)}
+                            className="w-full p-3 border border-gray-300 rounded-lg"
+                            placeholder="Nouvelle catégorie"
+                        />
+                        <button
+                            onClick={handleAddCategory}
+                            className="mt-2 bg-easyorder-green text-white py-2 px-4 rounded-lg hover:bg-easyorder-black"
+                        >
+                            Ajouter la catégorie
+                        </button>
                     </div>
 
                     <div className="mb-6">
