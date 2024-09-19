@@ -48,7 +48,7 @@ const Navbar = () => {
     }, [dropdownRef]);
 
     return (
-        <div className="bg-[#e7e6e6] border-b border-gray-300 p-6 shadow-md">
+        <div className="bg-[#e7e6e6] border-b border-gray-300 p-6">
             <nav className="container mx-auto flex justify-between items-center">
                 {/* Logo et Titre */}
                 <div className="flex items-center">
