@@ -7,4 +7,5 @@ export interface Order {
     status?: string | 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
     created_at?: Date;
     updated_at?: Date;
+    delivery_address?: string;
 }

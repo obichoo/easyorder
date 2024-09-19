@@ -1,10 +1,15 @@
 import AxiosInstance from "@/services/axios.service";
 import {Comment} from "@/models/comment.model";
+import {User} from "@/models/user.model";
 
 class CommentService {
     // Get all comments
     getAllComments() {
         return AxiosInstance.get("/comment");
+    }
+
+    getCommentsByUserType(userId: User['_id'], userType: 'recipient' | 'sender') {
+        return AxiosInstance.get(`/comment/${userType}/${userId}`);
     }
 
     // Get comment by ID
