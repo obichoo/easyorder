@@ -30,7 +30,7 @@ export default function Page() {
     try {
       const response = await axios({
         method: 'POST',
-        url: 'https://formspree.io/f/[your-formspree-endpoint]', // Remplace [your-formspree-endpoint] par ton propre endpoint
+        url: 'https://formspree.io/f/mkgwlgpp', // Remplace [your-formspree-endpoint] par ton propre endpoint
         data: formData,
       });
       setStatus({
