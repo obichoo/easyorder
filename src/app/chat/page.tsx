@@ -223,7 +223,7 @@ const Chat = () => {
             new Date(b.messages[b.messages.length - 1].created_at as any).getTime() -
             new Date(a.messages[a.messages.length - 1].created_at as any).getTime()
         )
-        
+
         setAllChats(sortedChats);
     }
     

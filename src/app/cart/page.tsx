@@ -5,78 +5,72 @@ import StripeButton from "@/app/components/stripe-button/page";
 import OrderService from "@/services/order.service";
 import OrderItemService from "@/services/order-item.service";
 import getUser from '@/utils/get-user';
+import {Order} from "@/models/order.model";
+import {OrderItem} from "@/models/order-item.model";
+import {User} from "@/models/user.model";
+import {Product} from "@/models/product.model";
 
 const Cart = () => {
-    const [cartItems, setCartItems] = useState<any[]>([]);
-    const user = getUser();
+    const [cartItems, setCartItems] = useState<OrderItem[]>([]);
+    const [userId, setUserId] = useState<User['_id'] | null>(null);
 
     useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const { data: orders } = await OrderService.getAllOrders();
-                const userOrders = orders.filter(order => order.user_id === user._id);
-                const items = await Promise.all(userOrders.map(async order => {
-                    const orderItems = await Promise.all(order.items.map(async itemId => {
-                        const { data: item } = await OrderItemService.getOrderItemById(itemId);
-                        return item;
-                    }));
+        const userId = getUser()?._id
+        setUserId(userId);
+    }, []);
 
-                    return orderItems.map(item => ({
-                        id: item._id,
-                        name: item.product_id.name,
-                        quantity: item.quantity,
-                        price: item.price_in_cent / 100,
-                        image: item.product_id.pictures && item.product_id.pictures.length > 0
-                            ? item.product_id.pictures[0].url
-                            : '/images/default-product.jpg'
-                    }));
-                }));
-
-                setCartItems(items.flat());
-            } catch (error) {
-                console.error("Erreur lors de la récupération des commandes :", error);
-            }
-        };
-
-        if (user?._id) {
-            fetchOrders();
+    useEffect(() => {
+        if (userId) {
+            getOrderItems();
         }
-    }, [user]);
+    }, [userId]);
 
-    const updateQuantity = async (itemId: string, newQuantity: number) => {
-        try {
-            await OrderItemService.updateOrderItem({ _id: itemId, quantity: newQuantity });
+    const getOrderItems = () => {
+        OrderService.getAllOrders().then(({ data }: { data: Order[]}) => {
+            const userOrders: Order[] = data?.filter((order: Order) => order.user_id === userId && order.status === 'pending');
+            const items = userOrders.map((order: Order) => order.items).flat()
+            setCartItems(items as OrderItem[]);
+        })
+    };
+
+
+    const updateQuantity = (itemId: string, newQuantity: number) => {
+        OrderItemService.updateOrderItem({ _id: itemId, quantity: newQuantity }).then(() => {
             setCartItems(prevItems =>
                 prevItems.map(item =>
-                    item.id === itemId ? { ...item, quantity: newQuantity } : item
+                    item._id === itemId ? {...item, quantity: newQuantity} : item
                 )
             );
 
             // Si la quantité est mise à jour à 0, on supprime l'item
             if (newQuantity === 0) {
-                await removeItem(itemId);
+                removeItem(itemId);
             }
-        } catch (error) {
+        }).catch(error => {
             console.error("Erreur lors de la mise à jour de la quantité :", error);
-        }
+        })
     };
 
     // Fonction pour supprimer un produit du panier
-    const removeItem = async (id: string) => {
-        try {
-            // Supprimer l'élément de commande
-            await OrderItemService.deleteOrderItem(id);
-
-            // Mettre à jour le state local pour supprimer l'item
-            setCartItems(prevItems => prevItems.filter(item => item.id !== id));
-        } catch (error) {
+    const removeItem = (id: string) => {
+        OrderItemService.deleteOrderItem(id).then(() => {
+            setCartItems(prevItems => prevItems.filter(item => item._id !== id));
+        }).catch(error => {
             console.error("Erreur lors de la suppression de l'item :", error);
-        }
+        })
     };
 
     const calculateTotal = () => {
-        return cartItems.reduce((total, item) => total + item.quantity * item.price, 0);
+        return cartItems.reduce((total, item) => total + (item.quantity as number)  * (item.price_in_cent as number) / 100, 0);
     };
+
+    const handleQuantityChange = (newQuantity: string, item: OrderItem) => {
+        const updatedQuantity = Math.max(0, parseInt(newQuantity, 10));
+
+        if (updatedQuantity !== item.quantity) {
+            updateQuantity(item._id as string, updatedQuantity);
+        }
+    }
 
     return (
         <div className="container mt-10">
@@ -103,11 +97,11 @@ const Cart = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {cartItems.map(item => (
-                                    <tr key={item.id} className="border-t">
+                                {cartItems.map((item: OrderItem) => (
+                                    <tr key={item._id} className="border-t">
                                         <td className="p-2 flex items-center">
-                                            <img src={item.image} alt={item.name} className="h-16 w-16 object-cover mr-4" />
-                                            <span>{item.name}</span>
+                                            {/*<img src={item.image} alt={item.name} className="h-16 w-16 object-cover mr-4" />*/}
+                                            <span>{(item.product_id as Product)?.name}</span>
                                         </td>
                                         <td className="p-2">
                                             <input
@@ -115,20 +109,15 @@ const Cart = () => {
                                                 min="0"
                                                 value={item.quantity}
                                                 className="border w-16 p-1 text-center"
-                                                onChange={(e) => {
-                                                    const updatedQuantity = Math.max(0, parseInt(e.target.value, 10)); // Toujours s'assurer que la quantité est au moins 0
-                                                    if (updatedQuantity !== item.quantity) {
-                                                        updateQuantity(item.id, updatedQuantity);
-                                                    }
-                                                }}
+                                                onChange={(e) => handleQuantityChange(e.target.value, item)}
                                             />
                                         </td>
-                                        <td className="p-2">{item.price} €</td>
-                                        <td className="p-2">{(item.quantity * item.price).toFixed(2)} €</td>
+                                        <td className="p-2">{(item.price_in_cent as number) / 100} €</td>
+                                        <td className="p-2">{((item.quantity as number) * ((item.price_in_cent as number) / 100)).toFixed(2)} €</td>
                                         <td className="p-2">
                                             <button
                                                 className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded"
-                                                onClick={() => removeItem(item.id)}
+                                                onClick={() => removeItem(item._id as string)}
                                             >
                                                 Supprimer
                                             </button>

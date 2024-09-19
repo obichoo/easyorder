@@ -1,42 +1,12 @@
+'use client';
+
 import { FaInstagram, FaSnapchat, FaTwitter, FaGlobe, FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 import UserService from '@/services/user.service'; 
 import ProductService from '@/services/product.service'; 
-import CommentService from '@/services/comment.service'; 
-
-// Fonction pour récupérer un artisan par ID
-async function fetchArtisanById(id: string) {
-  try {
-    const response = await UserService.getUserById(id);
-    return response.data;
-  } catch (error) {
-    console.error("Erreur lors de la récupération de l'artisan :", error);
-    return null;
-  }
-}
-
-// Fonction pour récupérer tous les produits et filtrer par ID d'artisan
-async function fetchProductsByArtisanId(artisanId: string) {
-  try {
-    const response = await ProductService.getAllProducts();
-    const products = response.data.filter((product: any) => product.artisan_id === artisanId);
-    return products;
-  } catch (error) {
-    console.error("Erreur lors de la récupération des produits :", error);
-    return [];
-  }
-}
-
-// Fonction pour récupérer les commentaires filtrés par recipient_id
-async function fetchCommentsByRecipientId(recipientId: string) {
-  try {
-    const response = await CommentService.getAllComments();
-    const comments = response.data.filter((comment: any) => comment.recipient_id === recipientId);
-    return comments;
-  } catch (error) {
-    console.error("Erreur lors de la récupération des commentaires :", error);
-    return [];
-  }
-}
+import CommentService from '@/services/comment.service';
+import {useRouter} from "next/navigation";
+import {useEffect, useState} from "react";
+import Link from "next/link";
 
 // Fonction pour afficher les étoiles en fonction de la note
 const RatingStars = ({ rating }: any) => {
@@ -57,14 +27,64 @@ const RatingStars = ({ rating }: any) => {
   );
 };
 
-export default async function Page({ params }: any) {
-  const { id } = params; 
-  const artisan = await fetchArtisanById(id);
-  const products = await fetchProductsByArtisanId(id);
-  const comments = await fetchCommentsByRecipientId(id);
+export default function Page({ params }: any) {
+  const router = useRouter();
+  const { id } = params;
+  const [artisan, setArtisan] = useState<any>(null);
+  const [products, setProducts] = useState([]);
+  const [comments, setComments] = useState([]);
+
+  useEffect(() => {
+    fetchArtisanById(id);
+    fetchProductsByArtisanId(id);
+    fetchCommentsByRecipientId(id);
+  }, [])
+
+  // Fonction pour récupérer un artisan par ID
+  const fetchArtisanById = (id: string) => {
+    try {
+      UserService.getUserById(id).then((response) => {
+        setArtisan(response.data);
+      })
+    } catch (error) {
+      console.error("Erreur lors de la récupération de l'artisan :", error);
+      return null;
+    }
+  }
+
+// Fonction pour récupérer tous les produits et filtrer par ID d'artisan
+  const fetchProductsByArtisanId = (artisanId: string) => {
+    try {
+      ProductService.getAllProducts().then((response) => {
+        const products = response.data.filter((product: any) => product.artisan_id === artisanId);
+        setProducts(products);
+      })
+      return products;
+    } catch (error) {
+      console.error("Erreur lors de la récupération des produits :", error);
+      return [];
+    }
+  }
+
+// Fonction pour récupérer les commentaires filtrés par recipient_id
+  const fetchCommentsByRecipientId = (recipientId: string) => {
+    try {
+      CommentService.getAllComments().then((response) => {
+        const comments = response.data.filter((comment: any) => comment.recipient_id === recipientId);
+        setComments(comments);
+      })
+    } catch (error) {
+      console.error("Erreur lors de la récupération des commentaires :", error);
+      return [];
+    }
+  }
   
   if (!artisan) {
     return <div>Artisan non trouvé.</div>;
+  }
+
+  const goToProduct = (productId: string) => {
+    router.push(`/products/${productId}`);
   }
 
   return (
@@ -95,11 +115,11 @@ export default async function Page({ params }: any) {
         <div className="flex overflow-x-auto space-x-4 p-4">
           {products.length > 0 ? (
             products.map((product: any) => (
-              <div key={product.id} className="min-w-[200px] p-4 bg-white shadow-md rounded-lg">
-                <img src={product.image} alt={product.name} className="w-full h-48 object-cover mb-2" />
-                <p className="text-center font-semibold">{product.name}</p>
-                <p className="text-center text-gray-500">{(product.price_in_cent / 100).toFixed(2)} €</p>
-              </div>
+              <Link className="min-w-[200px] p-4 bg-white shadow-md rounded-lg cursor-pointer" href={`/products/${product?._id}`} key={product.id}>
+                  <img src={product.image} alt={product.name} className="w-full h-48 object-cover mb-2" />
+                  <p className="text-center font-semibold">{product.name}</p>
+                  <p className="text-center text-gray-500">{(product.price_in_cent / 100).toFixed(2)} €</p>
+              </Link>
             ))
           ) : (
             <p className="text-center w-full text-gray-500">Pas de produits disponibles.</p>
@@ -122,7 +142,7 @@ export default async function Page({ params }: any) {
             <p className="text-center w-full text-gray-500">Aucun avis disponible.</p>
           )}
         </div>
-      </div>  
+      </div>
     </div>
   );
 }

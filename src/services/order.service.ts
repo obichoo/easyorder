@@ -1,5 +1,7 @@
 import AxiosInstance from "@/services/axios.service";
 import {Order} from "@/models/order.model";
+import {OrderItem} from "@/models/order-item.model";
+import {User} from "@/models/user.model";
 
 class OrderService {
     // Get all orders
@@ -25,6 +27,11 @@ class OrderService {
     // Delete order
     deleteOrder(orderId: Order['_id']) {
         return AxiosInstance.delete(`/order/${orderId}`);
+    }
+
+    // Add item to order (create order if order_id is not provided)
+    addItemToOrder(order: OrderItem & { user_id: User['_id'] }) {
+        return AxiosInstance.post('/order/addItem', order);
     }
 }
 

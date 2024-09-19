@@ -5,6 +5,6 @@ export interface Comment {
     sender_id?: User['_id'];
     recipient_id?: User['_id'];
     content?: string;
-    rating?: number;
+    rate?: number;
     created_at?: Date;
 }
