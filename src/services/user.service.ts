@@ -58,8 +58,8 @@ class UserService {
     }
 
     // Get user by email or name
-    getUserByEmailOrName(searchType: User['email'] | User['name'], value: string) {
-        return AxiosInstance.get(`/${searchType}/${value}`);
+    getUserByEmailOrName(searchType: 'email' | 'name', value: string) {
+        return AxiosInstance.get(`/user/${searchType}/${value}`);
     }
 
     // Update profile picture

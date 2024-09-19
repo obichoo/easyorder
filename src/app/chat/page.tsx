@@ -1,55 +1,297 @@
 'use client';
 
-import {useEffect, useState} from "react";
-import fakeChats from "@/app/chat/fake-chats";
+import {ReactNode, useEffect, useState} from "react";
 import { FaSpinner } from 'react-icons/fa';
+import MessageService from "@/services/message.service";
+import {Message} from "@/models/message.model";
+import getUser from "@/utils/get-user";
+import {User} from "@/models/user.model";
+import UserService from "@/services/user.service";
 
-const Chat = () => {
-    const [chatsData, setChatsData] = useState(fakeChats);
-    const [selectedChat, setSelectedChat] = useState(chatsData[0] || null);
+interface Chat {
+    id: number;
+    recipient: User;
+    messages: Message[];
+}
+
+const Conversation = ({ chat, onChatUpdate }: { chat: Chat | null, onChatUpdate: Function }) => {
+    const [userId, setUserId] = useState<User['_id']>('');
     const [loading, setLoading] = useState(false);
     const [newMessage, setNewMessage] = useState("");
 
     useEffect(() => {
-        // Scroll automatique vers le bas du chat
-        const chatContainer = document.querySelector(".bg-gray-100");
-        if (chatContainer) {
-            chatContainer.scrollTop = chatContainer.scrollHeight
-        }
-    }, [chatsData]);
+        scrollChatToBottom();
+    }, [chat?.messages]);
+
+    useEffect(() => {
+        setUserId(getUser()?._id)
+    }, [])
+
+    const scrollChatToBottom = () => {
+        setTimeout(() => {
+            const chatContainer = document.getElementById("chat");
+            if (chatContainer) {
+                chatContainer.scrollTop = chatContainer.scrollHeight
+            }
+        })
+    }
 
     const handleSendMessage = () => {
         if (newMessage.trim() === "") return;
 
         setLoading(true);
 
-        // Simuler une requête d'envoi de message
-        setTimeout(() => {
-            if (selectedChat) {
-                const updatedChat = {
-                    ...selectedChat,
-                    messages: [
-                        ...selectedChat.messages,
-                        {
-                            id: selectedChat.messages.length + 1,
-                            sender: "artisan",
-                            content: newMessage,
-                            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                        },
-                    ],
-                };
-                // Mise à jour de l'état des chats
-                setChatsData((prevChats) =>
-                    prevChats.map((chat) =>
-                        chat.id === selectedChat.id ? updatedChat : chat
-                    )
-                );
-                setSelectedChat(updatedChat);
-            }
-            setNewMessage("");
-            setLoading(false); // Fin du chargement
-        }, 1000); // Simule un délai de 1 seconde
+        const messageToSend: Message = {
+            sender_id: userId,
+            content: newMessage,
+            recipient_id: chat?.recipient._id,
+        }
+
+        MessageService.createMessage(messageToSend)
+            .then(response => {
+                if (!chat) return;
+
+                const updatedChat: Chat = chat;
+                updatedChat.messages.push(response.data);
+                onChatUpdate(updatedChat);
+
+                setNewMessage("");
+                setLoading(false);
+            })
+            .catch(e => {
+                console.log(e);
+                setLoading(false);
+            })
     };
+
+    return (
+        chat ?
+            <>
+                <div className="flex items-center p-4 bg-white shadow-md border-b">
+                    <div className="w-12 h-12 rounded-full mr-4 overflow-hidden">
+                        <img src={chat?.recipient?.profile_pic} className="w-100 h-100 object-cover" alt=""/>
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-bold">{chat?.recipient?.name}</h2>
+                        <p>{chat?.recipient?.email}</p>
+                    </div>
+                </div>
+                <div id="chat" className="flex-1 p-6 overflow-y-auto bg-easyorder-gray ">
+                    {chat?.messages.map((message: Message) => (
+                        <div
+                            key={message._id}
+                            className={`mb-3 p-2 max-w-[66%] w-fit rounded-md shadow-md ${
+                                message.sender_id !== userId ? "bg-white self-end" : "ml-auto bg-easyorder-green self-start"
+                            }`}
+                        >
+                            <p className="text-lg">{message.content}</p>
+                            <span className="text-xs text-easyorder-black">
+                                {new Date(message.created_at as any).toLocaleString()}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+                <div className="p-4 bg-white shadow-md">
+                    <div className="border flex items-center rounded-md overflow-hidden">
+                        <input
+                            type="text"
+                            placeholder="Message..."
+                            className="w-full p-2 outline-0"
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                        />
+                        <button
+                            onClick={handleSendMessage}
+                            className={`bg-easyorder-green text-white px-4 py-2 hover:bg-easyorder-black transition flex items-center justify-center gap-2 ${
+                                loading ? "opacity-50 cursor-not-allowed" : ""
+                            }`}
+                            disabled={loading}
+                        >
+                            {loading ? (
+                                <>
+                                    <FaSpinner className="animate-spin"/> Envoi...
+                                </>
+                            ) : (
+                                "Envoyer"
+                            )}
+                        </button>
+                    </div>
+                </div>
+            </>
+            :
+            <div className="flex-1 flex items-center justify-center">
+                <p className="text-gray-600">Sélectionnez un utilisateur pour commencer à discuter.</p>
+            </div>
+    )
+}
+
+const SelectUser = ({onSelect, users}: { onSelect: Function, users: User[] }) => {
+    const [searchedUsers, setSearchedUsers] = useState<User[]>([]);
+    const [search, setSearch] = useState<string>("");
+
+    useEffect(() => {
+        getSearchedUsers();
+    }, [search])
+
+    const getSearchedUsers = () => {
+        if (search.length === 0) {
+            setSearchedUsers([]);
+            return;
+        }
+
+        const searchResults = users.filter((user: User) =>
+            user?.name?.toLowerCase().includes(search.toLowerCase())
+        );
+
+        setSearchedUsers(searchResults);
+    }
+
+    const handleSelect = (user: User) => {
+        setSearch("");
+        setSearchedUsers([]);
+        onSelect(user);
+    }
+
+    return (
+        <div>
+            <input
+                placeholder="Démarrer une nouvelle discussion..."
+                type="search"
+                value={search}
+                onChange={(e: any) => setSearch(e.target.value)}
+                className="w-full p-2 outline-0 border rounded-md"
+            />
+            {search?.length > 0 && (
+                <div className="relative">
+                    {searchedUsers?.length > 0 ? (
+                        <div className="absolute w-full bg-white shadow-md rounded-md mt-2 max-h-60 overflow-auto">
+                            {searchedUsers.map((user) => (
+                                <div
+                                    key={user._id}
+                                    onClick={() => handleSelect(user)}
+                                    className="p-2 cursor-pointer hover:bg-gray-100"
+                                >
+                                    <h3 className="font-bold text-gray-900">{user.name}</h3>
+                                    <p className="text-sm text-gray-600">{user.email}</p>
+                                </div>
+                            ))}
+                        </div>
+                    ): (
+                        <p className="absolute w-full bg-white shadow-md rounded-md mt-2 p-2">Aucun utilisateur trouvé.</p>
+                    )}
+                </div>
+            )}
+        </div>
+    )
+}
+
+const Chat = () => {
+    const [users, setUsers] = useState<User[]>([]);
+    const [allChats, setAllChats] = useState<Chat[]>([]);
+    const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
+
+    useEffect(() => {
+        getUsers();
+    }, [])
+
+    useEffect(() => {
+        if (users.length > 0) {
+            getChatsData();
+        }
+    }, [users])
+
+    const getUsers = () => {
+        UserService.getAllUsers()
+            .then(response => {
+                setUsers(response.data)
+            })
+            .catch(e => {
+                console.log(e);
+            })
+    }
+
+    const onChatUpdate = (updatedChat: any) => {
+        const updatedChatIndex = allChats.findIndex((chat: Chat) => chat.recipient?._id === updatedChat.recipient._id);
+        allChats[updatedChatIndex] = updatedChat;
+
+        const sortedChats = allChats.map((chat: Chat) => {
+            chat.messages.sort((a: Message, b: Message) =>
+                new Date(a.created_at as any).getTime() - new Date(b.created_at as any).getTime()
+            )
+            return chat;
+        }).sort((a: Chat, b: Chat) =>
+            new Date(b.messages[b.messages.length - 1].created_at as any).getTime() -
+            new Date(a.messages[a.messages.length - 1].created_at as any).getTime()
+        )
+        
+        setAllChats(sortedChats);
+    }
+    
+    const onSelectUser = (user: User) => {
+        const existingChat = allChats.find((chat: Chat) => chat.recipient?._id === user._id);
+
+        if (existingChat) {
+            setSelectedChat(existingChat);
+            return;
+        }
+
+        const newChat: Chat = {
+            id: allChats.length + 1,
+            recipient: user,
+            messages: [],
+        }
+
+        setAllChats([newChat, ...allChats]);
+        setSelectedChat(newChat);
+    }
+
+    const getChatsData = () => {
+        MessageService.getAllMessages()
+            .then(response => {
+                const userMessages = response.data.filter((message: Message) =>
+                    message.sender_id === getUser()?._id || message.recipient_id === getUser()?._id
+                );
+                const userChats: Chat[] = []
+
+                userMessages.forEach((message: Message) => {
+                    const otherUserId: User['_id'] = message.sender_id === getUser()?._id ? message.recipient_id : message.sender_id;
+
+                    const existingChat = userChats.find((chat: Chat) => otherUserId === chat.recipient?._id);
+                    if (existingChat) {
+                        existingChat.messages.push(message);
+                    } else {
+                        const otherUser: User | undefined = users.find((user: User) => user._id === otherUserId);
+
+                        if (!otherUser) return;
+
+                        userChats.push({
+                            id: userChats.length + 1,
+                            recipient: otherUser as User,
+                            messages: [message],
+                        })
+                    }
+                })
+
+                const sortedChats = userChats.map((chat: Chat) => {
+                    chat.messages.sort((a: Message, b: Message) =>
+                        new Date(a.created_at as any).getTime() - new Date(b.created_at as any).getTime()
+                    )
+                    return chat;
+                }).sort((a: Chat, b: Chat) =>
+                    new Date(b.messages[b.messages.length - 1].created_at as any).getTime() -
+                    new Date(a.messages[a.messages.length - 1].created_at as any).getTime()
+                )
+
+                setAllChats(sortedChats);
+            })
+            .catch(e => {
+                console.log(e);
+            })
+    }
+
+    const sortChatsByDate = () => {
+
+    }
 
     return (
         <>
@@ -58,80 +300,36 @@ const Chat = () => {
                 {/* Sidebar pour les discussions */}
                 <div className="w-1/3 bg-white shadow-lg rounded-l-lg">
                     <div className="p-4">
-                        {chatsData.length > 0 ? (
-                            chatsData.map((chat) => (
-                                <div
-                                    key={chat.id}
-                                    onClick={() => setSelectedChat(chat)}
-                                    className={`p-3 mb-2 cursor-pointer rounded-md hover:bg-easyorder-gray ${
-                                        selectedChat?.id === chat.id ? "bg-easyorder-gray" : ""
-                                    }`}
-                                >
-                                    <h3 className="font-bold text-gray-900">{chat.name}</h3>
-                                    <p className="text-sm text-gray-600 truncate">
-                                        {chat.messages[chat.messages.length - 1]?.content || "Aucun message."}
-                                    </p>
-                                </div>
-                            ))
-                        ) : (
-                            <p className="text-gray-600">Aucun message disponible.</p>
-                        )}
+                        <SelectUser users={users} onSelect={onSelectUser}></SelectUser>
+                        <div className="mt-4">
+                            {allChats.length > 0 ? (
+                                allChats.map((chat: Chat) => (
+                                    <div
+                                        key={chat.id}
+                                        onClick={() => setSelectedChat(chat)}
+                                        className={`p-3 mb-2 cursor-pointer rounded-md hover:bg-easyorder-gray ${
+                                            selectedChat?.id === chat.id ? "bg-easyorder-gray" : ""
+                                        }`}
+                                    >
+                                        <h3 className="font-bold text-gray-900">{chat.recipient?.name}</h3>
+                                        <p className="text-sm text-gray-600 truncate">
+                                            {
+                                                chat.messages[chat.messages.length - 1]?.content ||
+                                                (<span className="italic">Aucun message</span>)
+                                            }
+                                        </p>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-gray-600">Aucun message disponible.</p>
+                            )}
+                        </div>
                     </div>
                 </div>
 
                 {/* Zone de chat */}
                 <div className="w-2/3 bg-gray-50 flex flex-col rounded-r-lg overflow-hidden shadow">
-                    {selectedChat ? (
-                        <>
-                            <div className="flex items-center p-4 bg-white shadow-md">
-                                <div className="w-12 h-12 rounded-full mr-4 overflow-hidden">
-                                    <img src="https://picsum.photos/48/48" className="w-100 h-100 object-cover" alt=""/>
-                                </div>
-                                <h2 className="text-xl font-bold">{selectedChat.name}</h2>
-                            </div>
-                            <div className="flex-1 p-6 overflow-y-auto bg-easyorder-gray ">
-                                {selectedChat.messages.map((message) => (
-                                    <div
-                                        key={message.id}
-                                        className={`mb-4 p-4 max-w-lg rounded-md shadow-md ${
-                                            message.sender === "client" ? "bg-white self-end" : "ml-auto bg-easyorder-green self-start"
-                                        }`}
-                                    >
-                                        <p>{message.content}</p>
-                                        <span className="text-xs text-gray-500">{message.timestamp}</span>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="p-4 bg-white shadow-md flex items-center">
-                                <input
-                                    type="text"
-                                    placeholder="Message..."
-                                    className="w-full p-2 border rounded-l-md border-easyorder-black border-r-0 outline-0"
-                                    value={newMessage}
-                                    onChange={(e) => setNewMessage(e.target.value)}
-                                />
-                                <button
-                                    onClick={handleSendMessage}
-                                    className={`bg-easyorder-green border border-easyorder-black text-white px-4 py-2 rounded-r-md hover:bg-easyorder-black transition flex items-center justify-center gap-2 ${
-                                        loading ? "opacity-50 cursor-not-allowed" : ""
-                                    }`}
-                                    disabled={loading}
-                                >
-                                    {loading ? (
-                                        <>
-                                            <FaSpinner className="animate-spin" /> Envoi...
-                                        </>
-                                    ) : (
-                                        "Envoyer"
-                                    )}
-                                </button>
-                            </div>
-                        </>
-                    ) : (
-                        <div className="flex items-center justify-center flex-1">
-                            <p className="text-gray-500">Aucun chat sélectionné</p>
-                        </div>
-                    )}
+                    <Conversation chat={selectedChat} onChatUpdate={onChatUpdate} />
                 </div>
             </div>
         </>
