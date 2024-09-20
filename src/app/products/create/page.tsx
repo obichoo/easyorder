@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useEffect, useState } from 'react';
 import ProductService from '@/services/product.service'; // Service pour les produits
@@ -11,15 +11,18 @@ const CreateProduct = () => {
     const [price, setPrice] = useState('');
     const [stock, setStock] = useState('');
     const [photos, setPhotos] = useState<any[]>([]); // Photos ajoutées
-    const [selectedCategory, setSelectedCategory] = useState(''); // Stocker l'ID de la catégorie sélectionnée
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([]); // Stocker plusieurs catégories sélectionnées
     const [categories, setCategories] = useState<any[]>([]); // Liste des catégories venant de l'API
     const [newCategory, setNewCategory] = useState(''); // Pour la création d'une nouvelle catégorie
     const [artisanId, setArtisanId] = useState(''); // ID de l'artisan
 
-    // Simuler la récupération de l'ID de l'utilisateur connecté (artisan)
+    // Récupérer l'ID de l'utilisateur connecté (artisan) depuis le local storage
     useEffect(() => {
-        const user = { id: '60a6a7cd85695e0a8493bdc1' }; // Simuler un utilisateur
-        setArtisanId(user.id); // Définir l'ID de l'utilisateur (artisan)
+        const user = localStorage.getItem('user');
+        if (user) {
+            const parsedUser = JSON.parse(user);
+            setArtisanId(parsedUser._id); // Définir l'ID de l'utilisateur (artisan)
+        }
     }, []);
 
     // Récupérer les catégories depuis l'API lors du chargement de la page
@@ -46,15 +49,15 @@ const CreateProduct = () => {
         // Convertir le prix en centimes avant l'envoi
         const priceInCent = parseFloat(price) * 100;
 
-        // Préparer les données à envoyer, y compris l'ID de la catégorie
+        // Préparer les données à envoyer, y compris l'ID de l'artisan et les catégories sélectionnées
         const productData = {
             name: productName,
             description,
             dimensions,
             price_in_cent: priceInCent,
             stock: parseInt(stock),
-            category: selectedCategory, // Envoyer l'ID de la catégorie sélectionnée
-            artisan_id: artisanId, // Ajouter l'ID de l'artisan à la requête
+            categories: selectedCategories, // Envoyer les catégories sélectionnées sous forme de tableau
+            artisan_id: artisanId, // Utiliser l'ID de l'utilisateur connecté (artisan)
             photos, // Gérer ici les images
         };
 
@@ -73,22 +76,34 @@ const CreateProduct = () => {
         setDimensions('');
         setPrice('');
         setStock('');
-        setSelectedCategory('');
+        setSelectedCategories([]); // Réinitialiser les catégories sélectionnées
         setPhotos([]); // Réinitialisation des photos
     };
 
-    const selectCategory = (categoryId: any) => {
-        setSelectedCategory(categoryId); // Enregistrer l'ID de la catégorie sélectionnée
+    const selectCategory = (categoryId: string) => {
+        if (!selectedCategories.includes(categoryId)) {
+            setSelectedCategories([...selectedCategories, categoryId]); // Ajouter la catégorie si elle n'est pas déjà sélectionnée
+        } else {
+            // Supprimer la catégorie si elle est déjà sélectionnée
+            setSelectedCategories(selectedCategories.filter((id) => id !== categoryId));
+        }
     };
 
     const handleAddCategory = async () => {
         try {
-            const newCategoryData = { name: newCategory };
+            const newCategoryData = {
+                name: newCategory,
+                description: "Description par défaut" // Description par défaut
+            };
             const response = await CategoryService.createCategory(newCategoryData);
             setCategories([...categories, response.data]); // Ajouter la nouvelle catégorie à la liste
             setNewCategory('');
         } catch (error) {
-            console.error("Erreur lors de la création de la catégorie :", error);
+            if (error.response) {
+                console.error("Erreur lors de la création de la catégorie : ", error.response.data);
+            } else {
+                console.error("Erreur lors de la création de la catégorie : ", error.message);
+            }
         }
     };
 
@@ -141,11 +156,10 @@ const CreateProduct = () => {
                             onChange={(e) => setPrice(e.target.value)}
                             className="w-full p-3 border border-gray-300 rounded-lg"
                             placeholder="Prix"
-                            step="0.01" // Permet d'entrer des centimes
+                            step="0.01"
                         />
                     </div>
 
-                    {/* Champ pour le nombre en stock */}
                     <div className="mb-6">
                         <label className="block text-easyorder-black font-semibold mb-2">Nombre en stock</label>
                         <input
@@ -157,16 +171,15 @@ const CreateProduct = () => {
                         />
                     </div>
 
-                    {/* Sélection de catégorie avec des étiquettes */}
                     <div className="mb-6">
                         <label className="block text-easyorder-black font-semibold mb-2">Catégorie</label>
                         <div className="flex flex-wrap gap-4">
                             {categories.map((category) => (
                                 <span
                                     key={category._id}
-                                    onClick={() => selectCategory(category._id)} // Sélectionner l'ID de la catégorie
+                                    onClick={() => selectCategory(category._id)} // Sélectionner/désélectionner l'ID de la catégorie
                                     className={`cursor-pointer py-2 px-4 rounded-lg ${
-                                        selectedCategory === category._id
+                                        selectedCategories.includes(category._id)
                                             ? 'bg-easyorder-green text-white'
                                             : 'bg-gray-300 text-easyorder-black'
                                     } hover:bg-easyorder-green hover:text-white transition duration-200`}
@@ -177,7 +190,6 @@ const CreateProduct = () => {
                         </div>
                     </div>
 
-                    {/* Ajouter une nouvelle catégorie */}
                     <div className="mb-6">
                         <label className="block text-easyorder-black font-semibold mb-2">Ajouter une nouvelle catégorie</label>
                         <input

@@ -9,6 +9,7 @@ const Navbar = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [user, setUser] = useState<any>(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState(''); // État pour la recherche
     const dropdownRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
     const router = useRouter();
@@ -46,6 +47,15 @@ const Navbar = () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [dropdownRef]);
+
+    // Fonction de gestion de la recherche
+    const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            // Redirection vers la page de recherche avec la query
+            router.push(`/search?query=${encodeURIComponent(searchQuery)}`);
+        }
+    };
 
     return (
         <div className="bg-[#e7e6e6] border-b border-gray-300 p-6">
@@ -86,14 +96,18 @@ const Navbar = () => {
                 </ul>
 
                 {/* Barre de recherche */}
-                <div className="relative flex items-center space-x-3 w-full max-w-md">
+                <form onSubmit={handleSearch} className="relative flex items-center space-x-3 w-full max-w-md">
                     <input
                         type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)} // Mettre à jour la requête de recherche
                         placeholder="Rechercher un bien..."
                         className="border border-gray-300 rounded-full py-2 px-4 w-full text-sm focus:outline-none focus:ring-2 focus:ring-[#77ad86] transition"
                     />
-                    <FaSearch size={32} className="text-[#032035]"/>
-                </div>
+                    <button type="submit">
+                        <FaSearch size={32} className="text-[#032035]" />
+                    </button>
+                </form>
 
                 {/* Section utilisateur */}
                 <div className="relative flex items-center space-x-4">
