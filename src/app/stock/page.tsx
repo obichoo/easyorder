@@ -158,7 +158,7 @@ export default function StockManagementPage() {
 
       <div className="grid grid-cols-4 gap-4">
         {filteredProducts.map((product) => (
-          <div key={product._id} className="bg-white shadow-md p-4 text-center">
+          <Link key={product._id} href={`/products/${product._id}`} className="bg-white shadow-md p-4 text-center">
             <img
               src={product.pictures[0] || 'https://via.placeholder.com/300x200'}
               alt={product.name}
@@ -169,7 +169,7 @@ export default function StockManagementPage() {
             <p className={product.stock > 0 ? 'text-green-500' : 'text-red-500'}>
               {product.stock > 0 ? `${product.stock} en stock` : 'Rupture de stock'}
             </p>
-          </div>
+          </Link>
         ))}
       </div>
 
