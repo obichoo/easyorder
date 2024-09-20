@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import {FaEdit, FaHeart, FaRegHeart, FaShoppingCart} from 'react-icons/fa';
+import { FaEdit, FaHeart, FaRegHeart, FaShoppingCart, FaTrash } from 'react-icons/fa';
 import { useRouter, useParams } from 'next/navigation';
 import ProductService from '@/services/product.service';
 import Link from "next/link";
@@ -12,7 +12,8 @@ import { User } from "@/models/user.model";
 import getUser from "@/utils/get-user";
 import FavoriteProductService from "@/services/favorite-product.service";
 import { FavoriteProduct } from "@/models/favorite-product.model";
-import Carousel, {CarouselSlide} from "@/app/components/carousel/page";
+import Carousel, { CarouselSlide } from "@/app/components/carousel/page";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/modal";
 
 export default function Page() {
   const router = useRouter();
@@ -22,6 +23,7 @@ export default function Page() {
   const [userId, setUserId] = useState<User['_id'] | null>(null);
   const [favorites, setFavorites] = useState<{ _id?: string, products?: string[] }>({});
   const [slides, setSlides] = useState<CarouselSlide[]>([]);
+  const { isOpen, onOpen, onClose } = useDisclosure(); // Gestion de la modale de suppression
 
   useEffect(() => {
     const userId = getUser()?._id;
@@ -46,9 +48,7 @@ export default function Page() {
       setProduct(response.data);
 
       const suggestedProducts = await ProductService.getAllProducts();
-      const shuffleArray = (array: any[]) => {
-        return array.sort(() => Math.random() - 0.5);
-      };
+      const shuffleArray = (array: any[]) => array.sort(() => Math.random() - 0.5);
       setSuggestions(shuffleArray(suggestedProducts.data.filter((p: any) => p.id !== id)).splice(0, 4));
     } catch (error) {
       console.error("Erreur lors du chargement du produit :", error);
@@ -66,7 +66,6 @@ export default function Page() {
       const slides = product.pictures?.map((picture: any) => ({
         src: picture.url,
         alt: product.name,
-
       })) || [];
       setSlides(slides);
     }
@@ -126,17 +125,29 @@ export default function Page() {
     }
   };
 
+  const handleDeleteProduct = () => {
+    ProductService.deleteProduct(product._id).then(() => {
+      onClose(); // Fermer la modale après la suppression
+      router.push('/home'); // Rediriger après la suppression
+    });
+  };
+
   return (
       <div className="container mx-auto mb-8 mt-12">
         {/* Nom du produit */}
         <div className="w-2/3 mx-auto">
-          <h1 className="text-center text-4xl font-bold mb-12 text-easyorder-black">{product.name}</h1>
+          <h1 className="text-center text-4xl font-bold mb-12 text-easyorder-black">
+            {product.name}
+            {userId === product?.artisan_id && (
+                <FaTrash size={32} className="ml-4 cursor-pointer text-danger inline mb-1" onClick={onOpen} />
+            )}
+          </h1>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Carousel */}
           <div className="w-full lg:w-1/2">
-            <Carousel slides={slides} options={{loop: true}} slidesPerView={1} slidesHeight={'300px'} slidesSpacing={'2rem'} />
+            <Carousel slides={slides} options={{ loop: true }} slidesPerView={1} slidesHeight={'300px'} slidesSpacing={'2rem'} />
           </div>
 
           {/* Détails du produit */}
@@ -167,7 +178,7 @@ export default function Page() {
             {/* Boutons avec redirections */}
             <div className="flex space-x-4">
               <button onClick={toggleFavorite} className="text-red-500 transition-transform transform hover:scale-110">
-                {favorites?.products?.includes(product._id) ? <FaHeart size={32}/> : <FaRegHeart size={32}/>}
+                {favorites?.products?.includes(product._id) ? <FaHeart size={32} /> : <FaRegHeart size={32} />}
               </button>
 
               <Link href={`/chat?user=${product?.artisan_id}`}>
@@ -180,20 +191,18 @@ export default function Page() {
               <button
                   onClick={addToCart}
                   className="flex items-center bg-easyorder-green text-white px-4 py-2 rounded shadow hover:bg-easyorder-black transition">
-                <FaShoppingCart size={20} className="mr-2"/>
+                <FaShoppingCart size={20} className="mr-2" />
                 Ajouter au panier
               </button>
 
-              {
-                userId === product?.artisan_id &&
-                <Link href={`/products/edit/${product?._id}`}>
-                  <button className="bg-easyorder-gray text-easyorder-black px-4 py-2 rounded shadow hover:bg-easyorder-black hover:text-white transition flex">
-                    <FaEdit size={20} className="mr-2"/>
-                    Modifier ce produit
-                  </button>
-
-                </Link>
-              }
+              {userId === product?.artisan_id && (
+                  <Link href={`/products/edit/${product?._id}`}>
+                    <button className="bg-easyorder-gray text-easyorder-black px-4 py-2 rounded shadow hover:bg-easyorder-black hover:text-white transition flex">
+                      <FaEdit size={20} className="mr-2" />
+                      Modifier ce produit
+                    </button>
+                  </Link>
+              )}
             </div>
           </div>
         </div>
@@ -221,14 +230,33 @@ export default function Page() {
                   <p className="text-easyorder-black font-semibold">Prix
                     : {((product?.price_in_cent as number) / 100).toFixed(2)} €</p>
                 </Link>
-            )
-            ):
-            (<p className="text-center text-lg text-easyorder-black">
-              Aucun produit trouvé.
-            </p>)
-            }
+            )) : (
+                <p className="text-center text-lg text-easyorder-black">Aucun produit trouvé.</p>
+            )}
           </div>
         </div>
+
+        {/* Modale de suppression */}
+        <Modal isOpen={isOpen} onClose={onClose}>
+          <ModalContent>
+            <ModalHeader>Confirmer la suppression</ModalHeader>
+            <ModalBody>
+              <p>Êtes-vous sûr de vouloir supprimer ce produit ? Cette action est irréversible.</p>
+            </ModalBody>
+            <ModalFooter>
+              <button
+                  onClick={onClose}
+                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition">
+                Annuler
+              </button>
+              <button
+                  onClick={handleDeleteProduct}
+                  className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-700 transition">
+                Supprimer
+              </button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </div>
   );
 }

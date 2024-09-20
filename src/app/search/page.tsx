@@ -26,6 +26,11 @@ const SearchPage = () => {
         if (category) {
             setSelectedCategory(category);
         }
+
+        const query = searchParams.get('query');
+        if (query) {
+            setSearchTerm(query);
+        }
     }
 
     // Récupérer tous les produits et catégories

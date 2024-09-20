@@ -20,7 +20,6 @@ const VendorProfilePage = () => {
     const [categories, setCategories] = useState<any[]>([]);
     const [products, setProducts] = useState<any[]>([]);
     const [selectedCategories, setSelectedCategories] = useState<any[]>([]);
-    const [selectedProducts, setSelectedProducts] = useState<any[]>([]);
     const [isEditingCompanyName, setIsEditingCompanyName] = useState<boolean>(false);
     const [isEditingPersonalProfile, setIsEditingPersonalProfile] = useState<boolean>(false);
 
@@ -91,16 +90,23 @@ const VendorProfilePage = () => {
         router.push('/subscription');
     };
 
-    const handleCategoriesChange = (selectedCategories: any) => {
+    const handleCategoriesChange = () => {
+        UserService.updateUser({
+            _id: user._id,
+            categories: selectedCategories?.map((c: any) => c.value)
+        }).then((response) => {
+            setUser(response.data);
+            localStorage.setItem('user', JSON.stringify(response.data));
+            closeCategoryModal();
+        })
+    }
+
+    const handleProductsChange = () => {
 
     }
 
-    const handleProductsChange = (selectedProducts: any) => {
-
-    }
-
-    const handleOpenCategoryModal = () => {
-        setSelectedCategories(user.company.categories);
+    const handleOpenCategoriesModal = () => {
+        setSelectedCategories(user.categories.map((c: any) => ({ value: c, label: categories.find((cat) => cat._id == c)?.name })));
         openCategoryModal();
     }
 
@@ -276,7 +282,7 @@ const VendorProfilePage = () => {
 
                     {/* Catégories */}
                     <div className="flex mb-4">
-                        <button onClick={handleOpenCategoryModal}
+                        <button onClick={handleOpenCategoriesModal}
                                 className="bg-easyorder-green text-white px-4 py-2 flex items-center rounded-md hover:bg-easyorder-black transition">
                             <FaList className="mr-2"/> Modifier les catégories
                         </button>
@@ -285,28 +291,24 @@ const VendorProfilePage = () => {
                     {/* Liste des catégories */}
                     <div className="mb-8">
                         <h3 className="font-bold mb-2">Catégories actuelles</h3>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                            {categories.length > 0 ? (
-                                categories.map((category, index) => (
+                        {user?.categories?.length > 0 ? (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                                {user?.categories?.map((category: any, index: any) => (
                                     <div
                                         key={index}
                                         className="bg-white shadow-sm rounded-md p-2 text-sm flex items-center justify-center text-center hover:bg-easyorder-green hover:text-white transition-all duration-300"
                                     >
-                                        <p className="font-medium">{category.name}</p>
+                                        <p className="font-medium">{categories.find((c) => c._id == category)?.name}</p>
                                     </div>
-                                ))
-                            ) : (
-                                <p>Aucune catégorie sélectionnée</p>
-                            )}
-                        </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p>Aucune catégorie sélectionnée</p>
+                        )}
                     </div>
 
                     {/* Boutons d'ajout et d'édition des produits */}
                     <div className="flex mb-4">
-                        <button onClick={openProductModal}
-                                className="bg-easyorder-green text-white px-4 py-2 flex items-center rounded-md hover:bg-easyorder-black transition mr-2">
-                            <FaList className="mr-2"/> Modifier les produits
-                        </button>
                         <button onClick={() => router.push('/products/create')}
                                 className="bg-easyorder-green text-white px-4 py-2 flex items-center rounded-md hover:bg-easyorder-black transition">
                             <FaPlus className="mr-2"/> Ajouter un produit
@@ -314,7 +316,7 @@ const VendorProfilePage = () => {
                     </div>
 
                     {/* Modal pour modification des catégories */}
-                    <Modal isOpen={isCategoryModalOpen} onClose={closeCategoryModal}>
+                    <Modal className="overflow-visible" isOpen={isCategoryModalOpen} onClose={closeCategoryModal}>
                         <ModalContent>
                             <ModalHeader>
                                 <h2>Modifier les catégories</h2>
@@ -330,29 +332,6 @@ const VendorProfilePage = () => {
                                     Annuler
                                 </button>
                                 <button onClick={handleCategoriesChange}
-                                        className="bg-easyorder-green text-white px-4 py-2 rounded-md hover:bg-easyorder-black transition">
-                                    Confirmer
-                                </button>
-                            </ModalFooter>
-                        </ModalContent>
-                    </Modal>
-
-                    {/* Modal pour modification des produits */}
-                    <Modal isOpen={isProductModalOpen} onClose={closeProductModal}>
-                        <ModalContent>
-                            <ModalHeader>
-                                <h2>Modifier les produits</h2>
-                            </ModalHeader>
-                            <ModalBody>
-                                <Select isMulti value={selectedProducts} onChange={(e: any) => setSelectedProducts(e)}
-                                        options={products.map(p => ({value: p._id, label: p.name}))}/>
-                            </ModalBody>
-                            <ModalFooter>
-                                <button onClick={closeProductModal}
-                                        className="bg-red-400 text-white px-4 py-2 rounded-md hover:bg-easyorder-black transition">
-                                    Annuler
-                                </button>
-                                <button onClick={handleProductsChange}
                                         className="bg-easyorder-green text-white px-4 py-2 rounded-md hover:bg-easyorder-black transition">
                                     Confirmer
                                 </button>
