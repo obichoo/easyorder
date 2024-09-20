@@ -43,9 +43,6 @@ const Navbar = () => {
         };
 
         document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
     }, [dropdownRef]);
 
     // Fonction de gestion de la recherche
@@ -118,7 +115,7 @@ const Navbar = () => {
                             </Link>
                             <div className="relative flex items-center" ref={dropdownRef}>
                                 <button
-                                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                    onMouseUp={() => setIsDropdownOpen(!isDropdownOpen)}
                                     className="text-[#032035] hover:text-[#77ad86] flex items-center transition duration-200 ease-in-out"
                                 >
                                     {user.profile_pic ? (
@@ -140,7 +137,7 @@ const Navbar = () => {
                                         <ul className="py-2">
                                             <li>
                                                 <Link
-                                                    href={user.role === 'artisan' ? "/my-account/shopkeeper" : "/my-account/customer"}
+                                                    href="/my-account"
                                                     className="block px-4 py-2 text-[#032035] hover:bg-[#77ad86] hover:text-white transition duration-200 ease-in-out"
                                                 >
                                                     Mon profil

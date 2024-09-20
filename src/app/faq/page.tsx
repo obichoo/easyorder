@@ -35,61 +35,61 @@ const faqs = [
 ];
 
 export default function FAQPage() {
-  const [openIndex, setOpenIndex] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
-  const toggleAnswer = (index: any) => {
+  const toggleAnswer = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
   // Filtrer les FAQs en fonction du texte de recherche
   const filteredFaqs = faqs.filter((faq) =>
-    faq.question.toLowerCase().includes(searchTerm.toLowerCase())
+      faq.question.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Barre de recherche */}
-      <div className="flex justify-center mb-8">
-        <div className="relative w-full max-w-md">
-          <input
-            type="text"
-            placeholder="Rechercher dans les FAQ..."
-            className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-easyorder-green"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <FaSearch className="absolute top-1/2 right-3 transform -translate-y-1/2 text-easyorder-gray" />
+      <div className="container mx-auto px-4 py-12">
+        {/* Barre de recherche */}
+        <div className="flex justify-center mb-10">
+          <div className="relative w-full max-w-md">
+            <input
+                type="text"
+                placeholder="Rechercher dans les FAQ..."
+                className="w-full px-4 py-2 border border-easyorder-black rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-easyorder-green transition"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <FaSearch className="absolute top-1/2 right-3 transform -translate-y-1/2 text-easyorder-black" />
+          </div>
+        </div>
+
+        {/* Liste des questions et réponses */}
+        <div className="space-y-6">
+          {filteredFaqs.length === 0 ? (
+              <p className="text-center text-easyorder-gray">Aucune FAQ ne correspond à votre recherche.</p>
+          ) : (
+              filteredFaqs.map((faq, index) => (
+                  <div key={index} className="bg-white shadow-lg rounded-lg overflow-hidden">
+                    <div
+                        className="flex items-center justify-between p-4 cursor-pointer hover:bg-easyorder-gray transition"
+                        onClick={() => toggleAnswer(index)}
+                    >
+                      <h3 className="text-xl font-semibold text-easyorder-black">{faq.question}</h3>
+                      {openIndex === index ? (
+                          <FaChevronUp className="text-easyorder-green" />
+                      ) : (
+                          <FaChevronDown className="text-easyorder-black" />
+                      )}
+                    </div>
+                    {openIndex === index && (
+                        <div className="p-4 bg-white border-t border-easyorder-gray transition-all duration-500">
+                          <p className="text-easyorder-black">{faq.answer}</p>
+                        </div>
+                    )}
+                  </div>
+              ))
+          )}
         </div>
       </div>
-
-      {/* Liste des questions et réponses */}
-      <div className="space-y-4">
-        {filteredFaqs.length === 0 ? (
-          <p className="text-center text-easyorder-gray">Aucune FAQ ne correspond à votre recherche.</p>
-        ) : (
-          filteredFaqs.map((faq, index) => (
-            <div key={index} className="bg-white shadow-md rounded-lg">
-              <div
-                className="flex items-center justify-between p-4 cursor-pointer hover:bg-easyorder-gray"
-                onClick={() => toggleAnswer(index)}
-              >
-                <h3 className="text-lg font-semibold">{faq.question}</h3>
-                {openIndex === index ? (
-                  <FaChevronUp className="text-easyorder-gray" />
-                ) : (
-                  <FaChevronDown className="text-easyorder-gray" />
-                )}
-              </div>
-              {openIndex === index && (
-                <div className="p-4 border-t border-easyorder-gray">
-                  <p>{faq.answer}</p>
-                </div>
-              )}
-            </div>
-          ))
-        )}
-      </div>
-    </div>
   );
 }

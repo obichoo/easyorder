@@ -8,7 +8,7 @@ import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure
 import ProductService from '@/services/product.service';
 import CategoryService from '@/services/category.service';
 
-const EditProfile = () => {
+const VendorProfilePage = () => {
     const router = useRouter();
     const [banner, setBanner] = useState<string>('');
     const [logo, setLogo] = useState<string>('');
@@ -28,6 +28,7 @@ const EditProfile = () => {
     const [siret, setSiret] = useState<string>('12345678901234');
     const [subscriber, setSubscriber] = useState<boolean>(false);
     const [etat, setEtat] = useState<string>('en attente');
+    const [isEditingCompanyName, setIsEditingCompanyName] = useState<boolean>(false);
 
     // Gestion des modales pour catégories et produits
     const { isOpen: isCategoryModalOpen, onOpen: openCategoryModal, onClose: closeCategoryModal } = useDisclosure();
@@ -101,6 +102,30 @@ const EditProfile = () => {
 
     return (
         <div className="container mx-auto p-8">
+            <div className="flex justify-center items-center mb-8">
+                {isEditingCompanyName ? (
+                    <input
+                        type="text"
+                        className="border p-2 rounded-md text-3xl font-bold outline-none"
+                        value={companyName}
+                        onChange={(e) => setCompanyName(e.target.value)}
+                    />
+                ) : (
+                    <h1 className="text-3xl font-bold">{companyName || "Mon entreprise"}</h1>
+                )}
+                <button
+                    onClick={() => setIsEditingCompanyName(!isEditingCompanyName)}
+                    className="ml-4 bg-easyorder-green text-white px-4 py-2 rounded-md hover:bg-easyorder-black transition flex items-center"
+                >
+                    <FaEdit className="mr-2" /> {isEditingCompanyName ? "Enregistrer" : "Modifier"}
+                </button>
+                <button
+      onClick={handleSubscribeClick}
+      className="bg-easyorder-green text-white font-semibold py-2 px-4 rounded-lg hover:bg-easyorder-black transition duration-300 ml-4"
+    >
+      Souscrire à l'abonnement Premium
+    </button>
+            </div>
 
             {/* Bannière */}
             <div className="flex justify-between items-center mb-4">
@@ -280,7 +305,7 @@ const EditProfile = () => {
                         <h2>Modifier les produits</h2>
                     </ModalHeader>
                     <ModalBody>
-                        <Select isMulti value={selectedProducts} onChange={setSelectedProducts}
+                        <Select isMulti value={selectedProducts} onChange={(e: any) => setSelectedProducts(e)}
                                 options={products.map(p => ({value: p._id, label: p.name}))}/>
                     </ModalBody>
                     <ModalFooter>
@@ -317,4 +342,4 @@ const EditProfile = () => {
     );
 };
 
-export default EditProfile;
+export default VendorProfilePage;

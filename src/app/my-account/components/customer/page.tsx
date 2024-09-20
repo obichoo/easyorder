@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { FaUserCircle } from 'react-icons/fa';
 import UserService from "@/services/user.service"; // Import du service utilisateur
 
-export default function ProfileEditPage() {
+export default function ClientProfilePage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -12,7 +12,7 @@ export default function ProfileEditPage() {
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState('/default-profile.png');
   const [updateMessage, setUpdateMessage] = useState('');
-  const [userId, setUserId] = useState<number | null>(null); // ID de l'utilisateur
+  const [userId, setUserId] = useState<string | null>(null); // ID de l'utilisateur
 
   // Charger les informations de l'utilisateur depuis le localStorage
   useEffect(() => {

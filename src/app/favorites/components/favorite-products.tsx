@@ -32,7 +32,7 @@ const RemoveFavoriteModal = ({ confirm, favorite }: { confirm: Function, favorit
     return (
         <>
             <button onClick={(e) => handleOpen(e)}>
-                <MdFavorite className={'text-red-500 text-2xl'} />
+                <MdFavorite className={'text-red-500 text-2xl hover:text-red-600 transition-colors'} />
             </button>
             <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
                 <ModalContent>
@@ -43,10 +43,10 @@ const RemoveFavoriteModal = ({ confirm, favorite }: { confirm: Function, favorit
                         </p>
                     </ModalBody>
                     <ModalFooter>
-                        <button className="bg-easyorder-gray py-1 px-2 rounded" onClick={(e) => handleClose(e)}>
+                        <button className="bg-gray-200 py-2 px-4 rounded-md hover:bg-gray-300 transition" onClick={(e) => handleClose(e)}>
                             Annuler
                         </button>
-                        <button className="bg-easyorder-green py-1 px-2 rounded" onClick={(e) => handleConfirm(e)}>
+                        <button className="bg-easyorder-green text-white py-2 px-4 rounded-md hover:bg-easyorder-black transition" onClick={(e) => handleConfirm(e)}>
                             Confirmer
                         </button>
                     </ModalFooter>
@@ -65,13 +65,13 @@ const FavoriteItem = ({ favorite, product, remove }: { favorite: FavoriteProduct
 
     return (
         <div
-            className={'w-60 h-60 shadow mx-auto rounded-2xl p-3 duration-100 bg-white cursor-pointer hover:scale-105'}
+            className="w-60 h-60 shadow-lg mx-auto rounded-2xl p-3 bg-white cursor-pointer hover:shadow-xl transition-transform hover:scale-105 duration-300"
             key={favorite._id}
             onClick={(e) => handleProductClick(e)}
         >
-            <img className={'rounded-xl '} src="https://picsum.photos/224/200" alt="" />
-            <div className={'flex justify-between mt-1'}>
-                <p className={'text-center'}>{product.name}</p>
+            <img className="rounded-xl h-36 w-full object-cover mb-2" src={product.pictures?.[0]?.url || 'https://picsum.photos/224/200'} alt={product.name} />
+            <div className="flex justify-between items-center">
+                <p className="text-center font-medium">{product.name}</p>
                 <div>
                     <RemoveFavoriteModal favorite={favorite} confirm={() => remove(product)} />
                 </div>
@@ -110,21 +110,22 @@ const FavoriteProducts = () => {
     };
 
     return (
-        <div>
-            <h2 className={'text-2xl mt-16 mb-8'}>Mes produits favoris</h2>
-            <div className={'w-full grid grid-cols-4 gap-4'}>
-                {favorites.length > 0 && favorites.map(favorite => (
-                    (favorite.products as Product[]).map(product => (
-                        <FavoriteItem
-                            key={product._id}
-                            favorite={favorite}
-                            product={product}
-                            remove={() => handleRemove(product, favorite)}
-                        />
+        <div className="container mx-auto mt-12">
+            <h2 className="text-3xl font-semibold text-center mb-10">Mes produits favoris</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {favorites.length > 0 ? (
+                    favorites.map(favorite => (
+                        (favorite.products as Product[]).map(product => (
+                            <FavoriteItem
+                                key={product._id}
+                                favorite={favorite}
+                                product={product}
+                                remove={() => handleRemove(product, favorite)}
+                            />
+                        ))
                     ))
-                ))}
-                {favorites.length === 0 && (
-                    <p>Vous n'avez pas encore de produits favoris</p>
+                ) : (
+                    <p className="col-span-full text-center text-lg text-gray-600">Vous n'avez pas encore de produits favoris</p>
                 )}
             </div>
         </div>

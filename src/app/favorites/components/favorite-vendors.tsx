@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { FavoriteVendor } from "@/models/favorite-vendor.model";
 import FavoriteVendorService from "@/services/favorite-vendor.service";
 import getUser from "@/utils/get-user";
+import {User} from "@/models/user.model";
 
 const RemoveFavoriteModal = ({ confirm, favorite }: { confirm: Function, favorite: FavoriteVendor }) => {
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
@@ -30,21 +31,21 @@ const RemoveFavoriteModal = ({ confirm, favorite }: { confirm: Function, favorit
     return (
         <>
             <button onClick={(e) => handleOpen(e)}>
-                <MdFavorite className={'text-red-500 text-2xl'} />
+                <MdFavorite className="text-red-500 text-2xl hover:text-red-600 transition-colors" />
             </button>
             <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
                 <ModalContent>
                     <ModalHeader className="flex flex-col gap-1">Retirer des favoris</ModalHeader>
                     <ModalBody>
                         <p>
-                            Voulez-vous vraiment retirer ce produit de vos favoris ?
+                            Voulez-vous vraiment retirer cet artisan de vos favoris ?
                         </p>
                     </ModalBody>
                     <ModalFooter>
-                        <button className="bg-easyorder-gray py-1 px-2 rounded" onClick={(e) => handleClose(e)}>
+                        <button className="bg-gray-200 py-2 px-4 rounded-md hover:bg-gray-300 transition" onClick={(e) => handleClose(e)}>
                             Annuler
                         </button>
-                        <button className="bg-easyorder-green py-1 px-2 rounded" onClick={(e) => handleConfirm(e)}>
+                        <button className="bg-easyorder-green text-white py-2 px-4 rounded-md hover:bg-easyorder-black transition" onClick={(e) => handleConfirm(e)}>
                             Confirmer
                         </button>
                     </ModalFooter>
@@ -57,19 +58,19 @@ const RemoveFavoriteModal = ({ confirm, favorite }: { confirm: Function, favorit
 const FavoriteItem = ({ favorite, vendor, remove }: { favorite: FavoriteVendor, vendor: any, remove: Function }) => {
     const router = useRouter();
 
-    const handleProductClick = (event: any) => {
+    const handleVendorClick = (event: any) => {
         router.push(`/artisans/${vendor._id}`);
     };
 
     return (
         <div
-            className={'w-60 h-60 shadow mx-auto rounded-2xl p-3 duration-100 bg-white cursor-pointer hover:scale-105'}
+            className="w-60 h-60 shadow-lg mx-auto rounded-2xl p-3 bg-white cursor-pointer hover:shadow-xl transition-transform hover:scale-105 duration-300"
             key={favorite._id}
-            onClick={(e) => handleProductClick(e)}
+            onClick={(e) => handleVendorClick(e)}
         >
-            <img className={'rounded-xl '} src="https://picsum.photos/224/200" alt="" />
-            <div className={'flex justify-between mt-1'}>
-                <p className={'text-center'}>{vendor.name}</p>
+            <img className="rounded-xl h-36 w-full object-cover mb-2" src={vendor.profile_pic || 'https://picsum.photos/224/200'} alt={vendor.name} />
+            <div className="flex justify-between items-center">
+                <p className="text-center font-medium">{vendor.name}</p>
                 <div>
                     <RemoveFavoriteModal favorite={favorite} confirm={() => remove(vendor)} />
                 </div>
@@ -80,7 +81,7 @@ const FavoriteItem = ({ favorite, vendor, remove }: { favorite: FavoriteVendor, 
 
 const FavoriteVendors = () => {
     const [favorites, setFavorites] = useState<FavoriteVendor[]>([]);
-    const [user, setUser] = useState<any>();
+    const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
         setUser(getUser());
@@ -89,7 +90,7 @@ const FavoriteVendors = () => {
     useEffect(() => {
         if (user && user._id) {
             FavoriteVendorService.getAllFavorites().then(res => {
-                const userFavorites = res.data.filter((favorite: FavoriteVendor) => (favorite.user_id as FavoriteVendor)._id === user._id);
+                const userFavorites = res.data.filter((favorite: FavoriteVendor) => (favorite.user_id as User)._id === user._id);
                 setFavorites(userFavorites);
             });
         }
@@ -97,30 +98,33 @@ const FavoriteVendors = () => {
 
     const handleRemove = async (vendor: any, favorite: FavoriteVendor) => {
         try {
-            // Créer une copie des vendeurs sans celui que l'on souhaite retirer
-            const updatedVendors = (favorite.vendor as FavoriteVendor[]).filter(v => v._id !== vendor._id);
-
-            // Mettre à jour le favori avec la liste des vendeurs mise à jour
+            const updatedVendors = (favorite.vendor as User[]).filter(v => v._id !== vendor._id);
             const updatedFavorite = { ...favorite, vendor: updatedVendors };
 
             await FavoriteVendorService.updateFavorite(updatedFavorite as FavoriteVendor);
-            setFavorites(favorites.filter(fav => fav._id !== favorite._id || updatedVendors.length > 0)); // Met à jour l'état pour retirer le favori de la liste
+            setFavorites(favorites.filter(fav => fav._id !== favorite._id || updatedVendors.length > 0));
         } catch (error) {
             console.error("Erreur lors de la mise à jour du favori :", error);
         }
     };
 
     return (
-        <div>
-            <h2 className={'text-2xl mt-16 mb-8'}>Mes artisans favoris</h2>
-            <div className={'w-full grid grid-cols-4 gap-4'}>
-                {favorites.length > 0 && favorites.map(favorite => (
-                    (favorite.vendor as FavoriteVendor[]).map((vendor: any) => (
-                        <FavoriteItem key={vendor._id} favorite={favorite} vendor={vendor} remove={(v: any) => handleRemove(v, favorite)} />
+        <div className="container mx-auto mt-12">
+            <h2 className="text-3xl font-semibold text-center mb-10">Mes artisans favoris</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {favorites.length > 0 ? (
+                    favorites.map(favorite => (
+                        (favorite.vendor as User[]).map(vendor => (
+                            <FavoriteItem
+                                key={vendor._id}
+                                favorite={favorite}
+                                vendor={vendor}
+                                remove={() => handleRemove(vendor, favorite)}
+                            />
+                        ))
                     ))
-                ))}
-                {favorites.length === 0 && (
-                    <p>Vous n'avez pas encore d'artisan favori</p>
+                ) : (
+                    <p className="col-span-full text-center text-lg text-gray-600">Vous n'avez pas encore d'artisan favori</p>
                 )}
             </div>
         </div>

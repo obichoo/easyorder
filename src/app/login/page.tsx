@@ -78,25 +78,27 @@ const Login = () => {
     };
 
     return (
-        <div className="mt-16">
-            <h1 className="text-3xl mb-16 text-center">Bienvenue sur EasyOrder !</h1>
-            <div className="mx-auto w-96">
-                <h2 className="text-2xl font-bold mb-6 text-center">
-                    {type === 'signin' ? 'Connexion' : 'Inscription'}
-                </h2>
-
-                {/* Affichage des erreurs serveur */}
-                {errors.server && <p className="text-red-500 text-center mb-4">{errors.server}</p>}
+        <div className="flex items-center justify-center bg-easyorder-gray mt-28">
+            <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-8">
+                <h1 className="text-3xl mb-6 text-center text-easyorder-green">Bienvenue sur EasyOrder !</h1>
 
                 {/* Formulaire de connexion/inscription */}
                 <form onSubmit={handleSubmit} className="space-y-4">
+                    <h2 className="text-2xl font-bold mb-4 text-center text-easyorder-black">
+                        {type === 'signin' ? 'Connexion' : 'Inscription'}
+                    </h2>
+
+                    {/* Affichage des erreurs serveur */}
+                    {errors.server && <p className="text-red-500 text-center mb-4">{errors.server}</p>}
+
+                    {/* Champs email */}
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                        <label htmlFor="email" className="block text-sm font-medium text-easyorder-black">Email</label>
                         <input
                             type="email"
                             id="email"
                             name="email"
-                            className={`mt-1 block w-full p-2 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md`}
+                            className={`mt-1 block w-full p-2 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
                             placeholder="Votre email"
                         />
                         {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
@@ -105,23 +107,23 @@ const Login = () => {
                     {type === 'signup' && (
                         <>
                             <div>
-                                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nom</label>
+                                <label htmlFor="name" className="block text-sm font-medium text-easyorder-black">Nom</label>
                                 <input
                                     type="text"
                                     id="name"
                                     name="name"
-                                    className={`mt-1 block w-full p-2 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md`}
+                                    className={`mt-1 block w-full p-2 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
                                     placeholder="Votre nom"
                                 />
                                 {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
                             </div>
                             <div>
-                                <label htmlFor="role" className="block text-sm font-medium text-gray-700">Rôle</label>
+                                <label htmlFor="role" className="block text-sm font-medium text-easyorder-black">Rôle</label>
                                 <select
                                     name="role"
                                     id="role"
                                     defaultValue=""
-                                    className={`mt-1 block w-full p-2 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md`}
+                                    className={`mt-1 block w-full p-2 border ${errors.role ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
                                 >
                                     <option value="">Choisissez un rôle</option>
                                     <option value="artisan">Artisan</option>
@@ -132,13 +134,14 @@ const Login = () => {
                         </>
                     )}
 
+                    {/* Champs mot de passe */}
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">Mot de passe</label>
+                        <label htmlFor="password" className="block text-sm font-medium text-easyorder-black">Mot de passe</label>
                         <input
                             type="password"
                             id="password"
                             name="password"
-                            className={`mt-1 block w-full p-2 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-md`}
+                            className={`mt-1 block w-full p-2 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
                             placeholder="Votre mot de passe"
                         />
                         {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
@@ -155,7 +158,7 @@ const Login = () => {
                 </form>
 
                 {/* Switch between signin/signup */}
-                <p className="mt-4 text-center text-sm text-gray-600">
+                <p className="mt-4 text-center text-sm text-easyorder-black">
                     {type === 'signin' ? (
                         <>
                             Pas encore de compte ?{' '}
