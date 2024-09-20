@@ -6,6 +6,7 @@ export interface Product {
     name?: string;
     description?: string;
     price_in_cent?: number;
+    initial_stock?: number;
     stock?: number;
     artisan_id?: User['_id'];
     created_at?: Date;
