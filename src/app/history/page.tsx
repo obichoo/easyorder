@@ -212,6 +212,7 @@ const PurchasesHistoryTable = ({ orders, loading }: { orders: Order[], loading: 
                                 onChange={(e) => setRate(Number(e.target.value))}
                                 min="0"
                                 max="5"
+                                step={0.5}
                                 className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                             />
                         </div>

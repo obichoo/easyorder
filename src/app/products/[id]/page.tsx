@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { FaHeart, FaShoppingCart } from 'react-icons/fa';
+import {FaHeart, FaRegHeart, FaShoppingCart} from 'react-icons/fa';
 import { useRouter, useParams } from 'next/navigation';
 import ProductService from '@/services/product.service';
 import Link from "next/link";
@@ -9,7 +9,9 @@ import {Product} from "@/models/product.model";
 import OrderService from "@/services/order.service";
 import {Order} from "@/models/order.model";
 import {User} from "@/models/user.model";
-import getUser from "@/utils/get-user"; // Importer le service ProductService
+import getUser from "@/utils/get-user";
+import FavoriteProductService from "@/services/favorite-product.service";
+import {FavoriteProduct} from "@/models/favorite-product.model"; // Importer le service ProductService
 
 export default function Page() {
   const router = useRouter(); // Utilisation du hook useRouter
@@ -17,12 +19,28 @@ export default function Page() {
   const [product, setProduct] = useState<Product | any>(null); // État pour stocker les données du produit
   const [suggestions, setSuggestions] = useState<any[]>([]); // État pour stocker les produits suggérés
   const [userId, setUserId] = useState<User['_id'] | null>(null);
+  const [favorites, setFavorites] = useState<{
+    _id?: string,
+    products?: string[]
+  }>({});
 
   useEffect(() => {
     const userId = getUser()?._id;
 
     setUserId(userId);
+    getFavoritesProducts()
   }, []);
+
+  const getFavoritesProducts = () => {
+    FavoriteProductService.getAllFavorites().then(({data}: {data: FavoriteProduct[]}) => {
+      const myFavorites = data.filter((favorite: FavoriteProduct) => (favorite.user_id as User)?._id === getUser()?._id)
+      const mappedFavorites = myFavorites.map((favorite: FavoriteProduct) => ({
+        _id: favorite?._id,
+        products: favorite.products?.map((product: any) => product._id)
+      }))
+      setFavorites(mappedFavorites[0] as any)
+    })
+  }
 
   // Récupérer les détails du produit
   useEffect(() => {
@@ -72,6 +90,36 @@ export default function Page() {
     })
   }
 
+  const toggleFavorite = () => {
+    const userId = getUser()?._id;
+    if (!favorites?._id) {
+      FavoriteProductService.createFavorite({
+        user_id: userId,
+        products: [product?._id as string]
+      }).then(() => {
+        getFavoritesProducts()
+      })
+    } else {
+      if (favorites?.products?.includes(product?._id)) {
+        const newFavorite = {
+          _id: favorites?._id,
+          products: favorites?.products?.filter((p: any) => p !== product?._id)
+        }
+        FavoriteProductService.updateFavorite(newFavorite).then(() => {
+          getFavoritesProducts()
+        })
+      } else {
+        const newFavorite = {
+          _id: favorites?._id,
+          products: [...(favorites?.products as []), product?._id]
+        }
+        FavoriteProductService.updateFavorite(newFavorite).then(() => {
+          getFavoritesProducts()
+        })
+      }
+    }
+  }
+
   return (
       <div>
         <div className="w-full h-16 bg-easyorder-gray mb-4"></div>
@@ -114,26 +162,28 @@ export default function Page() {
 
               {/* Boutons avec redirections */}
               <div className="flex space-x-4">
-                <button
-                    className="flex items-center bg-red-400 text-white px-4 py-2 rounded"
-                    onClick={() => router.push('/favorites')} // Redirection vers la page des favoris
-                >
-                  <FaHeart className="h-6 w-6 text-red-600 mr-2" />
-                  Favoris
+                <button onClick={toggleFavorite}
+                        className="bg-transparent text-red-700 px-4 py-2 rounded-md transition">
+                  {
+                    (favorites?.products as any)?.includes(product._id) ? (
+                        <FaHeart size={32} className="text-red-500"></FaHeart>
+                    ) : (
+                        <FaRegHeart size={32} className="text-red-500"></FaRegHeart>
+                    )
+                  }
                 </button>
 
-                <Link
-                    className="bg-easyorder-black text-white px-4 py-2 rounded"
-                    href={`/chat?user=${product?.artisan_id}`}
-                >
-                  Contacter l'artisan
+                <Link href={`/chat?user=${product?.artisan_id}`}>
+                  <button className="h-full bg-easyorder-black text-white px-4 py-2 rounded">
+                    Contacter l'artisan
+                  </button>
                 </Link>
 
                 <button
-                    className="flex items-center bg-easyorder-green text-white px-4 py-2 rounded"
+                    className="flex items-center bg-easyorder-green px-4 py-2 text-white px-4 rounded hover:bg-easyorder-black transition"
                     onClick={() => addToCart()}
                 >
-                  <FaShoppingCart className="h-6 w-6 text-easyorder-black mr-2" />
+                  <FaShoppingCart size={20} className="text-white mr-2"/>
                   Ajouter au panier
                 </button>
               </div>
@@ -146,7 +196,7 @@ export default function Page() {
             <div className="grid grid-cols-4 gap-4">
               {suggestions.length > 0 ? (
                   suggestions.map((suggestedProduct) => (
-                      <div key={suggestedProduct.id} className="flex flex-col items-center">
+                      <div key={suggestedProduct._id} className="flex flex-col items-center">
                         <img src={suggestedProduct.image || "/path/to/default-image.jpg"} alt={suggestedProduct.name} className="w-full h-auto mb-2" />
                         <p className="font-semibold">{suggestedProduct.name}</p>
                         <p className="text-gray-500">{suggestedProduct.price_in_cent} €</p>

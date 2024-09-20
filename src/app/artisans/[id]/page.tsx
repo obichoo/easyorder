@@ -14,7 +14,6 @@ import {
 import UserService from '@/services/user.service';
 import ProductService from '@/services/product.service';
 import CommentService from '@/services/comment.service';
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import FavoriteVendorService from "@/services/favorite-vendor.service";
@@ -22,7 +21,6 @@ import getUser from "@/utils/get-user";
 import {FavoriteVendor} from "@/models/favorite-vendor.model";
 import {User} from "@/models/user.model";
 
-// Fonction pour afficher les étoiles en fonction de la note
 const RatingStars = ({ rating }: any) => {
   const fullStars = Math.floor(rating);
   const hasHalfStar = rating % 1 >= 0.5;
@@ -42,12 +40,14 @@ const RatingStars = ({ rating }: any) => {
 };
 
 export default function Page({ params }: any) {
-  const router = useRouter();
   const { id } = params;
   const [artisan, setArtisan] = useState<any>(null);
   const [products, setProducts] = useState([]);
   const [comments, setComments] = useState([]);
-  const [favorites, setFavorites] = useState<any[]>([]);
+  const [favorites, setFavorites] = useState<{
+    _id?: string,
+    vendor?: string[]
+  }>({});
 
   useEffect(() => {
     fetchArtisanById(id);
@@ -63,7 +63,7 @@ export default function Page({ params }: any) {
         _id: favorite?._id,
         vendor: favorite.vendor?.map((vendor: any) => vendor._id)
       }))
-      setFavorites(mappedFavorites as any)
+      setFavorites(mappedFavorites[0] as any)
     })
   }
 
@@ -105,24 +105,28 @@ export default function Page({ params }: any) {
 
   const toggleFavorite = () => {
     const userId = getUser()?._id;
-
-    const existingFavorite = favorites.find((f: any) => f.vendor.includes(artisan._id))
-    if (existingFavorite) {
-      FavoriteVendorService.deleteFavorite(existingFavorite?._id)
+    if (!favorites?._id) {
+        FavoriteVendorService.createFavorite({
+            user_id: userId,
+            vendor: [artisan?._id as string]
+        }).then(() => {
+            getFavoritesVendors()
+        })
     } else {
-      if (favorites.length > 0) {
+      if (favorites?.vendor?.includes(artisan?._id)) {
         const newFavorite = {
-          _id: favorites[0]?._id,
-          vendor: [...favorites[0]?.vendor, artisan?._id]
+          _id: favorites?._id,
+          vendor: favorites?.vendor?.filter((vendor: any) => vendor !== artisan?._id)
         }
         FavoriteVendorService.updateFavorite(newFavorite).then(() => {
             getFavoritesVendors()
         })
       } else {
-        FavoriteVendorService.createFavorite({
-          user_id: userId,
-          vendor: [artisan?._id as string]
-        }).then(() => {
+        const newFavorite = {
+          _id: favorites?._id,
+          vendor: [...(favorites?.vendor as []), artisan?._id]
+        }
+        FavoriteVendorService.updateFavorite(newFavorite).then(() => {
             getFavoritesVendors()
         })
       }
@@ -148,7 +152,7 @@ export default function Page({ params }: any) {
 
             <button onClick={toggleFavorite} className="bg-transparent text-red-700 px-4 py-2 rounded-md transition">
               {
-                favorites?.find((f) => f.vendor.includes(artisan._id)) ? (
+                (favorites?.vendor as any)?.includes(artisan._id) ? (
                     <FaHeart size={32} className="text-red-500"></FaHeart>
                 ) : (
                     <FaRegHeart size={32} className="text-red-500"></FaRegHeart>
