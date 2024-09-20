@@ -1,7 +1,17 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import {FaUpload, FaPlus, FaSave, FaEdit, FaList, FaArrowRight, FaArrowLeft} from 'react-icons/fa';
+import {
+    FaUpload,
+    FaPlus,
+    FaSave,
+    FaEdit,
+    FaList,
+    FaArrowRight,
+    FaArrowLeft,
+    FaFacebook,
+    FaInstagram, FaTwitter, FaTiktok
+} from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import Select from 'react-select';
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/modal";
@@ -192,84 +202,143 @@ const VendorProfilePage = () => {
                     </div>
 
                     {/* Formulaire complet avec description, informations entreprise, mot de passe */}
-                    <div className="mb-6">
-                        <label className="block text-easyorder-black font-semibold mb-2">Description de
+                    <div className="mb-4">
+                        <label className="block font-semibold mb-1">Description de
                             l'entreprise</label>
                         <textarea
-                            value={user.company?.description || ''}
+                            value={user?.description || ''}
                             onChange={(e) => setUser({
                                 ...user,
-                                company: {...user.company, description: e.target.value}
+                                description: e.target.value
                             })}
                             className="w-full p-3 border border-gray-300 rounded-lg"
                             rows={5}
                         ></textarea>
                     </div>
 
-                    {/* Informations entreprise */}
-                    <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-                        <h2 className="text-xl font-semibold mb-4">Informations de l'entreprise</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="font-semibold">Email</label>
+                    <div className="mb-4">
+                        <label className="font-semibold mb-1 block">Réseaux sociaux</label>
+                        <div className="grid grid-cols-2 gap-x-10 gap-y-2">
+                            <div className="w-full flex items-center gap-2">
+                                <FaFacebook size={32}/>
                                 <input
-                                    type="email"
-                                    value={user.email || ''}
-                                    onChange={(e) => setUser({...user, email: e.target.value})}
+                                    type="text"
+                                    placeholder="Lien de votre page Facebook"
+                                    value={user.social_network?.facebook || ''}
+                                    onChange={(e) => setUser({...user, social_network: { ...user.social_network, facebook: e.target.value}})}
                                     className="w-full p-2 border border-gray-300 rounded-md"
                                 />
                             </div>
-                            <div>
-                                <label className="font-semibold">SIREN</label>
-                                <p>{user.company?.siren || 'Non défini'}</p>
+                            <div className="w-full flex items-center gap-2">
+                                <FaInstagram size={32}/>
+                                <input
+                                    type="text"
+                                    placeholder="Lien de votre page Instagram"
+                                    value={user.social_network?.instagram || ''}
+                                    onChange={(e) => setUser({
+                                        ...user,
+                                        social_network: {...user.social_network, instagram: e.target.value}
+                                    })}
+                                    className="w-full p-2 border border-gray-300 rounded-md"
+                                />
                             </div>
-                            <div>
-                                <label className="font-semibold">SIRET</label>
-                                <p>{user.company?.siret || 'Non défini'}</p>
+                            <div className="w-full flex items-center gap-2">
+                                <FaTwitter size={32}/>
+                                <input
+                                    type="text"
+                                    placeholder="Lien de votre page Twitter"
+                                    value={user.social_network?.twitter || ''}
+                                    onChange={(e) => setUser({
+                                        ...user,
+                                        social_network: {...user.social_network, twitter: e.target.value}
+                                    })}
+                                    className="w-full p-2 border border-gray-300 rounded-md"
+                                />
                             </div>
-                            <div>
-                                <label className="font-semibold">Adresse</label>
-                                <p>{user.company?.address || 'Non défini'}</p>
+                            <div className="w-full flex items-center gap-2">
+                                <FaTiktok size={32}/>
+                                <input
+                                    type="text"
+                                    placeholder="Lien de votre page TikTok"
+                                    value={user.social_network?.tiktok || ''}
+                                    onChange={(e) => setUser({
+                                        ...user,
+                                        social_network: {...user.social_network, tiktok: e.target.value}
+                                    })}
+                                    className="w-full p-2 border border-gray-300 rounded-md"
+                                />
                             </div>
-                            <div>
-                                <label className="font-semibold">Code Postal</label>
-                                <p>{user.company?.postalCode || 'Non défini'}</p>
-                            </div>
-                            <div>
-                                <label className="font-semibold">Ville</label>
-                                <p>{user.company?.city || 'Non défini'}</p>
+                        </div>
+                    </div>
+
+                    {/* Informations entreprise */}
+                    <div className="mb-4">
+                        <label className="font-semibold mb-1 block">Informations de l'entreprise</label>
+                        <div className="bg-white rounded-lg shadow-lg p-4 mb-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="font-semibold">Email</label>
+                                    <input
+                                        type="email"
+                                        value={user.email || ''}
+                                        onChange={(e) => setUser({...user, email: e.target.value})}
+                                        className="w-full p-2 border border-gray-300 rounded-md"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="font-semibold">SIREN</label>
+                                    <p>{user.company?.siren || 'Non défini'}</p>
+                                </div>
+                                <div>
+                                    <label className="font-semibold">SIRET</label>
+                                    <p>{user.company?.siret || 'Non défini'}</p>
+                                </div>
+                                <div>
+                                    <label className="font-semibold">Adresse</label>
+                                    <p>{user.company?.address || 'Non défini'}</p>
+                                </div>
+                                <div>
+                                    <label className="font-semibold">Code Postal</label>
+                                    <p>{user.company?.postalCode || 'Non défini'}</p>
+                                </div>
+                                <div>
+                                    <label className="font-semibold">Ville</label>
+                                    <p>{user.company?.city || 'Non défini'}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     {/* Modification du mot de passe */}
-                    <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-                        <h2 className="text-xl font-semibold mb-4">Modifier le mot de passe</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label className="font-semibold">Nouveau mot de passe</label>
-                                <input
-                                    type="password"
-                                    value={user.password || ''}
-                                    onChange={(e) => setUser({...user, password: e.target.value})}
-                                    className="w-full p-2 border border-gray-300 rounded-md"
-                                    placeholder="Mot de passe"
-                                />
-                            </div>
-                            <div>
-                                <label className="font-semibold">Confirmer le mot de passe</label>
-                                <input
-                                    type="password"
-                                    value={user.confirmPassword || ''}
-                                    onChange={(e) => setUser({...user, confirmPassword: e.target.value})}
-                                    className="w-full p-2 border border-gray-300 rounded-md"
-                                    placeholder="Confirmer le mot de passe"
-                                />
+                    <div className="mb-4">
+                        <label className="font-semibold mb-1 block">Modifier le mot de passe</label>
+                        <div className="bg-white rounded-lg shadow-lg p-4 mb-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label className="font-semibold">Nouveau mot de passe</label>
+                                    <input
+                                        type="password"
+                                        value={user.password || ''}
+                                        onChange={(e) => setUser({...user, password: e.target.value})}
+                                        className="w-full p-2 border border-gray-300 rounded-md"
+                                        placeholder="Mot de passe"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="font-semibold">Confirmer le mot de passe</label>
+                                    <input
+                                        type="password"
+                                        value={user.confirmPassword || ''}
+                                        onChange={(e) => setUser({...user, confirmPassword: e.target.value})}
+                                        className="w-full p-2 border border-gray-300 rounded-md"
+                                        placeholder="Confirmer le mot de passe"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex justify-end mb-8">
+                    <div className="flex justify-end mb-4">
                         <button
                             onClick={handleSaveChanges}
                             className="bg-easyorder-green text-white px-6 py-2 rounded-md hover:bg-easyorder-black transition"
@@ -278,7 +347,7 @@ const VendorProfilePage = () => {
                         </button>
                     </div>
 
-                    <hr className="w-full border-easyorder-black my-4" />
+                    <hr className="w-full border-easyorder-black my-4"/>
 
                     {/* Catégories */}
                     <div className="flex mb-4">

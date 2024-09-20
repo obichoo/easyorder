@@ -16,4 +16,10 @@ export interface User {
     created_at?: Date;
     updated_at?: Date;
     categories?: Category[];
+    social_network?: {
+        facebook?: string;
+        instagram?: string;
+        twitter?: string;
+        tiktok?: string;
+    }
 }

@@ -9,7 +9,7 @@ import {
   FaStarHalfAlt,
   FaRegStar,
   FaHeart,
-  FaRegHeart
+  FaRegHeart, FaTiktok, FaFacebook
 } from 'react-icons/fa';
 import UserService from '@/services/user.service';
 import ProductService from '@/services/product.service';
@@ -137,17 +137,17 @@ export default function Page({ params }: any) {
       <div>
         {/* Bannière de l'artisan */}
         <div
-            className="relative w-full h-64 lg:h-96 overflow-hidden flex items-center justify-center bg-easyorder-gray">
+            className="relative w-full h-52 lg:h-72 overflow-hidden flex items-center justify-center bg-easyorder-gray">
           <img
-              src={artisan.banner || artisan.profile_pic}
+              src={artisan.company?.banner_pic || 'https://via.placeholder.com/150'}
               alt={`Bannière de ${artisan.name}`}
-              className="w-full h-full object-cover filter brightness-75 rounded-b-2xl"
+              className="w-full h-full object-cover filter brightness-50 rounded-b-2xl"
           />
           <div className="absolute left-6 bottom-6 flex items-end">
             <img
                 src={artisan.profile_pic}
                 alt={`Profil de ${artisan.name}`}
-                className="w-32 h-32 lg:w-48 lg:h-48 rounded-full shadow-lg border-4 border-easyorder-green object-cover"
+                className="w-20 h-20 lg:w-20 lg:h-20 rounded-full shadow-lg object-cover"
             />
 
             <button onClick={toggleFavorite} className="bg-transparent text-red-700 px-4 py-2 rounded-md transition">
@@ -161,39 +161,34 @@ export default function Page({ params }: any) {
             </button>
           </div>
           <div className="absolute text-white text-center">
-            <h1 className="text-4xl lg:text-6xl font-bold">{artisan.name}</h1>
-            <p className="mt-2">{artisan.company?.denomination || artisan.company || artisan.address}</p>
+            <h1 className="text-4xl lg:text-6xl font-bold">{artisan.company?.denomination}</h1>
+            <p className="text-white text-center mx-40">{artisan.description}</p>
+          </div>
+          <div className="absolute right-6 bottom-6">
+            <div className="mt-4 flex justify-center lg:justify-start space-x-6">
+                {artisan.social_network?.facebook && (
+                    <a href={artisan.social_network.facebook} className="text-white">
+                      <FaFacebook size={32}/>
+                    </a>
+                )}
+                {artisan.social_network?.instagram && (
+                    <a href={artisan.social_network.instagram} className="text-white">
+                      <FaInstagram size={32}/>
+                    </a>
+                )}
+                {artisan.social_network?.twitter && (
+                    <a href={artisan.social_network.twitter} className="text-white">
+                      <FaTwitter size={32}/>
+                    </a>
+                )}
+                {artisan.social_network?.tiktok && (
+                    <a href={artisan.social_network?.tiktok} className="text-white">
+                      <FaTiktok size={32}/>
+                    </a>
+                )}
+              </div>
           </div>
         </div>
-
-        {/* Informations sur l'artisan */}
-        {/*<div className="container mx-auto mt-12 text-center lg:text-left px-4">*/}
-        {/*  <div className="text-lg lg:text-xl">*/}
-        {/*    <p className="text-gray-700">{artisan.description}</p>*/}
-        {/*      <div className="mt-4 flex justify-center lg:justify-start space-x-6">*/}
-        {/*        {artisan.social?.instagram && (*/}
-        {/*            <a href={artisan.social.instagram} className="text-gray-500 hover:text-pink-500">*/}
-        {/*              <FaInstagram size={24} />*/}
-        {/*            </a>*/}
-        {/*        )}*/}
-        {/*        {artisan.social?.snapchat && (*/}
-        {/*            <a href={artisan.social.snapchat} className="text-gray-500 hover:text-yellow-500">*/}
-        {/*              <FaSnapchat size={24} />*/}
-        {/*            </a>*/}
-        {/*        )}*/}
-        {/*        {artisan.social?.twitter && (*/}
-        {/*            <a href={artisan.social.twitter} className="text-gray-500 hover:text-blue-500">*/}
-        {/*              <FaTwitter size={24} />*/}
-        {/*            </a>*/}
-        {/*        )}*/}
-        {/*        {artisan.website && (*/}
-        {/*            <a href={artisan.website} className="text-gray-500 hover:text-green-500">*/}
-        {/*              <FaGlobe size={24} />*/}
-        {/*            </a>*/}
-        {/*        )}*/}
-        {/*      </div>*/}
-        {/*    </div>*/}
-        {/*</div>*/}
 
         {/* Produits de l'artisan */}
         <div className="container mx-auto mt-12">
@@ -228,7 +223,7 @@ export default function Page({ params }: any) {
                     <div key={index} className="bg-white shadow-lg rounded-lg p-6">
                       <div className="flex justify-between items-center">
                         <p className="font-semibold">{comment.sender_id?.name || comment.sender_id}</p>
-                        <RatingStars rating={comment.rate} />
+                        <RatingStars rating={comment.rate}/>
                       </div>
                       <p className="mt-4 text-gray-700">{comment.content}</p>
                     </div>

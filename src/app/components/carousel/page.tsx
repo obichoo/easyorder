@@ -65,18 +65,18 @@ const Carousel = ({slides, options, slidesPerView, slidesHeight, slidesSpacing, 
                                         href={value.link as string}
                                         className="embla__slide"
                                     >
-                                        <div className="bg-white border border-[#77ad86] rounded-lg overflow-hidden hover:shadow-lg transition duration-300 transform">
-                                            <div className="flex justify-center items-center">
-                                                {value?.data.pictures && value?.data.pictures[0]?.url ? (
-                                                    <img src={value?.data.pictures[0].url} alt={value.text} className="object-cover h-[150px] w-[150px]" />
-                                                ) : (
-                                                    <img src="https://via.placeholder.com/150" alt="Placeholder" className="object-cover h-full w-full" />
-                                                )}
-                                            </div>
-                                            <div className="p-4 text-center truncate">
-                                                <p className="font-bold text-[#032035] truncate">{value.text}</p>
-                                                <p className="text-[#77ad86]">{((value?.data?.price_in_cent as number) / 100).toFixed(2)} €</p>
-                                            </div>
+                                        <div className="bg-white p-4 rounded-lg transition transform cursor-pointer">
+                                            <img
+                                            src={(value?.data?.pictures && value?.data.pictures.length > 0) ? value?.data.pictures[0]?.url : 'https://via.placeholder.com/300'}
+                                            alt={value?.data.name}
+                                            className="w-full h-48 object-cover rounded-lg mb-4"
+                                            />
+                                            <h4 className="font-bold text-xl text-easyorder-black mb-2 truncate">{value?.data.name}</h4>
+                                            <p className="text-gray-600 mb-2 truncate">
+                                                {(value?.data?.description as string)}
+                                            </p>
+                                            <p className="text-easyorder-black font-semibold">Prix : {((value?.data?.price_in_cent as number) / 100).toFixed(2)} €</p>
+                                            <p className="text-gray-600">Stock : {(value?.data?.stock as number) > 0 ? value?.data.stock : 'Rupture de stock'}</p>
                                         </div>
                                     </Link>
                                 )
