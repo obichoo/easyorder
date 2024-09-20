@@ -33,7 +33,9 @@ const VendorProfilePage = () => {
         const userId = (getUser() as User)._id;
 
         UserService.getUserById(userId).then((response) => {
-            setUser(response.data);
+            const userWithoutPassword = response.data;
+            delete userWithoutPassword.password;
+            setUser(userWithoutPassword);
             localStorage.setItem('user', JSON.stringify(response.data));
         })
     }, []);
