@@ -32,10 +32,7 @@ const Page = () => {
     };
 
     const setOrderToPaid = (orderId: string) => {
-        OrderService.updateOrder({
-            _id: orderId,
-            status: 'processing'
-        });
+        OrderService.validateOrder(orderId);
     };
 
     useEffect(() => {

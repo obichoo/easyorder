@@ -33,6 +33,11 @@ class OrderService {
     addItemToOrder(order: OrderItem & { user_id: User['_id'] }) {
         return AxiosInstance.post('/order/addItem', order);
     }
+
+    // Validate order
+    validateOrder(orderId: Order['_id']) {
+        return AxiosInstance.post(`/order/${orderId}/validateOrder`);
+    }
 }
 
 export default new OrderService();
