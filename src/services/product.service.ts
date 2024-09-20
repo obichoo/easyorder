@@ -41,7 +41,9 @@ class ProductService {
     uploadProductPictures(productId: Product['_id'], pictures: any) {
         const formData = new FormData();
 
-        formData.append('pictures', pictures);
+        for (let i = 0; i < pictures?.length; i++) {
+            formData.append('pictures', pictures[i]);
+        }
 
         return AxiosInstance.post(`/product/${productId}/addPictures`, formData);
     }

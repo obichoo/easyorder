@@ -64,10 +64,10 @@ export default function Page() {
   useEffect(() => {
     if (product) {
       const slides = product.pictures?.map((picture: any) => ({
-        src: picture.url,
-        alt: product.name,
+        image: picture.url,
       })) || [];
       setSlides(slides);
+      console.log('slides', slides);
     }
   }, [product]);
 

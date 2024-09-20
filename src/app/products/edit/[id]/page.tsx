@@ -117,7 +117,7 @@ const CreateProduct = () => {
                 <h1 className="text-3xl font-bold text-center text-easyorder-black mb-6">Modifier un produit</h1>
 
                 <div className="mb-4">
-                    <label className="block text-easyorder-black font-semibold">Nom du Produit</label>
+                    <label className="block text-easyorder-black font-semibold">Nom du produit</label>
                     <input
                         type="text"
                         value={productName}
@@ -197,7 +197,7 @@ const CreateProduct = () => {
                 </div>
 
                 <div className="mb-4">
-                    <label className="block text-easyorder-black font-semibold">Nouvelle Catégorie</label>
+                    <label className="block text-easyorder-black font-semibold">Nouvelle catégorie</label>
                     <div className="flex gap-2">
                         <input
                             type="text"
