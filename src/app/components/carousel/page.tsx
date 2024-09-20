@@ -1,79 +1,113 @@
-"use client";
+import { EmblaOptionsType } from 'embla-carousel'
+import Autoplay from 'embla-carousel-autoplay'
+import useEmblaCarousel from 'embla-carousel-react'
+import Link from "next/link";
+import {ReactElement} from "react";
 
-import { useState, useEffect } from 'react';
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'; // Import des icônes
+export interface CarouselSlide {
+    link?: string,
+    image?: string,
+    text: string,
+    data?: any
+}
 
-const CarrouselBanner = () => {
-    const [currentSlide, setCurrentSlide] = useState(0);
+const Slide = ({ slide, index }: { slide: CarouselSlide, index: number }) => {
+    return (
+        <>
+            <div className="embla__slide__number rounded-lg overflow-hidden">
+                {
+                    slide.image ? (
+                        <div className="w-full h-full relative">
+                            <img className="w-full h-full object-cover brightness-75" src={slide.image} alt={slide.text}/>
+                            <p className="text-white text-2xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">{slide.text}</p>
+                        </div>
+                    ) : (
+                        <div className="w-full h-full bg-[#e7e6e6] flex items-center justify-center">
+                            <p className="text-[#032035] text-2xl">{slide.text}</p>
+                        </div>
+                    )
+                }
+            </div>
+        </>
+    )
+}
 
-    const banners = [
-        { id: 1, image: 'https://via.placeholder.com/1200x400?text=Entreprise+1', alt: 'Entreprise 1' },
-        { id: 2, image: 'https://via.placeholder.com/1200x400?text=Entreprise+2', alt: 'Entreprise 2' },
-        { id: 3, image: 'https://via.placeholder.com/1200x400?text=Entreprise+3', alt: 'Entreprise 3' },
-        { id: 4, image: 'https://via.placeholder.com/1200x400?text=Entreprise+4', alt: 'Entreprise 4' },
-        { id: 5, image: 'https://via.placeholder.com/1200x400?text=Entreprise+5', alt: 'Entreprise 5' },
-    ];
-
-    // Change slide every 5 seconds
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentSlide((prevSlide) => (prevSlide + 1) % banners.length);
-        }, 5000);
-
-        return () => clearInterval(interval);
-    }, [banners.length]);
-
-    const goToPreviousSlide = () => {
-        setCurrentSlide((prevSlide) => (prevSlide - 1 + banners.length) % banners.length);
-    };
-
-    const goToNextSlide = () => {
-        setCurrentSlide((prevSlide) => (prevSlide + 1) % banners.length);
-    };
+const Carousel = ({slides, options, slidesPerView, slidesHeight, slidesSpacing, type}: {
+    slides: CarouselSlide[],
+    options: EmblaOptionsType,
+    slidesPerView?: number,
+    slidesHeight?: string,
+    slidesSpacing?: string,
+    type?: 'category' | 'product',
+}) => {
+    const [emblaRef, emblaApi] = useEmblaCarousel(options, [Autoplay()])
 
     return (
-        <div className="relative w-full h-64 lg:h-96 overflow-hidden rounded-lg shadow-lg">
-            {/* Slide */}
-            {banners.map((banner, index) => (
-                <div
-                    key={banner.id}
-                    className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
-                >
-                    <img
-                        src={banner.image}
-                        alt={banner.alt}
-                        className="w-full h-full object-cover rounded-lg"
-                    />
+        <section
+            className="embla"
+            style={{
+                ['--slide-size' as string]: `${slidesPerView ? 100 / (slidesPerView || 1) + '%' : '100%'}`,
+                ['--slide-height' as string]: slidesHeight || '19rem',
+                ['--slide-spacing' as string]: slidesSpacing || '1rem'
+            }}
+        >
+            <div className="embla__viewport" ref={emblaRef}>
+                <div className="embla__container">
+                    {slides.map((value, index) => {
+                        if (type) {
+                            if (type === 'product') {
+                                return (
+                                    <Link
+                                        key={value?.data?._id}
+                                        href={value.link as string}
+                                        className="embla__slide"
+                                    >
+                                        <div className="bg-white border border-[#77ad86] rounded-lg overflow-hidden hover:shadow-lg transition duration-300 transform">
+                                            <div className="flex justify-center items-center">
+                                                {value?.data.pictures && value?.data.pictures[0]?.url ? (
+                                                    <img src={value?.data.pictures[0].url} alt={value.text} className="object-cover h-[150px] w-[150px]" />
+                                                ) : (
+                                                    <img src="https://via.placeholder.com/150" alt="Placeholder" className="object-cover h-full w-full" />
+                                                )}
+                                            </div>
+                                            <div className="p-4 text-center truncate">
+                                                <p className="font-bold text-[#032035] truncate">{value.text}</p>
+                                                <p className="text-[#77ad86]">{((value?.data?.price_in_cent as number) / 100).toFixed(2)} €</p>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                )
+                            } else if (type === 'category') {
+                                return (
+                                    <Link
+                                        key={index}
+                                        href={value.link as string}
+                                        className="embla__slide"
+                                    >
+                                        <div className="bg-[#77ad86] text-white hover:bg-[#032035] text-center py-2 px-4 rounded-lg transition duration-300 transform shadow-md">
+                                            {value.text}
+                                        </div>
+                                    </Link>
+                                )
+                            }
+                        } else if (value.link) {
+                            return (
+                                <Link key={index} className="embla__slide" href={value.link}>
+                                    <Slide slide={value} index={index} key={index} />
+                                </Link>
+                            )
+                        } else {
+                            return (
+                                <div className="embla__slide" key={index}>
+                                    <Slide slide={value} index={index} key={index} />
+                                </div>
+                            )
+                        }
+                    })}
                 </div>
-            ))}
-
-            {/* Previous Button */}
-            <button
-                className="absolute z-10 left-4 top-1/2 transform -translate-y-1/2 bg-[#77ad86] text-white p-3 rounded-full shadow-lg hover:bg-[#032035] transition duration-200"
-                onClick={goToPreviousSlide}
-            >
-                <FaArrowLeft size={20} />
-            </button>
-
-            {/* Next Button */}
-            <button
-                className="absolute z-10 right-4 top-1/2 transform -translate-y-1/2 bg-[#77ad86] text-white p-3 rounded-full shadow-lg hover:bg-[#032035] transition duration-200"
-                onClick={goToNextSlide}
-            >
-                <FaArrowRight size={20} />
-            </button>
-
-            {/* Indicator Dots */}
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
-                {banners.map((_, index) => (
-                    <div
-                        key={index}
-                        className={`h-3 w-3 rounded-full ${index === currentSlide ? 'bg-[#77ad86]' : 'bg-gray-300'} transition-all duration-300`}
-                    />
-                ))}
             </div>
-        </div>
-    );
-};
+        </section>
+    )
+}
 
-export default CarrouselBanner;
+export default Carousel

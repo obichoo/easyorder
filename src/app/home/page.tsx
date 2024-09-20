@@ -1,88 +1,87 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import Link from 'next/link';
-import Navbar from '../components/navbar/page';
-import CarrouselBanner from '../components/carousel/page';
 import ProductService from "@/services/product.service";
 import CategoryService from "@/services/category.service";
 import { Product } from "@/models/product.model";
 import { Category } from "@/models/category.model";
+import Carousel, {CarouselSlide} from "@/app/components/carousel/page";
+import UserService from "@/services/user.service";
+import {EmblaOptionsType} from "embla-carousel";
 
 const Home = () => {
-    const [products, setProducts] = useState<Product[]>([]);
-    const [categories, setCategories] = useState<Category[]>([]);
+    const [artisansSlides, setArtisansSlides] = useState<CarouselSlide[]>([]);
+    const [categoriesSlides, setCategoriesSlides] = useState<CarouselSlide[]>([]);
+    const [productsSlides, setProductsSlides] = useState<CarouselSlide[]>([]);
+    const [options, setOptions] = useState<EmblaOptionsType>({
+        loop: true,
+    });
 
     const shuffleArray = (array: any[]) => {
         return array.sort(() => Math.random() - 0.5);
     };
 
+    const getCategoriesSlides = () => {
+            CategoryService.getAllCategories().then((response) => {
+                const categories = response.data.map((category: Category): CarouselSlide => ({
+                    link: `/search?category=${category._id}`,
+                    text: category.name as string,
+                    data: category
+                }));
+                setCategoriesSlides(categories);
+            })
+    };
+
+    const getProductsSlides = () => {
+        ProductService.getAllProducts().then((response) => {
+            const shuffledProducts = shuffleArray(response.data).map((product: Product): CarouselSlide => ({
+                link: `/products/${product._id}`,
+                image: (product.pictures as Array<any>)?.[0]?.url,
+                text: product.name as string,
+                data: product
+            }));
+            setProductsSlides(shuffledProducts);
+        })
+    }
+
+    const getArtisansSlides =  () => {
+        UserService.getAllArtisans().then((response) => {
+            const artisans = response.data.map((user: any): CarouselSlide  => ({
+                link: `/artisans/${user._id}`,
+                image: user.profile_pic,
+                text: user.name
+            }));
+            setArtisansSlides(artisans);
+        })
+    }
+
     useEffect(() => {
-        const fetchProductsAndCategories = async () => {
-            try {
-                const productResponse = await ProductService.getAllProducts();
-                const shuffledProducts = shuffleArray(productResponse.data);
-                setProducts(shuffledProducts);
-
-                const categoryResponse = await CategoryService.getAllCategories();
-                setCategories(categoryResponse.data);
-            } catch (error) {
-                console.error("Erreur lors du chargement des données :", error);
-            }
-        };
-
-        fetchProductsAndCategories();
+        getArtisansSlides();
+        getCategoriesSlides()
+        getProductsSlides()
     }, []);
 
     return (
-        <div className="min-h-screen bg-[#e7e6e6]">
+        <div className="bg-[#e7e6e6]">
             <main className="mt-8 px-6">
-                <CarrouselBanner />
+                <Carousel slidesPerView={1} slidesHeight="250px" slidesSpacing="2rem" key="artisans-carousel" options={options} slides={artisansSlides} />
 
                 {/* Catégories */}
                 <div className="mt-12 mb-8">
                     <h2 className="text-center text-2xl font-bold mb-6 text-[#032035]">Explorez les Catégories</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-6 gap-6 text-center">
-                        {categories.length > 0 ? (
-                            categories.map((category: any, index: number) => (
-                                <Link
-                                    key={index}
-                                    href={'/search?category=' + category._id}
-                                    className="bg-[#77ad86] text-white hover:bg-[#032035] py-2 px-4 rounded-lg transition duration-300 transform hover:scale-105 shadow-md"
-                                >
-                                    {category.name}
-                                </Link>
-                            ))
-                        ) : (
-                            <p className="text-center col-span-6 text-lg text-[#032035]">Aucune catégorie disponible</p>
-                        )}
-                    </div>
+                    {categoriesSlides.length > 0 ? (
+                        <Carousel type="category" slidesPerView={7} slidesHeight="30px" slidesSpacing="1rem" key="categories-carousel" options={options} slides={categoriesSlides} />
+                    ) : (
+                        <p className="text-center col-span-6 text-lg text-[#032035]">Aucune catégorie disponible</p>
+                    )}
                 </div>
 
                 {/* Liste des produits */}
                 <div className="mt-12 mb-12">
                     <h2 className="text-center text-2xl font-bold mb-6 text-[#032035]">Nos Produits</h2>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                        {products.length > 0 ? (
-                            products.map((product: Product, index: number) => (
-                                <Link
-                                    key={product?._id}
-                                    href={`/products/${product._id}`}
-                                    className="bg-white border border-[#77ad86] rounded-lg overflow-hidden hover:shadow-lg transition duration-300 transform hover:scale-105"
-                                >
-                                    <div className="h-40 flex justify-center items-center">
-                                        {product.pictures && product.pictures[0]?.url ? (
-                                            <img src={product.pictures[0].url} alt={product.name} className="object-cover h-full w-full" />
-                                        ) : (
-                                            <img src="https://via.placeholder.com/150" alt="Placeholder" className="object-cover h-full w-full" />
-                                        )}
-                                    </div>
-                                    <div className="p-4 text-center">
-                                        <p className="font-bold text-[#032035]">{product.name}</p>
-                                        <p className="text-[#77ad86]">{((product.price_in_cent as number) / 100).toFixed(2)} €</p>
-                                    </div>
-                                </Link>
-                            ))
+                        {productsSlides.length > 0 ? (
+                            <Carousel type="product" slidesPerView={4} slidesHeight="200px" slidesSpacing="2rem" key="products-carousel" options={options} slides={productsSlides} />
                         ) : (
                             <p className="text-center col-span-4 text-lg text-[#032035]">Aucun produit disponible</p>
                         )}
