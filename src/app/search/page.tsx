@@ -1,54 +1,116 @@
 'use client';
 
-import {Suspense, useEffect, useState} from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ProductService from '@/services/product.service';
+import CategoryService from '@/services/category.service'; // Service pour récupérer les catégories
 import { useRouter } from 'next/navigation';
-import { FaSpinner } from 'react-icons/fa'; // Utilisation de FaSpinner pour l'animation de chargement
+import { FaSpinner } from 'react-icons/fa';
+import {Category} from "@/models/category.model";
+import {Product} from "@/models/product.model"; // Utilisation de FaSpinner pour l'animation de chargement
 
 const SearchPage = () => {
-    const [products, setProducts] = useState<any[]>([]);
-    const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]); // Liste des catégories
+    const [selectedCategory, setSelectedCategory] = useState<Category['_id']>(''); // Catégorie sélectionnée
+    const [searchTerm, setSearchTerm] = useState<string>(''); // Terme de recherche
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const searchParams = useSearchParams();
     const router = useRouter();
 
-    // Récupérer la query depuis les paramètres d'URL
-    const query = searchParams.get('query')?.toLowerCase();
+    const checkQueryParams = () => {
+        const category = searchParams.get('category');
+        if (category) {
+            setSelectedCategory(category);
+        }
+    }
 
+    // Récupérer tous les produits et catégories
     useEffect(() => {
-        const fetchAllProducts = async () => {
+        checkQueryParams();
+
+        const fetchAllData = async () => {
             try {
                 setLoading(true);
-                const response = await ProductService.getAllProducts();
-                setProducts(response.data);
+
+                // Récupérer les produits
+                const productResponse = await ProductService.getAllProducts();
+                setProducts(productResponse.data);
+
+                // Récupérer les catégories
+                const categoryResponse = await CategoryService.getAllCategories();
+                setCategories(categoryResponse.data);
+
                 setLoading(false);
             } catch (error) {
-                setError("Erreur lors de la récupération des produits. Veuillez réessayer.");
+                setError("Erreur lors de la récupération des produits ou catégories.");
                 setLoading(false);
             }
         };
 
-        fetchAllProducts();
+        fetchAllData();
     }, []);
 
+    // Filtrer les produits en fonction du terme de recherche et de la catégorie
     useEffect(() => {
-        if (query && products.length > 0) {
-            const filtered = products.filter((product) =>
-                product.name.toLowerCase().includes(query) ||
-                product.description.toLowerCase().includes(query)
+        let filtered = products;
+
+        // Filtrage par terme de recherche
+        if (searchTerm) {
+            filtered = filtered.filter((product: Product) =>
+                (product?.name as string).toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (product?.description as string).toLowerCase().includes(searchTerm.toLowerCase())
             );
-            setFilteredProducts(filtered);
         }
-    }, [query, products]);
+
+        // Filtrage par catégorie
+        if (selectedCategory) {
+            filtered = filtered.filter((product: Product) =>
+                (product?.categories as Category['_id'][]).includes(selectedCategory)
+            );
+        }
+
+        setFilteredProducts(filtered);
+    }, [searchTerm, selectedCategory, products]);
 
     return (
-        <div className="min-h-screen bg-easyorder-gray py-8">
+        <div className="bg-easyorder-gray py-8">
             <div className="max-w-7xl mx-auto px-6">
                 <h1 className="text-center text-3xl font-bold text-easyorder-black mb-12">
-                    Résultats de recherche pour "{query}"
+                    Résultats de recherche
                 </h1>
+
+                {/* Barre de recherche */}
+                <div className="flex justify-center mb-6">
+                    <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="Rechercher un produit..."
+                        className="w-full max-w-md p-3 border border-easyorder-black rounded-md"
+                    />
+                </div>
+
+                {/* Filtre des catégories */}
+                <div className="flex justify-center space-x-4 mb-8">
+                    <button
+                        className={`px-4 py-2 rounded-md ${!selectedCategory ? 'bg-easyorder-green text-white' : 'bg-gray-200 text-easyorder-black'}`}
+                        onClick={() => setSelectedCategory('')}
+                    >
+                        Toutes les catégories
+                    </button>
+                    {categories.map((category) => (
+                        <button
+                            key={category._id}
+                            className={`px-4 py-2 rounded-md ${selectedCategory === category._id ? 'bg-easyorder-green text-white' : 'bg-gray-200 text-easyorder-black'}`}
+                            onClick={() => setSelectedCategory(category._id)}
+                        >
+                            {category.name}
+                        </button>
+                    ))}
+                </div>
 
                 {loading ? (
                     <div className="flex justify-center items-center">
@@ -68,20 +130,20 @@ const SearchPage = () => {
                                 onClick={() => router.push(`/products/${product._id}`)}
                             >
                                 <img
-                                    src={(product.photos && product.photos.length > 0) ? product.photos[0] : 'https://via.placeholder.com/300'}
+                                    src={(product.pictures && product.pictures.length > 0) ? product.pictures[0]?.url : 'https://via.placeholder.com/300'}
                                     alt={product.name}
                                     className="w-full h-48 object-cover rounded-lg mb-4"
                                 />
                                 <h4 className="font-bold text-xl text-easyorder-black mb-2">{product.name}</h4>
-                                <p className="text-gray-600 mb-2">{product.description.substring(0, 100)}...</p>
-                                <p className="text-easyorder-black font-semibold">Prix : {(product.price_in_cent / 100).toFixed(2)} €</p>
-                                <p className="text-gray-600">Stock : {product.stock > 0 ? product.stock : 'Rupture de stock'}</p>
+                                <p className="text-gray-600 mb-2">{(product?.description as string).substring(0, 100)}...</p>
+                                <p className="text-easyorder-black font-semibold">Prix : {((product?.price_in_cent as number) / 100).toFixed(2)} €</p>
+                                <p className="text-gray-600">Stock : {(product?.stock as number) > 0 ? product.stock : 'Rupture de stock'}</p>
                             </div>
                         ))}
                     </div>
                 ) : (
                     <p className="text-center text-lg text-easyorder-black">
-                        Aucun produit trouvé pour "{query}".
+                        Aucun produit trouvé.
                     </p>
                 )}
             </div>
@@ -92,9 +154,9 @@ const SearchPage = () => {
 const Page = () => {
     return (
         <Suspense>
-            <SearchPage />;
+            <SearchPage />
         </Suspense>
-        )
-}
+    );
+};
 
 export default Page;

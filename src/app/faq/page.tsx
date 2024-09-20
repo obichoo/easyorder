@@ -5,8 +5,8 @@ import { FaSearch, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
 const faqs = [
   {
-    question: 'Comment acheter des biens ?',
-    answer: 'Dans un premier temps, connectez-vous ou inscrivez-vous afin de pouvoir accéder aux différentes fonctionnalités. Ensuite, recherchez ou sélectionnez un bien qui vous intéresse. Cliquez dessus et appuyez sur le bouton "Acheter".',
+    question: 'Comment acheter des produits ?',
+    answer: 'Dans un premier temps, connectez-vous ou inscrivez-vous afin de pouvoir accéder aux différentes fonctionnalités. Ensuite, recherchez ou sélectionnez un produit qui vous intéresse. Cliquez dessus et appuyez sur le bouton "Acheter".',
   },
   {
     question: 'Comment vendre des produits personnalisés ?',
@@ -25,8 +25,8 @@ const faqs = [
     answer: 'Oui, pour cela, un abonnement à 7,99 euros/mois est disponible.',
   },
   {
-    question: 'Comment ajouter des biens ?',
-    answer: 'Rendez-vous dans votre profil > Modifier votre boutique > Ajouter des biens.',
+    question: 'Comment ajouter des produits ?',
+    answer: 'Rendez-vous dans votre profil > Modifier votre boutique > Ajouter des produits.',
   },
   {
     question: 'Des outils de gestion de stock sont-ils disponibles ?',

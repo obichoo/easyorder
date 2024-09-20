@@ -12,7 +12,6 @@ import { Category } from "@/models/category.model";
 const Home = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
     const shuffleArray = (array: any[]) => {
         return array.sort(() => Math.random() - 0.5);
@@ -35,21 +34,6 @@ const Home = () => {
         fetchProductsAndCategories();
     }, []);
 
-    // Fonction de sélection de la catégorie
-    const handleCategoryClick = (categoryId: string) => {
-        // Si la catégorie sélectionnée est déjà active, on supprime le filtre
-        if (selectedCategory === categoryId) {
-            setSelectedCategory(null); // Réinitialisation du filtre
-        } else {
-            setSelectedCategory(categoryId); // Sélection de la nouvelle catégorie
-        }
-    };
-
-    // Filtrer les produits en fonction de la catégorie sélectionnée
-    const filteredProducts = selectedCategory
-        ? products.filter((product) => product.categories?.includes(selectedCategory as any))
-        : products;
-
     return (
         <div className="min-h-screen bg-[#e7e6e6]">
             <main className="mt-8 px-6">
@@ -61,15 +45,13 @@ const Home = () => {
                     <div className="grid grid-cols-2 md:grid-cols-6 gap-6 text-center">
                         {categories.length > 0 ? (
                             categories.map((category: any, index: number) => (
-                                <button
+                                <Link
                                     key={index}
-                                    onClick={() => handleCategoryClick(category._id)}
-                                    className={`bg-[#77ad86] text-white hover:bg-[#032035] py-2 px-4 rounded-lg transition duration-300 transform hover:scale-105 shadow-md ${
-                                        selectedCategory === category._id ? 'bg-[#032035]' : ''
-                                    }`}
+                                    href={'/search?category=' + category._id}
+                                    className="bg-[#77ad86] text-white hover:bg-[#032035] py-2 px-4 rounded-lg transition duration-300 transform hover:scale-105 shadow-md"
                                 >
                                     {category.name}
-                                </button>
+                                </Link>
                             ))
                         ) : (
                             <p className="text-center col-span-6 text-lg text-[#032035]">Aucune catégorie disponible</p>
@@ -81,10 +63,10 @@ const Home = () => {
                 <div className="mt-12 mb-12">
                     <h2 className="text-center text-2xl font-bold mb-6 text-[#032035]">Nos Produits</h2>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                        {filteredProducts.length > 0 ? (
-                            filteredProducts.map((product, index) => (
+                        {products.length > 0 ? (
+                            products.map((product: Product, index: number) => (
                                 <Link
-                                    key={index}
+                                    key={product?._id}
                                     href={`/products/${product._id}`}
                                     className="bg-white border border-[#77ad86] rounded-lg overflow-hidden hover:shadow-lg transition duration-300 transform hover:scale-105"
                                 >
