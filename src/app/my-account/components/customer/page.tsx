@@ -45,26 +45,30 @@ export default function ClientProfilePage() {
     try {
       // Mise à jour de l'image de profil si un fichier a été sélectionné
       if (profileImage && userId) {
-        await UserService.updateProfilePicture(userId, profileImage);
+        await UserService.updateProfilePicture(userId, profileImage).then((response) => {
+          localStorage.setItem("user", JSON.stringify(response.data?.user));
+        })
       }
 
       // Mise à jour des autres informations utilisateur (email, nom, mot de passe)
-      const updatedUser: { name: string; email: string, password: string} = {
+      const updatedUser: { name: string; email: string, password?: string} = {
         name,
         email,
         password
       }
 
+      if (!password) {
+        delete updatedUser.password;
+      }
+
       if (userId) {
-        await UserService.updateUser({ _id: userId, ...updatedUser });
+        await UserService.updateUser({ _id: userId, ...updatedUser })
         setUpdateMessage("Profil mis à jour avec succès !");
       }
 
       // Actualiser les données utilisateur dans le localStorage
       const updatedStoredUser = JSON.parse(localStorage.getItem("user") || '{}');
       updatedStoredUser.user = { ...updatedStoredUser.user, name, email, profile_pic: previewImage };
-      localStorage.setItem("user", JSON.stringify(updatedStoredUser));
-
     } catch (error) {
       console.error("Erreur lors de la mise à jour du profil", error);
       setUpdateMessage("Une erreur est survenue lors de la mise à jour.");
@@ -72,7 +76,7 @@ export default function ClientProfilePage() {
   };
 
   return (
-      <div className="max-w-4xl mx-auto py-10">
+      <div className="max-w-4xl mx-auto py-8">
         <h1 className="text-3xl font-bold text-center mb-8">Modifier mon profil</h1>
         <div className="flex items-start space-x-8">
           <div className="flex-shrink-0">

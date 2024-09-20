@@ -76,6 +76,13 @@ class UserService {
     addCompanyToUser(userId: User['_id'], companyId: User['_id']) {
         return AxiosInstance.post(`/user/addCompany`);
     }
+
+    updateCompanyPictures(userId: User['_id'], { profilePicture, bannerPicture }: { profilePicture?: File, bannerPicture?: File }) {
+        const formData = new FormData();
+        if (profilePicture) formData.append("profile_pic", profilePicture);
+        if (bannerPicture) formData.append("banner_pic", bannerPicture);
+        return AxiosInstance.post(`/user/${userId}/company_pic`, formData);
+    }
 }
 
 export default new UserService();

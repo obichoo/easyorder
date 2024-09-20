@@ -14,5 +14,4 @@ export interface User {
     profile_pic?: string;
     created_at?: Date;
     updated_at?: Date;
-    banner_pic?: string;
 }
