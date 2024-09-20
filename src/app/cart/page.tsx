@@ -14,10 +14,12 @@ import { FaArrowLeft } from "react-icons/fa";
 import MondialRelayWidget from "@/app/components/relaiscolis/MondialRelayWidget";
 
 const Cart = () => {
+    const [order, setOrder] = useState<Order | null>(null);
     const [cartItems, setCartItems] = useState<OrderItem[]>([]);
     const [userId, setUserId] = useState<User['_id'] | null>(null);
     const [showPopup, setShowPopup] = useState(false);
     const [selectedRelay, setSelectedRelay] = useState<{ street: string; postalCode: string; city: string; country: string } | null>(null);
+    const [loadingRelay, setLoadingRelay] = useState(false);
 
     useEffect(() => {
         const userId = getUser()?._id;
@@ -32,9 +34,12 @@ const Cart = () => {
 
     const getOrderItems = () => {
         OrderService.getAllOrders().then(({ data }: { data: Order[] }) => {
-            const userOrders: Order[] = data?.filter((order: Order) => (order.user_id as User)?._id === userId && order.status === 'pending');
-            const items = userOrders.map((order: Order) => order.items).flat();
-            setCartItems(items as OrderItem[]);
+            const userOrder: Order | any = data?.find((order: Order) => (order.user_id as User)?._id === userId && order.status === 'pending');
+            if (!userOrder) {
+                return;
+            }
+            setOrder(userOrder);
+            setCartItems(userOrder.items as OrderItem[]);
         });
     };
 
@@ -91,7 +96,7 @@ const Cart = () => {
     
         try {
             // Récupère la commande actuelle
-            const { data: order } = await OrderService.getOrderById(cartItems[0]?.order_id);
+            const { data: order } = await OrderService.getOrderById(cartItems?.[0]?.order_id as string);
     
             // Mets à jour l'adresse de livraison sans changer les autres détails
             const updatedOrderData = {
@@ -103,12 +108,17 @@ const Cart = () => {
                     country: selectedRelay.country
                 }
             };
-    
+
+            setLoadingRelay(true);
+
             // Mets à jour la commande complète
-            await OrderService.updateOrder(updatedOrderData); // Passer l'objet mis à jour sans ID spécifique
-    
-            closePopup();
-        } catch (error) {
+            await OrderService.updateOrder(updatedOrderData).then((response) => {
+                setOrder(response.data);
+                closePopup();
+                setLoadingRelay(false);
+            })
+
+        } catch (error: any) {
             console.error("Erreur lors de la mise à jour de la commande :", error.response?.data || error.message);
         }
     };
@@ -186,21 +196,40 @@ const Cart = () => {
                         </p>
                     </div>
 
-                    <div className="flex justify-between items-end mt-6">
+                    {
+                        order?.delivery_address &&
+                        <div className="flex justify-end mb-2">
+                            <div>
+                                <p className="text-easyorder-black text-sm">Point relais choisi</p>
+                                <p className="text-easyorder-black">
+                                    {order?.delivery_address.street}, {order?.delivery_address.postalCode} {order?.delivery_address.city}
+                                </p>
+                            </div>
+                        </div>
+                    }
+
+                    <div className="flex justify-between items-end">
                         <Link href="/home" className="bg-easyorder-gray hover:bg-easyorder-green text-easyorder-black py-2 px-6 rounded-md transition flex items-center">
                             <FaArrowLeft size={12} className="inline-block mr-1 -mt-[2px]" />
                             Continuer vos achats
                         </Link>
-                        <div className="text-right">
-                            <button
-                                onClick={handlePayment}
-                                className="bg-easyorder-green text-white py-2 px-6 rounded-md"
-                            >
-                                Choisir un point relais
-                            </button>
-                            
+
+                        <div className="flex mb-2">
+                            <div>
+                                <button
+                                    onClick={handlePayment}
+                                    className="bg-easyorder-green hover:bg-easyorder-black transition text-white py-2 px-6 rounded-md"
+                                >
+                                    {order?.delivery_address ? 'Modifier le point relais' : 'Choisir un point relais'}
+                                </button>
+                            </div>
+                                {
+                                    order?.delivery_address &&
+                                    <div className="ml-4">
+                                        <StripeButton params={`?orderId=${cartItems?.[0]?.order_id}`} amount={calculateTotal() * 100}></StripeButton>
+                                    </div>
+                                }
                         </div>
-                        <StripeButton params={`?orderId=${cartItems?.[0]?.order_id}`} amount={calculateTotal() * 100}></StripeButton>
                     </div>
                 </div>
             )}
@@ -209,8 +238,7 @@ const Cart = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-5 rounded-lg shadow-lg">
                         <h2 className="text-xl font-semibold mb-4">Sélectionnez votre point de relais</h2>
-                        <MondialRelayWidget onParcelShopSelected={(relay) => {
-                            console.log("Point relais sélectionné :", relay);
+                        <MondialRelayWidget onParcelShopSelected={(relay: any) => {
                             setSelectedRelay(relay);
                         }} />
                         
@@ -225,8 +253,8 @@ const Cart = () => {
                         )}
                         
                         <div className="flex justify-end mt-4">
-                            <button onClick={handleConfirm} className="bg-easyorder-green text-white py-2 px-4 rounded-md mr-2">
-                                Confirmer
+                            <button onClick={loadingRelay ? () => {} : handleConfirm} className="bg-easyorder-green text-white py-2 px-4 rounded-md mr-2">
+                                {loadingRelay ? 'Chargement...' : 'Confirmer'}
                             </button>
                             <button onClick={closePopup} className="bg-red-500 text-white py-2 px-4 rounded-md">
                                 Annuler
