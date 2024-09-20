@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import {Suspense, useEffect, useState} from 'react';
 import { useSearchParams } from 'next/navigation';
 import ProductService from '@/services/product.service';
 import { useRouter } from 'next/navigation';
@@ -89,4 +89,12 @@ const SearchPage = () => {
     );
 };
 
-export default SearchPage;
+const Page = () => {
+    return (
+        <Suspense>
+            <SearchPage />;
+        </Suspense>
+        )
+}
+
+export default Page;

@@ -47,7 +47,7 @@ const Home = () => {
 
     // Filtrer les produits en fonction de la catégorie sélectionnée
     const filteredProducts = selectedCategory
-        ? products.filter((product) => product.categories?.includes(selectedCategory))
+        ? products.filter((product) => product.categories?.includes(selectedCategory as any))
         : products;
 
     return (
