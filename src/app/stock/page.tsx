@@ -21,8 +21,6 @@ const initialChartData = {
   ],
 };
 
-const userId = getUser()?._id;
-
 export default function StockManagementPage() {
   const [data, setData] = useState({
     totalSales: 0,
@@ -36,6 +34,12 @@ export default function StockManagementPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [userId, setUserId] = useState('');
+
+  useEffect(() => {
+    const user = getUser();
+    setUserId(user?._id || '');
+  }, []);
 
   useEffect(() => {
     if (searchTerm === '') {
@@ -50,6 +54,8 @@ export default function StockManagementPage() {
   }, [searchTerm, allProducts]);
 
   useEffect(() => {
+    if (!userId) return;
+
     async function fetchData() {
       setLoading(true);
 
