@@ -13,7 +13,7 @@ const MyAccountPage = () => {
         setRole(getUser()?.role);
     }, [])
 
-    if (!role) return <div>Chargement du profil...</div>
+    if (!role) return <div className="text-center text-2xl mt-20 font-bold">Chargement du profil...</div>
 
     if (role === 'client') {
         return (<ClientProfilePage />)
