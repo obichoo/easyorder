@@ -3,20 +3,33 @@
 import React, { useEffect, useState } from 'react';
 import { FaHeart, FaShoppingCart } from 'react-icons/fa';
 import { useRouter, useParams } from 'next/navigation';
-import ProductService from '@/services/product.service'; // Importer le service ProductService
+import ProductService from '@/services/product.service';
+import Link from "next/link";
+import {Product} from "@/models/product.model";
+import OrderService from "@/services/order.service";
+import {Order} from "@/models/order.model";
+import {User} from "@/models/user.model";
+import getUser from "@/utils/get-user"; // Importer le service ProductService
 
 export default function Page() {
   const router = useRouter(); // Utilisation du hook useRouter
   const { id } = useParams(); // Récupérer l'ID du produit depuis l'URL
-  const [product, setProduct] = useState<any>(null); // État pour stocker les données du produit
+  const [product, setProduct] = useState<Product | any>(null); // État pour stocker les données du produit
   const [suggestions, setSuggestions] = useState<any[]>([]); // État pour stocker les produits suggérés
+  const [userId, setUserId] = useState<User['_id'] | null>(null);
+
+  useEffect(() => {
+    const userId = getUser()?._id;
+
+    setUserId(userId);
+  }, []);
 
   // Récupérer les détails du produit
   useEffect(() => {
     if (id) {
       const fetchProduct = async () => {
         try {
-          const response = await ProductService.getProductById(id);
+          const response = await ProductService.getProductById(id as string);
           setProduct(response.data);
 
           // Optionnel : Récupérer les suggestions de produits
@@ -33,6 +46,30 @@ export default function Page() {
 
   if (!product) {
     return <p>Chargement du produit...</p>;
+  }
+
+  const addToCart = () => {
+    OrderService.getAllOrders().then(({data}) => {
+      const existingOrder = data.find((order: Order) => (order.user_id as User)?._id == userId && order.status === 'pending');
+      if (existingOrder) {
+        OrderService.addItemToOrder({
+          order_id: existingOrder._id,
+          product_id: product._id,
+          quantity: 1,
+          user_id: userId as string
+        }).then(() => {
+          router.push('/cart');
+        })
+      } else {
+        OrderService.addItemToOrder({
+          product_id: product._id,
+          quantity: 1,
+          user_id: userId as string
+        }).then(() => {
+          router.push('/cart');
+        })
+      }
+    })
   }
 
   return (
@@ -72,7 +109,7 @@ export default function Page() {
               </div>
               <div className="mb-4">
                 <h2 className="text-xl font-semibold mb-2">Prix</h2>
-                <p>{product.price} €</p>
+                <p>{product.price_in_cent / 100} €</p>
               </div>
 
               {/* Boutons avec redirections */}
@@ -85,26 +122,19 @@ export default function Page() {
                   Favoris
                 </button>
 
-                <button
+                <Link
                     className="bg-easyorder-black text-white px-4 py-2 rounded"
-                    onClick={() => router.push('/chat')} // Redirection vers la page de contact
+                    href={`/chat?user=${product?.artisan_id}`}
                 >
                   Contacter l'artisan
-                </button>
+                </Link>
 
                 <button
                     className="flex items-center bg-easyorder-green text-white px-4 py-2 rounded"
-                    onClick={() => router.push('/cart')} // Redirection vers la page du panier
+                    onClick={() => addToCart()}
                 >
                   <FaShoppingCart className="h-6 w-6 text-easyorder-black mr-2" />
                   Ajouter au panier
-                </button>
-
-                <button
-                    className="bg-easyorder-green text-white px-4 py-2 rounded"
-                    onClick={() => router.push('/checkout')} // Redirection vers la page d'achat
-                >
-                  Acheter
                 </button>
               </div>
             </div>

@@ -1,12 +1,13 @@
 'use client';
 
-import {ReactNode, useEffect, useState} from "react";
+import {ReactNode, Suspense, useEffect, useState} from "react";
 import { FaSpinner } from 'react-icons/fa';
 import MessageService from "@/services/message.service";
 import {Message} from "@/models/message.model";
 import getUser from "@/utils/get-user";
 import {User} from "@/models/user.model";
 import UserService from "@/services/user.service";
+import {useSearchParams} from "next/navigation";
 
 interface Chat {
     id: number;
@@ -186,9 +187,11 @@ const SelectUser = ({onSelect, users}: { onSelect: Function, users: User[] }) =>
 }
 
 const Chat = () => {
+    const searchParams = useSearchParams()
     const [users, setUsers] = useState<User[]>([]);
     const [allChats, setAllChats] = useState<Chat[]>([]);
     const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
+    const [chatsFetched, setChatsFetched] = useState(false);
 
     useEffect(() => {
         getUsers();
@@ -199,6 +202,12 @@ const Chat = () => {
             getChatsData();
         }
     }, [users])
+
+    useEffect(() => {
+        if (chatsFetched) {
+            getDefaultChat();
+        }
+    }, [allChats]);
 
     const getUsers = () => {
         UserService.getAllUsers()
@@ -225,6 +234,15 @@ const Chat = () => {
         )
 
         setAllChats(sortedChats);
+    }
+
+    const getDefaultChat = () => {
+        if (chatsFetched && searchParams.get('user')) {
+            const userToChat = users.find((user: User) => user._id === searchParams.get('user'));
+            if (userToChat) {
+                onSelectUser(userToChat);
+            }
+        }
     }
     
     const onSelectUser = (user: User) => {
@@ -282,15 +300,12 @@ const Chat = () => {
                     new Date(a.messages[a.messages.length - 1].created_at as any).getTime()
                 )
 
+                setChatsFetched(true);
                 setAllChats(sortedChats);
             })
             .catch(e => {
                 console.log(e);
             })
-    }
-
-    const sortChatsByDate = () => {
-
     }
 
     return (
@@ -336,4 +351,12 @@ const Chat = () => {
     );
 };
 
-export default Chat;
+const Page = () => {
+    return (
+        <Suspense>
+            <Chat />
+        </Suspense>
+    );
+}
+
+export default Page;

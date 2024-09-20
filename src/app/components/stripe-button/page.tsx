@@ -10,13 +10,15 @@ import {
 } from '@stripe/react-stripe-js';
 import {loadStripe} from "@stripe/stripe-js";
 import {Modal, ModalBody, ModalContent, ModalHeader, useDisclosure} from "@nextui-org/modal";
+import {useRouter} from "next/navigation";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY as string);
 
-const CheckoutForm = ({clientSecret, resetClientSecret}: any) => {
+const CheckoutForm = ({clientSecret, resetClientSecret, params = ''}: any) => {
+    const router = useRouter();
+
     const redirectToConfirmation = (event: any) => {
-        console.log(event)
-        window.location.replace('/payment/confirmation');
+        router.push(`/payment/confirmation${params}`);
     }
     const options: any = {
         clientSecret,
@@ -57,7 +59,7 @@ const CheckoutForm = ({clientSecret, resetClientSecret}: any) => {
     )
 }
 
-const StripeButton = ({amount}: any) => {
+const StripeButton = ({amount, params}: any) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [stripeId, setStripeId] = useState<string>('');
     const [clientSecret, setClientSecret] = useState<string>('');
@@ -91,7 +93,7 @@ const StripeButton = ({amount}: any) => {
             >
                 {loading ? 'Redirection...' : 'Procéder au paiement'}
             </button>
-            {clientSecret && <CheckoutForm clientSecret={clientSecret} resetClientSecret={resetClientSecret} />}
+            {clientSecret && <CheckoutForm params={params} clientSecret={clientSecret} resetClientSecret={resetClientSecret} />}
         </div>
     );
 };

@@ -54,10 +54,6 @@ const PurchasesHistoryTable = ({ orders, loading }: { orders: Order[], loading: 
         }
     };
 
-    const goToProduct = (productId: Product['_id']) => {
-        router.push(`/products/${productId}`);
-    };
-
     const openRatingModal = (orderItem: OrderItem) => {
         setSelectedOrderItem(orderItem); // On enregistre l'item de la commande sélectionné
         onOpen(); // On ouvre la modale
@@ -139,14 +135,13 @@ const PurchasesHistoryTable = ({ orders, loading }: { orders: Order[], loading: 
                                             >
                                                 {order.items?.map((orderItem: OrderItem | any, index: number) => (
                                                     <div key={orderItem?._id} className="grid grid-cols-[112px_auto] gap-3 h-28 mt-4">
-                                                        <div className="relative h-28 w-28">
+                                                        <Link href={`/products/${orderItem.product_id?._id}`} className="relative h-28 w-28">
                                                             <img
-                                                                onClick={() => goToProduct(orderItem.product_id?._id)}
                                                                 src={orderItem.product_id?.pictures?.[0]?.url || 'https://via.placeholder.com/150'}
                                                                 alt={orderItem.product_id?.name}
                                                                 className="w-full h-full object-cover rounded-md mr-4 cursor-pointer"
                                                             />
-                                                        </div>
+                                                        </Link>
 
                                                         <div className="flex justify-between items-center">
                                                             <div className="truncate">

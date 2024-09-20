@@ -5,6 +5,7 @@ import { FaCheckCircle } from 'react-icons/fa';
 import UserService from "@/services/user.service";
 import {Suspense, useEffect} from "react";
 import { useSearchParams } from 'next/navigation'
+import OrderService from "@/services/order.service";
 
 const ConfirmationPage = () => {
     return (
@@ -16,6 +17,7 @@ const ConfirmationPage = () => {
 
 const Page = () => {
     const searchParams = useSearchParams()
+
     const setSubscriber = () => {
         const userJson = localStorage.getItem('user');
         if (!userJson) return;
@@ -26,9 +28,21 @@ const Page = () => {
         })
     }
 
+    const setOrderToPaid = (orderId: string) => {
+        OrderService.updateOrder({
+            _id: orderId,
+            status: 'processing'
+        })
+    }
+
     useEffect(() => {
+        console.log(searchParams);
         if (searchParams.get('subscription') === 'true') {
             setSubscriber();
+        }
+
+        if (searchParams.get('orderId')) {
+            setOrderToPaid(searchParams.get('orderId') as string);
         }
     }, [])
 

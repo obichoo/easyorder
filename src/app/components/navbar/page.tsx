@@ -66,7 +66,7 @@ const Navbar = () => {
                     </li>
                     <li>
                         <Link href="/artisans" className="text-[#032035] hover:text-[#77ad86] transition duration-200 ease-in-out">
-                            Les artisans
+                            Artisans
                         </Link>
                     </li>
                     {isLoggedIn && (
