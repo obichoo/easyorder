@@ -18,7 +18,9 @@ const PurchasesHistoryTable = ({ orders, loading }: { orders: Order[], loading: 
     const [userId, setUserId] = useState<User['_id']>('');
     const [expandedOrders, setExpandedOrders] = useState<Order['_id'][]>([]);
     const [selectedOrderItem, setSelectedOrderItem] = useState<OrderItem | null>(null); // Pour l'item sélectionné
-    const { isOpen, onOpen, onClose } = useDisclosure(); // Gestion de la modale
+    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null); // Pour l'ordre sélectionné
+    const { isOpen: isRatingModalOpen, onOpen: openRatingModal, onClose: closeRatingModal } = useDisclosure(); // Gestion de la modale de notation
+    const { isOpen: isConfirmModalOpen, onOpen: openConfirmModal, onClose: closeConfirmModal } = useDisclosure(); // Gestion de la modale de confirmation de réception
     const [rate, setRate] = useState(0); // Note du vendeur
     const [content, setContent] = useState(''); // Commentaire pour la note
     const [isSubmitting, setIsSubmitting] = useState(false); // État de chargement
@@ -54,12 +56,17 @@ const PurchasesHistoryTable = ({ orders, loading }: { orders: Order[], loading: 
         }
     };
 
-    const openRatingModal = (orderItem: OrderItem) => {
+    const openRatingModalForItem = (orderItem: OrderItem) => {
         setSelectedOrderItem(orderItem); // On enregistre l'item de la commande sélectionné
-        onOpen(); // On ouvre la modale
+        openRatingModal(); // On ouvre la modale
     };
 
-    const handleConfirm = () => {
+    const openConfirmModalForOrder = (order: Order) => {
+        setSelectedOrder(order); // On enregistre la commande sélectionnée
+        openConfirmModal(); // On ouvre la modale
+    };
+
+    const handleConfirmRating = () => {
         setIsSubmitting(true); // Activer le mode "loading"
         CommentService.createComment({
             rate: rate,
@@ -70,22 +77,33 @@ const PurchasesHistoryTable = ({ orders, loading }: { orders: Order[], loading: 
             .then(() => {
                 setRate(0);
                 setContent('');
-                onClose(); // Fermer la modale
+                closeRatingModal(); // Fermer la modale
             })
             .finally(() => {
                 setIsSubmitting(false); // Désactiver le mode "loading" après la soumission
             });
     };
 
-    const handleClose = () => {
-        setRate(0);
-        setContent('');
-        onClose();
+    const handleConfirmReception = () => {
+        setIsSubmitting(true); // Activer le mode "loading"
+        OrderService.updateOrder({
+            _id: selectedOrder?._id,
+            status: 'delivered', // Marquer la commande comme livrée
+        })
+            .then(() => {
+                (orders.find((order: Order) => order._id === selectedOrder?._id) as Order).status = 'delivered';
+                closeConfirmModal(); // Fermer la modale
+            })
+            .finally(() => {
+                setIsSubmitting(false); // Désactiver le mode "loading"
+            });
     };
 
-    const goToVendor = (vendorId: User['_id']) => {
-        router.push(`/artisans/${vendorId}`);
-    }
+    const handleCloseRatingModal = () => {
+        setRate(0);
+        setContent('');
+        closeRatingModal();
+    };
 
     return (
         <div className="w-full">
@@ -108,24 +126,32 @@ const PurchasesHistoryTable = ({ orders, loading }: { orders: Order[], loading: 
                                             <div className="flex justify-between items-center">
                                                 <div className="cursor-pointer flex items-center gap-3" onClick={() => toggleCommandDetails(order)}>
                                                     <div>
-                                                        <p className="text-lg font-semibold">
-                                                            Commande n° {index + 1} - {getStatus(order.status)} ({new Date(order.updated_at as any).toLocaleDateString()})
-                                                        </p>
-                                                        <div className="flex">
-                                                            <p>Total : {order.total_in_cent ? order.total_in_cent / 100 + ' €' : 'Prix non défini'}</p>
-                                                            <div className="border-l border-easyorder-black mx-2 h-5"></div>
-                                                            <p>Date d'achat : {new Date(order.created_at as any).toLocaleDateString()}</p>
-                                                        </div>
+                                                        <p className="text-lg font-semibold">Commande n° {index + 1} ({new Date(order.created_at as any).toLocaleDateString()})</p>
+                                                        <p>Total
+                                                            : {order.total_in_cent ? order.total_in_cent / 100 + ' €' : 'Prix non défini'}</p>
+                                                        <p>Statut
+                                                            : {getStatus(order.status)} ({new Date(order.updated_at as any).toLocaleDateString()})</p>
                                                     </div>
                                                     <div>
                                                         {
                                                             expandedOrders.includes(order._id as Order['_id']) ? (
-                                                                <FaChevronUp />
+                                                                <FaChevronUp/>
                                                             ) : (
-                                                                <FaChevronDown />
+                                                                <FaChevronDown/>
                                                             )
                                                         }
                                                     </div>
+                                                </div>
+                                                <div>
+                                                    {/* Bouton pour confirmer la réception */}
+                                                    {order.status !== 'delivered' && (
+                                                        <button
+                                                            onClick={() => openConfirmModalForOrder(order)}
+                                                            className="bg-easyorder-green text-easyorder-black p-2 shadow rounded hover:bg-easyorder-black hover:text-easyorder-gray transition"
+                                                        >
+                                                            Confirmer la réception
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </div>
 
@@ -170,7 +196,7 @@ const PurchasesHistoryTable = ({ orders, loading }: { orders: Order[], loading: 
                                                             </div>
                                                             <div>
                                                                 <button
-                                                                    onClick={() => openRatingModal(orderItem)}
+                                                                    onClick={() => openRatingModalForItem(orderItem)}
                                                                     className="bg-easyorder-green text-easyorder-black p-2 shadow rounded hover:bg-easyorder-black hover:text-easyorder-gray transition"
                                                                 >
                                                                     Noter le vendeur
@@ -198,7 +224,7 @@ const PurchasesHistoryTable = ({ orders, loading }: { orders: Order[], loading: 
             }
 
             {/* Modal for rating the seller */}
-            <Modal isOpen={isOpen} onClose={handleClose}>
+            <Modal isOpen={isRatingModalOpen} onClose={handleCloseRatingModal}>
                 <ModalContent>
                     <ModalHeader>
                         Noter le vendeur
@@ -229,13 +255,40 @@ const PurchasesHistoryTable = ({ orders, loading }: { orders: Order[], loading: 
                     <ModalFooter>
                         <button
                             className="bg-red-400 text-white px-4 py-2 rounded-md hover:bg-red-500 transition"
-                            onClick={handleClose}
+                            onClick={handleCloseRatingModal}
                         >
                             Annuler
                         </button>
                         <button
                             className="bg-easyorder-green text-white px-4 py-2 rounded-md hover:bg-easyorder-black transition"
-                            onClick={handleConfirm}
+                            onClick={handleConfirmRating}
+                            disabled={isSubmitting} // Désactiver le bouton pendant la requête
+                        >
+                            {isSubmitting ? 'Chargement...' : 'Confirmer'}
+                        </button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+
+            {/* Modal for confirming reception */}
+            <Modal isOpen={isConfirmModalOpen} onClose={closeConfirmModal}>
+                <ModalContent>
+                    <ModalHeader>
+                        Confirmer la réception
+                    </ModalHeader>
+                    <ModalBody>
+                        <p>Êtes-vous sûr d'avoir reçu votre commande ?</p>
+                    </ModalBody>
+                    <ModalFooter>
+                        <button
+                            className="bg-red-400 text-white px-4 py-2 rounded-md hover:bg-red-500 transition"
+                            onClick={closeConfirmModal}
+                        >
+                            Annuler
+                        </button>
+                        <button
+                            className="bg-easyorder-green text-white px-4 py-2 rounded-md hover:bg-easyorder-black transition"
+                            onClick={handleConfirmReception}
                             disabled={isSubmitting} // Désactiver le bouton pendant la requête
                         >
                             {isSubmitting ? 'Chargement...' : 'Confirmer'}
@@ -256,7 +309,7 @@ const SellsHistoryTable = ({ orders, loading }: { orders: Order[], loading: bool
     const [isSubmitting, setIsSubmitting] = useState(false); // État de chargement
 
     const statusOptions = [
-        { value: 'processing', label: 'En cours de traitement' },
+        { value: 'processing', label: 'En traitement' },
         { value: 'shipped', label: 'Expédiée' },
         { value: 'delivered', label: 'Livrée' },
         { value: 'cancelled', label: 'Annulée' }
@@ -267,7 +320,7 @@ const SellsHistoryTable = ({ orders, loading }: { orders: Order[], loading: bool
             case 'pending':
                 return 'En attente';
             case 'processing':
-                return 'En cours de traitement';
+                return 'En traitement';
             case 'shipped':
                 return 'Expédiée';
             case 'delivered':
@@ -344,19 +397,9 @@ const SellsHistoryTable = ({ orders, loading }: { orders: Order[], loading: bool
                                                     className="cursor-pointer flex items-center gap-3"
                                                     onClick={() => toggleCommandDetails(order)}>
                                                     <div>
-                                                        <p className="text-lg font-semibold">
-                                                            Commande
-                                                            n° {index + 1} - {getStatus(order.status)} ({new Date(order.updated_at as any).toLocaleDateString()})
-                                                        </p>
-                                                        <div className="flex">
-                                                            <p>Total
-                                                                : {order.total_in_cent ? order.total_in_cent / 100 + ' €' : 'Prix non défini'}</p>
-                                                            <div
-                                                                className="border-l border-easyorder-black mx-2 h-5"></div>
-                                                            <p>Date
-                                                                de vente
-                                                                : {new Date(order.created_at as any).toLocaleDateString()}</p>
-                                                        </div>
+                                                        <p className="text-lg font-semibold">Commande n° {index + 1} ({new Date(order.created_at as any).toLocaleDateString()})</p>
+                                                        <p>Total : {order.total_in_cent ? order.total_in_cent / 100 + ' €' : 'Prix non défini'}</p>
+                                                        <p>Statut : {getStatus(order.status)} ({new Date(order.updated_at as any).toLocaleDateString()})</p>
                                                     </div>
                                                     <div>
                                                         {
