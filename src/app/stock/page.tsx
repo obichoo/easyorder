@@ -8,6 +8,7 @@ import Link from 'next/link';
 import OrderService from '@/services/order.service';
 import ProductService from '@/services/product.service';
 import getUser from '@/utils/get-user';
+import {Product} from "@/models/product.model";
 
 const initialChartData = {
   labels: [],
@@ -41,8 +42,8 @@ export default function StockManagementPage() {
       setFilteredProducts(allProducts);
     } else {
       setFilteredProducts(
-        allProducts.filter((product) =>
-          product.name.toLowerCase().includes(searchTerm.toLowerCase())
+        allProducts.filter((product: Product) =>
+          (product?.name as string).toLowerCase().includes(searchTerm.toLowerCase())
         )
       );
     }
