@@ -28,7 +28,7 @@ const Slide = ({ slide, index }: { slide: CarouselSlide, index: number }) => {
                 {
                     slide.image ? (
                         <div className="w-full h-full relative">
-                            <img className="w-full h-full object-cover brightness-75" src={slide.image} alt={slide.text}/>
+                            <img className={`w-full h-full object-cover ${slide.text ? 'brightness-75' : ''}`} src={slide.image} alt={slide.text}/>
                             <p className="text-white text-2xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">{slide.text}</p>
                         </div>
                     ) : (
