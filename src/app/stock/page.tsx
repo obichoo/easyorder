@@ -1,187 +1,179 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { FaSearch } from 'react-icons/fa';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
 import Link from 'next/link';
+import OrderService from '@/services/order.service';
+import ProductService from '@/services/product.service';
+import getUser from '@/utils/get-user';
 
-// Données factices
-const stockData = {
-  totalSales: 1200,
-  productsPending: 150,
-  productsInStock: 800,
-  productsOutOfStock: 50,
-  topSellingProducts: [
-    { id: 1, name: 'Produit A', sales: 300 },
-    { id: 2, name: 'Produit B', sales: 250 },
-    { id: 3, name: 'Produit C', sales: 200 },
-  ],
-};
-
-// Données pour le graphique des ventes
-const chartData = {
-  labels: ['Produit A', 'Produit B', 'Produit C'],
+const initialChartData = {
+  labels: [],
   datasets: [
     {
       label: 'Ventes',
-      data: [300, 250, 200],
+      data: [],
       backgroundColor: ['#77ad86', '#FFC107', '#FF5722'],
     },
   ],
 };
 
-// Liste de produits fictifs
-const allProducts = [
-  {
-    id: 1,
-    name: 'Vase artisanal',
-    price: 29.99,
-    sales: 50,
-    stock: 10,
-    image: 'https://via.placeholder.com/300x200?text=Vase+artisanal',
-  },
-  {
-    id: 2,
-    name: 'Lampe en bois',
-    price: 49.99,
-    sales: 30,
-    stock: 15,
-    image: 'https://via.placeholder.com/300x200?text=Lampe+en+bois',
-  },
-  {
-    id: 3,
-    name: 'Chaise en osier',
-    price: 19.99,
-    sales: 20,
-    stock: 3,
-    image: 'https://via.placeholder.com/300x200?text=Chaise+en+osier',
-  },
-  {
-    id: 4,
-    name: 'Table basse',
-    price: 39.99,
-    sales: 40,
-    stock: 0,
-    image: 'https://via.placeholder.com/300x200?text=Table+basse',
-  },
-];
+const userId = getUser()?._id;
 
 export default function StockManagementPage() {
-  const [data, setData] = useState(stockData);
+  const [data, setData] = useState({
+    totalSales: 0,
+    productsPending: 0,
+    productsInStock: 0,
+    productsOutOfStock: 0,
+    topSellingProducts: [],
+  });
+  const [chartData, setChartData] = useState(initialChartData);
+  const [allProducts, setAllProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredProducts, setFilteredProducts] = useState(allProducts);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Gestion de la recherche de produits
-  const handleSearch = (e: any) => {
-    e.preventDefault();
-    setLoading(true);
+  useEffect(() => {
+    if (searchTerm === '') {
+      setFilteredProducts(allProducts);
+    } else {
+      setFilteredProducts(
+        allProducts.filter((product) =>
+          product.name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      );
+    }
+  }, [searchTerm, allProducts]);
 
-    const result = allProducts.filter(product =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
 
-    setFilteredProducts(result);
-    setLoading(false);
-  };
+      try {
+        const productsResponse = await ProductService.getProductsByUserId(userId);
+        const products = productsResponse.data;
+
+        const inStock = products.reduce((sum, p) => sum + p.stock, 0);
+        const outOfStock = products.filter((p) => p.stock === 0).length;
+        const totalProducts = products.length;
+
+        const ordersResponse = await OrderService.getAllOrders();
+        const orders = ordersResponse.data;
+
+        const totalSales = orders
+          .filter(order => order.status === 'delivered' && order.items.some(item => item.product_id.artisan_id._id === userId))
+          .reduce((sum, order) => sum + order.total_in_cent, 0) / 100;
+
+        const topSellingProducts = orders.flatMap((order) => order.items)
+          .filter(item => products.some(p => p._id === item.product_id._id))
+          .reduce((acc, item) => {
+            const productIndex = acc.findIndex((p) => p.id === item.product_id._id);
+            if (productIndex !== -1) {
+              acc[productIndex].sales += item.quantity;
+            } else {
+              acc.push({
+                id: item.product_id._id,
+                name: item.product_id.name,
+                sales: item.quantity,
+              });
+            }
+            return acc;
+          }, [])
+          .sort((a, b) => b.sales - a.sales)
+          .slice(0, 3);
+
+        const labels = topSellingProducts.map((product) => product.name);
+        const salesData = topSellingProducts.map((product) => product.sales);
+
+        setChartData({
+          labels,
+          datasets: [
+            {
+              label: 'Ventes',
+              data: salesData,
+              backgroundColor: ['#77ad86', '#FFC107', '#FF5722'],
+            },
+          ],
+        });
+
+        setData({
+          totalSales,
+          productsPending: 0,
+          productsInStock: inStock,
+          productsOutOfStock: outOfStock,
+          topSellingProducts,
+        });
+
+        setAllProducts(products);
+        setFilteredProducts(products);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des données :', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, [userId]);
 
   return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-6 text-center text-easyorder-black">Gestion de Stock et Statistiques</h1>
-
-        {/* Statistiques */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-easyorder-green text-white p-6 rounded-lg shadow-md text-center transition-transform hover:scale-105">
-            <h2 className="text-2xl font-bold">Total des Ventes</h2>
-            <p className="text-4xl mt-2">{data.totalSales}</p>
-          </div>
-          <div className="bg-yellow-500 text-white p-6 rounded-lg shadow-md text-center transition-transform hover:scale-105">
-            <h2 className="text-2xl font-bold">Produits en Attente</h2>
-            <p className="text-4xl mt-2">{data.productsPending}</p>
-          </div>
-          <div className="bg-easyorder-green text-white p-6 rounded-lg shadow-md text-center transition-transform hover:scale-105">
-            <h2 className="text-2xl font-bold">Produits en Stock</h2>
-            <p className="text-4xl mt-2">{data.productsInStock}</p>
-          </div>
-          <div className="bg-red-500 text-white p-6 rounded-lg shadow-md text-center transition-transform hover:scale-105">
-            <h2 className="text-2xl font-bold">Produits Épuisés</h2>
-            <p className="text-4xl mt-2">{data.productsOutOfStock}</p>
-          </div>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4 text-black text-center">Gestion du stock</h1>
+      
+      <div className="grid grid-cols-4 gap-4 mb-8">
+        <div className="bg-white shadow-md p-4 text-center">
+          <h2 className="text-lg font-semibold">Ventes totales</h2>
+          <p className="text-2xl font-bold">${data.totalSales.toFixed(2)}</p>
         </div>
-
-        {/* Top produits vendus */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold mb-4 text-easyorder-black">Top Produits Vendus</h2>
-          <table className="min-w-full table-auto">
-            <thead>
-            <tr className="bg-gray-200">
-              <th className="px-4 py-2">Produit</th>
-              <th className="px-4 py-2">Ventes</th>
-            </tr>
-            </thead>
-            <tbody>
-            {data.topSellingProducts.map((product) => (
-                <tr key={product.id} className="border-b">
-                  <td className="px-4 py-2 text-easyorder-black">{product.name}</td>
-                  <td className="px-4 py-2">{product.sales}</td>
-                </tr>
-            ))}
-            </tbody>
-          </table>
+        <div className="bg-white shadow-md p-4 text-center">
+          <h2 className="text-lg font-semibold">Produits en stock</h2>
+          <p className="text-2xl font-bold">{data.productsInStock}</p>
         </div>
-
-        {/* Graphique des ventes */}
-        <div className="bg-easyorder-gray p-6 mt-8 rounded-lg shadow-md text-center">
-          <h2 className="text-2xl font-bold mb-4 text-easyorder-black">Statistiques de Vente</h2>
-          <Bar data={chartData} />
+        <div className="bg-white shadow-md p-4 text-center">
+          <h2 className="text-lg font-semibold">Produits hors stock</h2>
+          <p className="text-2xl font-bold">{data.productsOutOfStock}</p>
         </div>
-
-        {/* Barre de recherche */}
-        <h2 className="text-center text-2xl font-bold mb-4 mt-8 text-easyorder-black">Produits</h2>
-        <form onSubmit={handleSearch} className="flex justify-center mb-8 mt-8">
-          <div className="relative w-full max-w-md">
-            <input
-                type="text"
-                placeholder="Rechercher des produits..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-easyorder-green"
-            />
-            <button type="submit" className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500">
-              <FaSearch />
-            </button>
-          </div>
-        </form>
-
-        {/* Résultats de recherche */}
-        {loading ? (
-            <p className="text-center text-easyorder-black">Chargement...</p>
-        ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {filteredProducts.map((product) => (
-                  // Rediriger vers la page qui ajoute/modifie un bien
-                  <Link key={product.id} href={`/products/${product.id}`} passHref>
-                    <div
-                        className={`cursor-pointer shadow-md rounded-lg p-4 transition-transform hover:scale-105 ${
-                            product.stock === 0
-                                ? 'bg-red-500 text-white'
-                                : product.stock <= 5
-                                    ? 'bg-orange-500 text-white'
-                                    : 'bg-easyorder-green text-white'
-                        }`}
-                    >
-                      <img src={product.image} alt={product.name} className="w-full h-40 object-cover mb-2 rounded-lg" />
-                      <h2 className="text-lg font-semibold">{product.name}</h2>
-                      <p className="text-white">{product.price} €</p>
-                      <p className="mt-2">Stock : {product.stock}</p>
-                      <p className="mt-2">Ventes : {product.sales}</p>
-                    </div>
-                  </Link>
-              ))}
-            </div>
-        )}
+        <div className="bg-white shadow-md p-4 text-center">
+          <h2 className="text-lg font-semibold">Produits en attente</h2>
+          <p className="text-2xl font-bold">{data.productsPending}</p>
+        </div>
       </div>
+
+      <div className="bg-white shadow-md p-6 mb-8">
+        <Bar data={chartData} />
+      </div>
+
+      <div className="mb-4 flex justify-center">
+        <input
+          type="text"
+          placeholder="Rechercher un produit..."
+          className="w-1/2 py-2 px-4 rounded-lg border border-gray-300 outline-none"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
+      <div className="grid grid-cols-4 gap-4">
+        {filteredProducts.map((product) => (
+          <div key={product._id} className="bg-white shadow-md p-4 text-center">
+            <img
+              src={product.pictures[0] || 'https://via.placeholder.com/300x200'}
+              alt={product.name}
+              className="mb-4"
+            />
+            <h3 className="text-lg font-semibold">{product.name}</h3>
+            <p className="text-gray-500">${(product.price_in_cent / 100).toFixed(2)}</p>
+            <p className={product.stock > 0 ? 'text-green-500' : 'text-red-500'}>
+              {product.stock > 0 ? `${product.stock} en stock` : 'Rupture de stock'}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {loading && <p>Chargement des données...</p>}
+    </div>
   );
 }

@@ -52,6 +52,7 @@ const CreateProduct = () => {
             dimensions,
             price_in_cent: priceInCent,
             stock: parseInt(stock),
+            initial_stock: parseInt(stock),
             categories: selectedCategories,
             artisan_id: artisanId,
             photos,
