@@ -158,7 +158,9 @@ const Navbar = () => {
                                                     href="/my-account"
                                                     className="block px-4 py-2 text-[#032035] hover:bg-[#77ad86] hover:text-white transition duration-200 ease-in-out"
                                                 >
-                                                    Mon profil
+                                                    {
+                                                        user.role === 'artisan' ? 'Mon entreprise' : 'Mon compte'
+                                                    }
                                                 </Link>
                                             </li>
                                             <li>

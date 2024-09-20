@@ -165,7 +165,7 @@ const VendorProfilePage = () => {
                                 <p className="text-center">Ajouter un logo</p>
                             )}
                         </div>
-                        <input ref={logoInputRef} type="file" accept="image/*" className="hidden"
+                        <input ref={logoInputRef} type="file" accept="image/png, image/jpeg" className="hidden"
                                onChange={handleLogoUpload}/>
                     </div>
 
@@ -180,7 +180,7 @@ const VendorProfilePage = () => {
                             </div>
                         )}
                     </div>
-                    <input ref={bannerInputRef} type="file" accept="image/*" className="hidden"
+                    <input ref={bannerInputRef} type="file" accept="image/png, image/jpeg" className="hidden"
                            onChange={handleBannerUpload}/>
                 </div>
 

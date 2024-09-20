@@ -12,7 +12,7 @@ import { User } from "@/models/user.model";
 import getUser from "@/utils/get-user";
 import FavoriteProductService from "@/services/favorite-product.service";
 import { FavoriteProduct } from "@/models/favorite-product.model";
-import CarrouselBanner from "@/app/components/carousel/page";
+import Carousel, {CarouselSlide} from "@/app/components/carousel/page";
 
 export default function Page() {
   const router = useRouter();
@@ -21,6 +21,7 @@ export default function Page() {
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [userId, setUserId] = useState<User['_id'] | null>(null);
   const [favorites, setFavorites] = useState<{ _id?: string, products?: string[] }>({});
+  const [slides, setSlides] = useState<CarouselSlide[]>([]);
 
   useEffect(() => {
     const userId = getUser()?._id;
@@ -39,26 +40,40 @@ export default function Page() {
     });
   };
 
+  const fetchProduct = async () => {
+    try {
+      const response = await ProductService.getProductById(id as string);
+      setProduct(response.data);
+
+      const suggestedProducts = await ProductService.getAllProducts();
+      const shuffleArray = (array: any[]) => {
+        return array.sort(() => Math.random() - 0.5);
+      };
+      setSuggestions(shuffleArray(suggestedProducts.data.filter((p: any) => p.id !== id)).splice(0, 4));
+    } catch (error) {
+      console.error("Erreur lors du chargement du produit :", error);
+    }
+  };
+
   useEffect(() => {
     if (id) {
-      const fetchProduct = async () => {
-        try {
-          const response = await ProductService.getProductById(id as string);
-          setProduct(response.data);
-
-          const suggestedProducts = await ProductService.getAllProducts();
-          setSuggestions(suggestedProducts.data.filter((p: any) => p.id !== id));
-        } catch (error) {
-          console.error("Erreur lors du chargement du produit :", error);
-        }
-      };
-
       fetchProduct();
     }
   }, [id]);
 
+  useEffect(() => {
+    if (product) {
+      const slides = product.pictures?.map((picture: any) => ({
+        src: picture.url,
+        alt: product.name,
+
+      })) || [];
+      setSlides(slides);
+    }
+  }, [product]);
+
   if (!product) {
-    return <p className="text-center text-gray-500">Chargement du produit...</p>;
+    return <p className="text-center text-easyorder-black text-2xl font-bold mt-40">Chargement du produit...</p>;
   }
 
   const addToCart = () => {
@@ -119,32 +134,32 @@ export default function Page() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Carousel */}
           <div className="w-full lg:w-1/2">
-            <img src={product.image || "https://via.placeholder.com/400x300"} alt={product.name} className="w-full h-auto rounded-lg shadow-md" />
+            <Carousel slides={slides} options={{loop: true}} slidesPerView={1} slidesHeight={'300px'} slidesSpacing={'2rem'} />
           </div>
 
           {/* Détails du produit */}
           <div className="w-full lg:w-1/2 flex flex-col justify-between">
-            <div className="space-y-6">
-                <div>
-                  <h2 className="text-xl font-semibold text-easyorder-black">Catégories</h2>
-                  <p className="text-gray-700">
-                    {product.categories && product.categories.length > 0
-                        ? product.categories.map((cat: any) => cat.name).join(', ')
-                        : 'Aucune catégorie'}
-                  </p>
-                </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-easyorder-black">Description</h2>
-                  <p className="text-gray-700">{product.description}</p>
-                </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-easyorder-black">Dimensions</h2>
-                  <p className="text-gray-700">{product.dimensions}</p>
-                </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-easyorder-black">Prix</h2>
-                  <p className="text-gray-700">{(product.price_in_cent / 100).toFixed(2)} €</p>
-                </div>
+            <div className="space-y-2">
+              <div>
+                <h2 className="text-xl font-semibold text-easyorder-black">Description</h2>
+                <p className="text-gray-700">{product.description}</p>
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-easyorder-black">Catégories</h2>
+                <p className="text-gray-700">
+                  {product.categories && product.categories.length > 0
+                      ? product.categories.map((cat: any) => cat.name).join(', ')
+                      : 'Aucune catégorie'}
+                </p>
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-easyorder-black">Dimensions</h2>
+                <p className="text-gray-700">{product.dimensions || 'Pas de dimensions renseignées'}</p>
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-easyorder-black">Prix</h2>
+                <p className="text-gray-700">{(product.price_in_cent / 100).toFixed(2)} €</p>
+              </div>
             </div>
 
             {/* Boutons avec redirections */}

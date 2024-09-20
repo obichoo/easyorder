@@ -68,7 +68,7 @@ const SearchPage = () => {
         // Filtrage par catégorie
         if (selectedCategory) {
             filtered = filtered.filter((product: Product) =>
-                (product?.categories as Category['_id'][]).includes(selectedCategory)
+                (product?.categories as Category[]).find((c: Category) => c._id === selectedCategory)
             );
         }
 
@@ -94,7 +94,7 @@ const SearchPage = () => {
                 </div>
 
                 {/* Filtre des catégories */}
-                <div className="flex justify-center space-x-4 mb-8">
+                <div className="flex flex-wrap justify-center space-x-4 mb-8">
                     <button
                         className={`px-4 py-2 rounded-md ${!selectedCategory ? 'bg-easyorder-green text-white' : 'bg-gray-200 text-easyorder-black'}`}
                         onClick={() => setSelectedCategory('')}
@@ -134,8 +134,11 @@ const SearchPage = () => {
                                     alt={product.name}
                                     className="w-full h-48 object-cover rounded-lg mb-4"
                                 />
-                                <h4 className="font-bold text-xl text-easyorder-black mb-2">{product.name}</h4>
-                                <p className="text-gray-600 mb-2">{(product?.description as string).substring(0, 100)}...</p>
+                                <h4 className="font-bold text-xl text-easyorder-black mb-2 truncate">{product.name}</h4>
+                                <p className="text-gray-600 mb-2">
+                                    {(product?.description as string).substring(0, 60)}
+                                    {(product?.description as string).length > 59 && '...'}
+                                </p>
                                 <p className="text-easyorder-black font-semibold">Prix : {((product?.price_in_cent as number) / 100).toFixed(2)} €</p>
                                 <p className="text-gray-600">Stock : {(product?.stock as number) > 0 ? product.stock : 'Rupture de stock'}</p>
                             </div>

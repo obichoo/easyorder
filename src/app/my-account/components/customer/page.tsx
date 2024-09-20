@@ -143,7 +143,7 @@ export default function ClientProfilePage() {
               <input
                   type="file"
                   id="profileImage"
-                  accept="image/*"
+                  accept="image/png, image/jpeg"
                   onChange={handleImageChange}
                   className="mt-1"
               />

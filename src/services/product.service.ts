@@ -36,6 +36,17 @@ class ProductService {
     getProductsByUserId(userId: Product['artisan_id']) {
         return AxiosInstance.get(`/product/userProduct/${userId}`);
     }
+
+    // Upload product pictures
+    uploadProductPictures(productId: Product['_id'], pictures: any) {
+        const formData = new FormData();
+
+        for (let i = 0; i < pictures?.length; i++) {
+            formData.append('files', pictures[i]);
+        }
+
+        return AxiosInstance.post(`/product/${productId}/addPictures`, formData);
+    }
 }
 
 export default new ProductService();

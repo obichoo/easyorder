@@ -4,15 +4,18 @@ import React, { useEffect, useState } from 'react';
 import ProductService from '@/services/product.service';
 import CategoryService from '@/services/category.service';
 import {Product} from "@/models/product.model";
+import {Category} from "@/models/category.model";
+import {useRouter} from "next/navigation";
 
 const CreateProduct = () => {
+    const router = useRouter();
     const [productName, setProductName] = useState('');
     const [description, setDescription] = useState('');
     const [dimensions, setDimensions] = useState('');
     const [price, setPrice] = useState('');
     const [stock, setStock] = useState('');
-    const [photos, setPhotos] = useState<any[]>([]);
-    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+    const [pictures, setPictures] = useState<File[]>([]);
+    const [selectedCategories, setSelectedCategories] = useState<Product['_id'][]>([]);
     const [categories, setCategories] = useState<any[]>([]);
     const [newCategory, setNewCategory] = useState('');
     const [artisanId, setArtisanId] = useState('');
@@ -38,31 +41,42 @@ const CreateProduct = () => {
     }, []);
 
     const handleAddPhoto = (event: any) => {
-        const file = event.target.files[0];
-        if (file) {
-            setPhotos((prevPhotos: any) => [...prevPhotos, window.URL.createObjectURL(file)]);
+        const files = event.target.files;
+        if (files?.length) {
+            setPictures(files);
         }
     };
 
     const handleSubmit = async () => {
         const priceInCent = parseFloat(price) * 100;
-        const productData = {
+        const productData: Product = {
             name: productName,
             description,
-            dimensions,
+            size: { sizeLabel: dimensions},
             price_in_cent: priceInCent,
             stock: parseInt(stock),
             initial_stock: parseInt(stock),
-            categories: selectedCategories,
+            categories: selectedCategories as Category[],
             artisan_id: artisanId,
-            photos,
+            pictures: []
         };
 
-        try {
-            await ProductService.createProduct(productData as Product);
-        } catch (error) {
-            console.error("Erreur lors de la création du produit :", error);
-        }
+            await ProductService.createProduct(productData as Product).then((response) => {
+                const productId: string = response.data._id;
+
+                if (pictures.length === 0) {
+                    router.push(`/products/${productId}`);
+                    return;
+                } else {
+                    ProductService.uploadProductPictures(productId, pictures).then(() => {
+                        router.push(`/products/${productId}`);
+                    }).catch((error) => {
+                        console.error("Erreur lors de l'ajout des photos du produit : ", error);
+                    })
+                }
+            }).catch((error) => {
+                console.error("Erreur lors de la création du produit : ", error);
+            })
     };
 
     const handleCancel = () => {
@@ -72,7 +86,7 @@ const CreateProduct = () => {
         setPrice('');
         setStock('');
         setSelectedCategories([]);
-        setPhotos([]);
+        setPictures([]);
     };
 
     const selectCategory = (categoryId: string) => {
@@ -144,6 +158,7 @@ const CreateProduct = () => {
                         className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
                         placeholder="Prix"
                         step="0.01"
+                        min={0}
                     />
                 </div>
 
@@ -155,13 +170,14 @@ const CreateProduct = () => {
                         onChange={(e) => setStock(e.target.value)}
                         className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
                         placeholder="Quantité en stock"
+                        min={0}
                     />
                 </div>
 
                 <div className="mb-4">
                     <label className="block text-easyorder-black font-semibold">Catégorie</label>
                     <div className="flex flex-wrap gap-2">
-                        {categories.map((category) => (
+                        {categories?.length > 0 ? categories.map((category) => (
                             <span
                                 key={category._id}
                                 onClick={() => selectCategory(category._id)}
@@ -173,39 +189,46 @@ const CreateProduct = () => {
                             >
                                 {category.name}
                             </span>
-                        ))}
+                        )):
+
+                        <span className="text-easyorder-black">Aucune catégorie disponible</span>}
+
                     </div>
                 </div>
 
                 <div className="mb-4">
                     <label className="block text-easyorder-black font-semibold">Nouvelle Catégorie</label>
-                    <input
-                        type="text"
-                        value={newCategory}
-                        onChange={(e) => setNewCategory(e.target.value)}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
-                        placeholder="Ajouter une nouvelle catégorie"
-                    />
-                    <button
-                        onClick={handleAddCategory}
-                        className="mt-2 bg-easyorder-green text-white py-2 px-4 rounded-lg hover:bg-easyorder-black transition"
-                    >
-                        Ajouter
-                    </button>
+                    <div className="flex gap-2">
+                        <input
+                            type="text"
+                            value={newCategory}
+                            onChange={(e) => setNewCategory(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
+                            placeholder="Ajouter une nouvelle catégorie"
+                        />
+                        <button
+                            onClick={handleAddCategory}
+                            className="bg-easyorder-green text-white py-2 px-4 rounded-lg hover:bg-easyorder-black transition"
+                        >
+                            Ajouter
+                        </button>
+                    </div>
                 </div>
 
                 <div className="mb-4">
                     <label className="block text-easyorder-black font-semibold">Photos</label>
                     <input
                         type="file"
+                        accept="image/png, image/jpeg"
+                        multiple={true}
                         onChange={handleAddPhoto}
                         className="mb-3"
                     />
                     <div className="flex flex-wrap gap-2">
-                        {photos.map((photo, index) => (
+                        {[...pictures].map((file: File, index: number) => (
                             <img
                                 key={index}
-                                src={photo}
+                                src={window.URL.createObjectURL(file)}
                                 alt={`Photo ${index + 1}`}
                                 className="w-32 h-32 object-cover rounded-lg border border-gray-300"
                             />
@@ -213,18 +236,18 @@ const CreateProduct = () => {
                     </div>
                 </div>
 
-                <div className="flex justify-between mt-6">
-                    <button
-                        onClick={handleSubmit}
-                        className="bg-easyorder-green text-white py-2 px-4 rounded-lg hover:bg-easyorder-black transition"
-                    >
-                        Enregistrer
-                    </button>
+                <div className="flex justify-end gap-2 mt-6">
                     <button
                         onClick={handleCancel}
                         className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition"
                     >
                         Annuler
+                    </button>
+                    <button
+                        onClick={handleSubmit}
+                        className="bg-easyorder-green text-white py-2 px-4 rounded-lg hover:bg-easyorder-black transition"
+                    >
+                        Enregistrer
                     </button>
                 </div>
             </div>
