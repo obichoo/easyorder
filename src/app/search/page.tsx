@@ -7,7 +7,8 @@ import CategoryService from '@/services/category.service'; // Service pour récu
 import { useRouter } from 'next/navigation';
 import { FaSpinner } from 'react-icons/fa';
 import {Category} from "@/models/category.model";
-import {Product} from "@/models/product.model"; // Utilisation de FaSpinner pour l'animation de chargement
+import {Product} from "@/models/product.model";
+import Link from "next/link"; // Utilisation de FaSpinner pour l'animation de chargement
 
 const SearchPage = () => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -124,10 +125,10 @@ const SearchPage = () => {
                 ) : filteredProducts.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                         {filteredProducts.map((product) => (
-                            <div
+                            <Link
                                 key={product._id}
                                 className="bg-white p-4 rounded-lg shadow-lg transition transform hover:scale-105 hover:shadow-xl cursor-pointer"
-                                onClick={() => router.push(`/products/${product._id}`)}
+                                href={`/products/${product._id}`}
                             >
                                 <img
                                     src={(product.pictures && product.pictures.length > 0) ? product.pictures[0]?.url : 'https://via.placeholder.com/300'}
@@ -141,7 +142,7 @@ const SearchPage = () => {
                                 </p>
                                 <p className="text-easyorder-black font-semibold">Prix : {((product?.price_in_cent as number) / 100).toFixed(2)} €</p>
                                 <p className="text-gray-600">Stock : {(product?.stock as number) > 0 ? product.stock : 'Rupture de stock'}</p>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 ) : (

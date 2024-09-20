@@ -184,13 +184,16 @@ export default function Page() {
                 Ajouter au panier
               </button>
 
-              <Link href={`/products/edit/${product?._id}`}>
-                <button className="bg-easyorder-gray text-easyorder-black px-4 py-2 rounded shadow hover:bg-easyorder-black hover:text-white transition flex">
-                  <FaEdit size={20} className="mr-2"/>
-                  Modifier ce produit
-                </button>
+              {
+                userId === product?.artisan_id &&
+                <Link href={`/products/edit/${product?._id}`}>
+                  <button className="bg-easyorder-gray text-easyorder-black px-4 py-2 rounded shadow hover:bg-easyorder-black hover:text-white transition flex">
+                    <FaEdit size={20} className="mr-2"/>
+                    Modifier ce produit
+                  </button>
 
-              </Link>
+                </Link>
+              }
             </div>
           </div>
         </div>
@@ -198,18 +201,32 @@ export default function Page() {
         {/* Suggestions de produits */}
         <div className="mt-12">
           <h2 className="text-2xl font-bold mb-6 text-easyorder-black">Suggestions</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {suggestions.length > 0 ? (
-                suggestions.map((suggestedProduct) => (
-                    <div key={suggestedProduct._id} className="flex flex-col items-center bg-white p-4 rounded-lg shadow hover:shadow-lg transition">
-                      <img src={suggestedProduct.image || "https://via.placeholder.com/200"} alt={suggestedProduct.name} className="w-full h-auto mb-2 rounded-lg" />
-                      <p className="text-lg font-semibold">{suggestedProduct.name}</p>
-                      <p className="text-gray-700">{(suggestedProduct.price_in_cent / 100).toFixed(2)} €</p>
-                    </div>
-                ))
-            ) : (
-                <p className="text-gray-500">Aucune suggestion disponible</p>
-            )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {suggestions?.length ? suggestions?.map((product: any) => (
+                <Link
+                    key={product._id}
+                    className="bg-white p-4 rounded-lg shadow-lg transition transform hover:scale-105 hover:shadow-xl cursor-pointer"
+                    href={`/products/${product._id}`}
+                >
+                  <img
+                      src={(product.pictures && product.pictures.length > 0) ? product.pictures[0]?.url : 'https://via.placeholder.com/300'}
+                      alt={product.name}
+                      className="w-full h-48 object-cover rounded-lg mb-4"
+                  />
+                  <h4 className="font-bold text-xl text-easyorder-black mb-2 truncate">{product.name}</h4>
+                  <p className="text-gray-600 mb-2">
+                    {(product?.description as string).substring(0, 60)}
+                    {(product?.description as string).length > 59 && '...'}
+                  </p>
+                  <p className="text-easyorder-black font-semibold">Prix
+                    : {((product?.price_in_cent as number) / 100).toFixed(2)} €</p>
+                </Link>
+            )
+            ):
+            (<p className="text-center text-lg text-easyorder-black">
+              Aucun produit trouvé.
+            </p>)
+            }
           </div>
         </div>
       </div>
