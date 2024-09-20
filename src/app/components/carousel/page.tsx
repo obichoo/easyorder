@@ -1,8 +1,9 @@
+'use client';
+
 import { EmblaOptionsType } from 'embla-carousel'
 import Autoplay from 'embla-carousel-autoplay'
 import useEmblaCarousel from 'embla-carousel-react'
 import Link from "next/link";
-import {ReactElement} from "react";
 
 export interface CarouselSlide {
     link?: string,
@@ -32,14 +33,7 @@ const Slide = ({ slide, index }: { slide: CarouselSlide, index: number }) => {
     )
 }
 
-const Carousel = ({slides, options, slidesPerView, slidesHeight, slidesSpacing, type}: {
-    slides: CarouselSlide[],
-    options: EmblaOptionsType,
-    slidesPerView?: number,
-    slidesHeight?: string,
-    slidesSpacing?: string,
-    type?: 'category' | 'product',
-}) => {
+const Carousel = ({slides, options, slidesPerView, slidesHeight, slidesSpacing, type}: any) => {
     const [emblaRef, emblaApi] = useEmblaCarousel(options, [Autoplay()])
 
     return (
@@ -53,7 +47,7 @@ const Carousel = ({slides, options, slidesPerView, slidesHeight, slidesSpacing, 
         >
             <div className="embla__viewport" ref={emblaRef}>
                 <div className="embla__container">
-                    {slides.map((value, index) => {
+                    {slides?.map?.((value: any, index: any) => {
                         if (type) {
                             if (type === 'product') {
                                 return (

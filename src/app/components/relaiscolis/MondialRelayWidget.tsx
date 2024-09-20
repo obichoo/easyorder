@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 
-const MondialRelayWidget = ({ onParcelShopSelected }) => {
+const MondialRelayWidget = ({ onParcelShopSelected }: any) => {
     useEffect(() => {
         const loadScripts = async () => {
             const jQueryScript = document.createElement('script');
@@ -11,24 +11,19 @@ const MondialRelayWidget = ({ onParcelShopSelected }) => {
             document.body.appendChild(jQueryScript);
 
             jQueryScript.onload = () => {
-                console.log("jQuery chargé");
-
                 const widgetScript = document.createElement('script');
                 widgetScript.src = 'https://widget.mondialrelay.com/parcelshop-picker/jquery.plugin.mondialrelay.parcelshoppicker.min.js';
                 widgetScript.async = true;
                 document.body.appendChild(widgetScript);
 
                 widgetScript.onload = () => {
-                    console.log("Widget Mondial Relay chargé");
-
-                    if (window.$) {
-                        window.$("#Zone_Widget").MR_ParcelShopPicker({
+                    if ((window as any).$) {
+                        (window as any).$("#Zone_Widget").MR_ParcelShopPicker({
                             Target: "#ParcelShopCode",
                             Brand: "CC22ODIW", // code client Mondial Relay
                             Country: "FR",
                             EnableGmap: true,
-                            OnParcelShopSelected: (data) => {
-                                console.log("Point relais sélectionné :", data);
+                            OnParcelShopSelected: (data: any) => {
                                 onParcelShopSelected({
                                     street: data.Adresse1,
                                     postalCode: data.CP,
@@ -36,7 +31,7 @@ const MondialRelayWidget = ({ onParcelShopSelected }) => {
                                     country: data.Pays
                                 });
                             },
-                            OnError: (error) => {
+                            OnError: (error: any) => {
                                 console.error("Erreur lors du chargement des points relais : ", error);
                             }
                         });
@@ -50,8 +45,8 @@ const MondialRelayWidget = ({ onParcelShopSelected }) => {
         loadScripts();
 
         return () => {
-            if (window.$) {
-                window.$("#Zone_Widget").MR_ParcelShopPicker("destroy");
+            if ((window as any).$) {
+                (window as any).$("#Zone_Widget").MR_ParcelShopPicker("destroy");
             }
         };
     }, [onParcelShopSelected]);

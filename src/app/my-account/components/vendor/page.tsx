@@ -81,7 +81,6 @@ const VendorProfilePage = () => {
         try {
             await UserService.updateUser(user);
             localStorage.setItem('user', JSON.stringify(user));
-            console.log("Modifications enregistrées avec succès.");
         } catch (error) {
             console.error("Erreur lors de la sauvegarde des modifications:", error);
         }
