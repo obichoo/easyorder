@@ -59,7 +59,6 @@ const CreateProduct = () => {
 
         try {
             await ProductService.createProduct(productData as Product);
-            console.log("Produit créé avec succès");
         } catch (error) {
             console.error("Erreur lors de la création du produit :", error);
         }

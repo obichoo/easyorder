@@ -43,7 +43,6 @@ class StripeService {
             },
         });
 
-        console.log(customerSession)
         return customerSession
     }
 }

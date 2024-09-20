@@ -60,7 +60,6 @@ const Conversation = ({ chat, onChatUpdate }: { chat: Chat | null, onChatUpdate:
                 setLoading(false);
             })
             .catch(e => {
-                console.log(e);
                 setLoading(false);
             });
     };
@@ -215,9 +214,6 @@ const Chat = () => {
             .then(response => {
                 setUsers(response.data);
             })
-            .catch(e => {
-                console.log(e);
-            });
     };
 
     const onChatUpdate = (updatedChat: any) => {
@@ -308,9 +304,6 @@ const Chat = () => {
                 setChatsFetched(true);
                 setAllChats(sortedChats);
             })
-            .catch(e => {
-                console.log(e);
-            });
     };
 
     return (

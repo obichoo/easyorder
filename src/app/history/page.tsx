@@ -344,9 +344,6 @@ const SellsHistoryTable = ({ orders, loading }: { orders: Order[], loading: bool
                 setSelectedStatus('');
                 onClose(); // Fermer la modale après la mise à jour
             })
-            .catch(e => {
-                console.log(e);
-            })
             .finally(() => {
                 setIsSubmitting(false); // Désactiver le mode "loading"
             });
@@ -558,9 +555,6 @@ const History = () => {
 
                 setLoading(false);
             })
-            .catch(e => {
-                console.log(e);
-            });
     }
 
     return (

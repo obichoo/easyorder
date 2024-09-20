@@ -25,12 +25,6 @@ const Home = () => {
                 const shuffledProducts = shuffleArray(productResponse.data);
                 setProducts(shuffledProducts);
 
-                // Test: afficher chaque produit dans la console
-                console.log("Produits chargés :", shuffledProducts);
-                shuffledProducts.forEach((product) => {
-                    console.log("Produit détaillé :", product);
-                });
-
                 const categoryResponse = await CategoryService.getAllCategories();
                 setCategories(categoryResponse.data);
             } catch (error) {
