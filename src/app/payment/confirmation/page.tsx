@@ -23,7 +23,10 @@ const Page = () => {
         if (!userJson) return;
         const user = JSON.parse(userJson);
         user.subscriber = true;
-        UserService.updateUser(user).then(() => {
+        UserService.updateUser({
+            _id: user._id,
+            subscriber: true
+        }).then(() => {
             localStorage.setItem('user', JSON.stringify(user));
         });
     };

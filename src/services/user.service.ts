@@ -24,7 +24,10 @@ class UserService {
 
     // Update user
     updateUser(user: User) {
-        return AxiosInstance.put(`/user/${user._id}`, user);
+        const userId = user._id;
+        const userData = {...user};
+        delete userData._id;
+        return AxiosInstance.put(`/user/${userId}`, userData);
     }
 
     // Delete user
