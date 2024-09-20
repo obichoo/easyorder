@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import StripeService from "@/services/stripe.service";
 import { User } from "@/models/user.model";
 import { FaSpinner } from 'react-icons/fa';
+import getUser from "@/utils/get-user";
+import UserService from "@/services/user.service";
 
 declare global {
     namespace JSX {
@@ -31,7 +33,7 @@ const PricingTable = () => {
         const userJson = localStorage.getItem('user');
         if (userJson) {
             const user: User = JSON.parse(userJson);
-            getCustomerSessionClientSecret(user.stripe_id as string);
+            getCustomerSessionClientSecret(user?.stripe_id as string);
         } else {
             setLoading(false);
         }
@@ -58,19 +60,55 @@ const PricingTable = () => {
 };
 
 export default function SubscriptionPage() {
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        setUser(getUser());
+    }, []);
+
+    const handleUnsubscribe = () => {
+        StripeService.cancelSubscription(user?.stripe_id as string).then(() => {
+            UserService.updateUser({ _id: user?._id, subscriber: false }).then(() => {
+                setUser({ ...user, subscriber: false });
+                localStorage.setItem('user', JSON.stringify({ ...user, subscriber: false }));
+            })
+        })
+    }
+
     return (
         <div className="flex flex-col items-center justify-center w-full mt-20">
-            <div className="text-center">
-                <h1 className="text-4xl font-bold text-easyorder-black mb-2">Abonnement premium</h1>
-                <p className="text-lg text-easyorder-black mb-4">Optez pour un abonnement et profitez des fonctionnalités exclusives d'EasyOrder !</p>
-            </div>
-
             <div className="w-full max-w-4xl px-4">
-                <PricingTable />
+                {
+                    user?.subscriber ?
+                        (
+                            <div className="flex flex-col items-center justify-center mt-40">
+                                <h1 className="text-4xl font-bold text-easyorder-black mb-2">Vous êtes déjà abonné à EasyOrder Premium.</h1>
+                                <p className="text-lg text-easyorder-black mb-4">
+                                    Vous pouvez profiter de toutes les fonctionnalités exclusives d'EasyOrder Premium.
+                                </p>
+
+                                <button className="bg-easyorder-green hover:bg-easyorder-black transition py-2 px-4 rounded shadow text-white" onClick={handleUnsubscribe}>
+                                    Se désabonner
+                                </button>
+                            </div>
+                        )
+                        :
+                        (
+                            <>
+                                <div className="text-center">
+                                    <h1 className="text-4xl font-bold text-easyorder-black mb-2">Abonnement premium</h1>
+                                    <p className="text-lg text-easyorder-black mb-4">Optez pour un abonnement et profitez
+                                        des fonctionnalités exclusives d'EasyOrder !</p>
+                                </div>
+                                <PricingTable />
+                            </>
+                        )
+                }
             </div>
 
             <div className="text-center mt-16">
-                <p className="text-easyorder-black text-sm">Des questions sur les abonnements ? Consultez notre <a href="/faq" className="text-easyorder-green underline hover:text-easyorder-black">FAQ</a>.</p>
+                <p className="text-easyorder-black text-sm">Des questions sur les abonnements ? Consultez notre <a
+                    href="/faq" className="text-easyorder-green underline hover:text-easyorder-black">FAQ</a>.</p>
             </div>
         </div>
     );

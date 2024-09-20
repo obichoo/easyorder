@@ -45,6 +45,19 @@ class StripeService {
 
         return customerSession
     }
+
+    async cancelSubscription(customerId: string) {
+        const subscription = await stripe.subscriptions.list({
+            customer: customerId,
+            status: 'active',
+        });
+
+        if (subscription.data.length > 0) {
+            subscription.data.forEach(async (sub) => {
+                await stripe.subscriptions.cancel(sub.id)
+            })
+        }
+    }
 }
 
 export default new StripeService();
