@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { FavoriteProduct } from "@/models/favorite-product.model";
 import FavoriteProductService from "@/services/favorite-product.service";
 import getUser from "@/utils/get-user";
+import {User} from "@/models/user.model";
+import {Product} from "@/models/product.model";
 
 const RemoveFavoriteModal = ({ confirm, favorite }: { confirm: Function, favorite: FavoriteProduct }) => {
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
@@ -80,12 +82,16 @@ const FavoriteItem = ({ favorite, product, remove }: { favorite: FavoriteProduct
 
 const FavoriteProducts = () => {
     const [favorites, setFavorites] = useState<FavoriteProduct[]>([]);
-    const user = getUser();
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        setUser(getUser());
+    }, []);
 
     useEffect(() => {
         if (user && user._id) {
             FavoriteProductService.getAllFavorites().then(res => {
-                const userFavorites = res.data.filter((favorite: FavoriteProduct) => favorite.user_id._id === user._id);
+                const userFavorites = res.data.filter((favorite: FavoriteProduct) => (favorite.user_id as User)._id === user._id);
                 setFavorites(userFavorites);
             });
         }
@@ -93,10 +99,10 @@ const FavoriteProducts = () => {
 
     const handleRemove = async (product: any, favorite: FavoriteProduct) => {
         try {
-            const updatedProducts = favorite.products.filter(p => p._id !== product._id);
+            const updatedProducts = (favorite.products as Product[]).filter(p => (p as Product)._id !== product._id);
             const updatedFavorite = { ...favorite, products: updatedProducts };
 
-            await FavoriteProductService.updateFavorite(updatedFavorite);
+            await FavoriteProductService.updateFavorite(updatedFavorite as Product);
             setFavorites(favorites.filter(fav => fav._id !== favorite._id || updatedProducts.length > 0));
         } catch (error) {
             console.error("Erreur lors de la mise à jour du favori :", error);
@@ -108,7 +114,7 @@ const FavoriteProducts = () => {
             <h2 className={'text-2xl mt-16 mb-8'}>Mes produits favoris</h2>
             <div className={'w-full grid grid-cols-4 gap-4'}>
                 {favorites.length > 0 && favorites.map(favorite => (
-                    favorite.products.map(product => (
+                    (favorite.products as Product[]).map(product => (
                         <FavoriteItem
                             key={product._id}
                             favorite={favorite}

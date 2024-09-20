@@ -80,12 +80,16 @@ const FavoriteItem = ({ favorite, vendor, remove }: { favorite: FavoriteVendor, 
 
 const FavoriteVendors = () => {
     const [favorites, setFavorites] = useState<FavoriteVendor[]>([]);
-    const user = getUser();
+    const [user, setUser] = useState<any>();
+
+    useEffect(() => {
+        setUser(getUser());
+    }, []);
 
     useEffect(() => {
         if (user && user._id) {
             FavoriteVendorService.getAllFavorites().then(res => {
-                const userFavorites = res.data.filter((favorite: FavoriteVendor) => favorite.user_id._id === user._id);
+                const userFavorites = res.data.filter((favorite: FavoriteVendor) => (favorite.user_id as FavoriteVendor)._id === user._id);
                 setFavorites(userFavorites);
             });
         }
@@ -94,12 +98,12 @@ const FavoriteVendors = () => {
     const handleRemove = async (vendor: any, favorite: FavoriteVendor) => {
         try {
             // Créer une copie des vendeurs sans celui que l'on souhaite retirer
-            const updatedVendors = favorite.vendor.filter(v => v._id !== vendor._id);
+            const updatedVendors = (favorite.vendor as FavoriteVendor[]).filter(v => v._id !== vendor._id);
 
             // Mettre à jour le favori avec la liste des vendeurs mise à jour
             const updatedFavorite = { ...favorite, vendor: updatedVendors };
 
-            await FavoriteVendorService.updateFavorite(updatedFavorite);
+            await FavoriteVendorService.updateFavorite(updatedFavorite as FavoriteVendor);
             setFavorites(favorites.filter(fav => fav._id !== favorite._id || updatedVendors.length > 0)); // Met à jour l'état pour retirer le favori de la liste
         } catch (error) {
             console.error("Erreur lors de la mise à jour du favori :", error);
@@ -111,8 +115,8 @@ const FavoriteVendors = () => {
             <h2 className={'text-2xl mt-16 mb-8'}>Mes artisans favoris</h2>
             <div className={'w-full grid grid-cols-4 gap-4'}>
                 {favorites.length > 0 && favorites.map(favorite => (
-                    favorite.vendor.map(vendor => (
-                        <FavoriteItem key={vendor._id} favorite={favorite} vendor={vendor} remove={(v) => handleRemove(v, favorite)} />
+                    (favorite.vendor as FavoriteVendor[]).map((vendor: any) => (
+                        <FavoriteItem key={vendor._id} favorite={favorite} vendor={vendor} remove={(v: any) => handleRemove(v, favorite)} />
                     ))
                 ))}
                 {favorites.length === 0 && (

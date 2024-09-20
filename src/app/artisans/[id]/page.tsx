@@ -1,12 +1,26 @@
 'use client';
 
-import { FaInstagram, FaSnapchat, FaTwitter, FaGlobe, FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
+import {
+  FaInstagram,
+  FaSnapchat,
+  FaTwitter,
+  FaGlobe,
+  FaStar,
+  FaStarHalfAlt,
+  FaRegStar,
+  FaHeart,
+  FaRegHeart
+} from 'react-icons/fa';
 import UserService from '@/services/user.service';
 import ProductService from '@/services/product.service';
 import CommentService from '@/services/comment.service';
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import FavoriteVendorService from "@/services/favorite-vendor.service";
+import getUser from "@/utils/get-user";
+import {FavoriteVendor} from "@/models/favorite-vendor.model";
+import {User} from "@/models/user.model";
 
 // Fonction pour afficher les étoiles en fonction de la note
 const RatingStars = ({ rating }: any) => {
@@ -33,12 +47,25 @@ export default function Page({ params }: any) {
   const [artisan, setArtisan] = useState<any>(null);
   const [products, setProducts] = useState([]);
   const [comments, setComments] = useState([]);
+  const [favorites, setFavorites] = useState<any[]>([]);
 
   useEffect(() => {
     fetchArtisanById(id);
     fetchProductsByArtisanId(id);
     fetchCommentsByRecipientId(id);
+    getFavoritesVendors()
   }, []);
+
+  const getFavoritesVendors = () => {
+    FavoriteVendorService.getAllFavorites().then(({data}: {data: FavoriteVendor[]}) => {
+      const myFavorites = data.filter((favorite: FavoriteVendor) => (favorite.user_id as User)?._id === getUser()?._id)
+      const mappedFavorites = myFavorites.map((favorite: FavoriteVendor) => ({
+        _id: favorite?._id,
+        vendor: favorite.vendor?.map((vendor: any) => vendor._id)
+      }))
+      setFavorites(mappedFavorites as any)
+    })
+  }
 
   // Récupérer un artisan par ID
   const fetchArtisanById = async (id: string) => {
@@ -76,9 +103,31 @@ export default function Page({ params }: any) {
     return <div className="text-center text-gray-600 py-16">Artisan non trouvé.</div>;
   }
 
-  const goToProduct = (productId: string) => {
-    router.push(`/products/${productId}`);
-  };
+  const toggleFavorite = () => {
+    const userId = getUser()?._id;
+
+    const existingFavorite = favorites.find((f: any) => f.vendor.includes(artisan._id))
+    if (existingFavorite) {
+      FavoriteVendorService.deleteFavorite(existingFavorite?._id)
+    } else {
+      if (favorites.length > 0) {
+        const newFavorite = {
+          _id: favorites[0]?._id,
+          vendor: [...favorites[0]?.vendor, artisan?._id]
+        }
+        FavoriteVendorService.updateFavorite(newFavorite).then(() => {
+            getFavoritesVendors()
+        })
+      } else {
+        FavoriteVendorService.createFavorite({
+          user_id: userId,
+          vendor: [artisan?._id as string]
+        }).then(() => {
+            getFavoritesVendors()
+        })
+      }
+    }
+  }
 
   return (
       <div>
@@ -90,11 +139,23 @@ export default function Page({ params }: any) {
               alt={`Bannière de ${artisan.name}`}
               className="w-full h-full object-cover filter brightness-75 rounded-b-2xl"
           />
-          <img
-              src={artisan.profile_pic}
-              alt={`Profil de ${artisan.name}`}
-              className="absolute left-6 bottom-6 w-32 h-32 lg:w-48 lg:h-48 rounded-full shadow-lg border-4 border-easyorder-green object-cover"
-          />
+          <div className="absolute left-6 bottom-6 flex items-end">
+            <img
+                src={artisan.profile_pic}
+                alt={`Profil de ${artisan.name}`}
+                className="w-32 h-32 lg:w-48 lg:h-48 rounded-full shadow-lg border-4 border-easyorder-green object-cover"
+            />
+
+            <button onClick={toggleFavorite} className="bg-transparent text-red-700 px-4 py-2 rounded-md transition">
+              {
+                favorites?.find((f) => f.vendor.includes(artisan._id)) ? (
+                    <FaHeart size={32} className="text-red-500"></FaHeart>
+                ) : (
+                    <FaRegHeart size={32} className="text-red-500"></FaRegHeart>
+                )
+              }
+            </button>
+          </div>
           <div className="absolute text-white text-center">
             <h1 className="text-4xl lg:text-6xl font-bold">{artisan.name}</h1>
             <p className="mt-2">{artisan.company?.denomination || artisan.company || artisan.address}</p>
