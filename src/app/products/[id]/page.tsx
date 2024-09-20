@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { FaHeart, FaRegHeart, FaShoppingCart } from 'react-icons/fa';
+import {FaEdit, FaHeart, FaRegHeart, FaShoppingCart} from 'react-icons/fa';
 import { useRouter, useParams } from 'next/navigation';
 import ProductService from '@/services/product.service';
 import Link from "next/link";
@@ -129,7 +129,9 @@ export default function Page() {
   return (
       <div className="container mx-auto mb-8 mt-12">
         {/* Nom du produit */}
-        <h1 className="text-center text-4xl font-bold mb-12 text-easyorder-black">{product.name}</h1>
+        <div className="w-2/3 mx-auto">
+          <h1 className="text-center text-4xl font-bold mb-12 text-easyorder-black">{product.name}</h1>
+        </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Carousel */}
@@ -165,19 +167,30 @@ export default function Page() {
             {/* Boutons avec redirections */}
             <div className="flex space-x-4">
               <button onClick={toggleFavorite} className="text-red-500 transition-transform transform hover:scale-110">
-                {favorites?.products?.includes(product._id) ? <FaHeart size={32} /> : <FaRegHeart size={32} />}
+                {favorites?.products?.includes(product._id) ? <FaHeart size={32}/> : <FaRegHeart size={32}/>}
               </button>
 
               <Link href={`/chat?user=${product?.artisan_id}`}>
-                <button className="bg-easyorder-black text-white px-4 py-2 rounded shadow hover:bg-easyorder-gray transition">Contacter l'artisan</button>
+                <button
+                    className="bg-easyorder-black text-white px-4 py-2 rounded shadow hover:bg-black transition">Contacter
+                  l'artisan
+                </button>
               </Link>
 
               <button
                   onClick={addToCart}
                   className="flex items-center bg-easyorder-green text-white px-4 py-2 rounded shadow hover:bg-easyorder-black transition">
-                <FaShoppingCart size={20} className="mr-2" />
+                <FaShoppingCart size={20} className="mr-2"/>
                 Ajouter au panier
               </button>
+
+              <Link href={`/products/edit/${product?._id}`}>
+                <button className="bg-easyorder-gray text-easyorder-black px-4 py-2 rounded shadow hover:bg-easyorder-black hover:text-white transition flex">
+                  <FaEdit size={20} className="mr-2"/>
+                  Modifier ce produit
+                </button>
+
+              </Link>
             </div>
           </div>
         </div>

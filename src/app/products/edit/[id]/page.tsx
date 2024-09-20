@@ -61,22 +61,22 @@ const CreateProduct = () => {
             pictures: []
         };
 
-            await ProductService.createProduct(productData as Product).then((response) => {
-                const productId: string = response.data._id;
+        await ProductService.createProduct(productData as Product).then((response) => {
+            const productId: string = response.data._id;
 
-                if (pictures.length === 0) {
+            if (pictures.length === 0) {
+                router.push(`/products/${productId}`);
+                return;
+            } else {
+                ProductService.uploadProductPictures(productId, pictures).then(() => {
                     router.push(`/products/${productId}`);
-                    return;
-                } else {
-                    ProductService.uploadProductPictures(productId, pictures).then(() => {
-                        router.push(`/products/${productId}`);
-                    }).catch((error) => {
-                        console.error("Erreur lors de l'ajout des photos du produit : ", error);
-                    })
-                }
-            }).catch((error) => {
-                console.error("Erreur lors de la création du produit : ", error);
-            })
+                }).catch((error) => {
+                    console.error("Erreur lors de l'ajout des photos du produit : ", error);
+                })
+            }
+        }).catch((error) => {
+            console.error("Erreur lors de la création du produit : ", error);
+        })
     };
 
     const handleCancel = () => {
@@ -114,10 +114,10 @@ const CreateProduct = () => {
     return (
         <div className="min-h-screen bg-easyorder-gray flex items-center justify-center py-10">
             <div className="max-w-2xl w-full bg-white p-8 rounded-lg shadow-lg">
-                <h1 className="text-3xl font-bold text-center text-easyorder-black mb-6">Ajouter un produit</h1>
+                <h1 className="text-3xl font-bold text-center text-easyorder-black mb-6">Modifier un produit</h1>
 
                 <div className="mb-4">
-                    <label className="block text-easyorder-black font-semibold">Nom du produit</label>
+                    <label className="block text-easyorder-black font-semibold">Nom du Produit</label>
                     <input
                         type="text"
                         value={productName}
@@ -178,26 +178,26 @@ const CreateProduct = () => {
                     <label className="block text-easyorder-black font-semibold">Catégorie</label>
                     <div className="flex flex-wrap gap-2">
                         {categories?.length > 0 ? categories.map((category) => (
-                            <span
-                                key={category._id}
-                                onClick={() => selectCategory(category._id)}
-                                className={`cursor-pointer py-2 px-4 rounded-lg transition ${
-                                    selectedCategories.includes(category._id)
-                                        ? 'bg-easyorder-green text-white'
-                                        : 'bg-gray-300 text-easyorder-black'
-                                }`}
-                            >
+                                <span
+                                    key={category._id}
+                                    onClick={() => selectCategory(category._id)}
+                                    className={`cursor-pointer py-2 px-4 rounded-lg transition ${
+                                        selectedCategories.includes(category._id)
+                                            ? 'bg-easyorder-green text-white'
+                                            : 'bg-gray-300 text-easyorder-black'
+                                    }`}
+                                >
                                 {category.name}
                             </span>
-                        )):
+                            )):
 
-                        <span className="text-easyorder-black">Aucune catégorie disponible</span>}
+                            <span className="text-easyorder-black">Aucune catégorie disponible</span>}
 
                     </div>
                 </div>
 
                 <div className="mb-4">
-                    <label className="block text-easyorder-black font-semibold">Nouvelle catégorie</label>
+                    <label className="block text-easyorder-black font-semibold">Nouvelle Catégorie</label>
                     <div className="flex gap-2">
                         <input
                             type="text"
