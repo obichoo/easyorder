@@ -57,21 +57,21 @@ export default function StockManagementPage() {
         const productsResponse = await ProductService.getProductsByUserId(userId);
         const products = productsResponse.data;
 
-        const inStock = products.reduce((sum, p) => sum + p.stock, 0);
-        const outOfStock = products.filter((p) => p.stock === 0).length;
+        const inStock = products.reduce((sum: any, p: any) => sum + p.stock, 0);
+        const outOfStock = products.filter((p: any) => p.stock === 0).length;
         const totalProducts = products.length;
 
         const ordersResponse = await OrderService.getAllOrders();
         const orders = ordersResponse.data;
 
         const totalSales = orders
-          .filter(order => order.status === 'delivered' && order.items.some(item => item.product_id.artisan_id._id === userId))
-          .reduce((sum, order) => sum + order.total_in_cent, 0) / 100;
+          .filter((order: any) => order.status === 'delivered' && order.items.some((item: any) => item.product_id.artisan_id._id === userId))
+          .reduce((sum: any, order: any) => sum + order.total_in_cent, 0) / 100;
 
-        const topSellingProducts = orders.flatMap((order) => order.items)
-          .filter(item => products.some(p => p._id === item.product_id._id))
-          .reduce((acc, item) => {
-            const productIndex = acc.findIndex((p) => p.id === item.product_id._id);
+        const topSellingProducts = orders.flatMap((order: any) => order.items)
+          .filter((item: any) => products.some((p: any) => p._id === item.product_id._id))
+          .reduce((acc: any, item: any) => {
+            const productIndex = acc.findIndex((p: any) => p.id === item.product_id._id);
             if (productIndex !== -1) {
               acc[productIndex].sales += item.quantity;
             } else {
@@ -83,11 +83,11 @@ export default function StockManagementPage() {
             }
             return acc;
           }, [])
-          .sort((a, b) => b.sales - a.sales)
+          .sort((a: any, b: any) => b.sales - a.sales)
           .slice(0, 3);
 
-        const labels = topSellingProducts.map((product) => product.name);
-        const salesData = topSellingProducts.map((product) => product.sales);
+        const labels = topSellingProducts.map((product: any) => product.name);
+        const salesData = topSellingProducts.map((product: any) => product.sales);
 
         setChartData({
           labels,
@@ -158,7 +158,7 @@ export default function StockManagementPage() {
       </div>
 
       <div className="grid grid-cols-4 gap-4">
-        {filteredProducts.map((product) => (
+        {filteredProducts.map((product: any) => (
           <Link key={product._id} href={`/products/${product._id}`} className="bg-white shadow-md p-4 text-center">
             <img
               src={product.pictures[0] || 'https://via.placeholder.com/300x200'}
