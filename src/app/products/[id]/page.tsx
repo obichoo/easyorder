@@ -67,7 +67,6 @@ export default function Page() {
         image: picture.url,
       })) || [];
       setSlides(slides);
-      console.log('slides', slides);
     }
   }, [product]);
 
@@ -165,10 +164,43 @@ export default function Page() {
                       : 'Aucune catégorie'}
                 </p>
               </div>
-              <div>
-                <h2 className="text-xl font-semibold text-easyorder-black">Dimensions</h2>
-                <p className="text-gray-700">{product.dimensions || 'Pas de dimensions renseignées'}</p>
-              </div>
+
+              {/* Affichage des tailles uniquement si renseignées */}
+              {product.size?.sizeLabel && (
+                  <div>
+                    <h2 className="text-xl font-semibold text-easyorder-black">Taille</h2>
+                    <p className="text-gray-700">
+                      {product.size.sizeLabel}
+                    </p>
+                  </div>
+              )}
+
+              {/* Dimensions */}
+              {(product?.size?.dimensions?.height?.value || product?.size?.dimensions?.width?.value || product?.size?.dimensions?.depth?.value) ? (
+                  <div>
+                    <h2 className="text-xl font-semibold text-easyorder-black">Dimensions</h2>
+                    <p className="text-gray-700">
+                      {product?.size?.dimensions?.height?.value && `${product?.size?.dimensions?.height?.value} ${product?.size?.dimensions?.height?.unit}`}
+                      {product?.size?.dimensions?.height?.value && product?.size?.dimensions?.width?.value && ' x '}
+                      {product?.size?.dimensions?.width?.value && `${product?.size?.dimensions?.width?.value} ${product?.size?.dimensions?.width?.unit}`}
+                      {product?.size?.dimensions?.(width?.value || height?.value) && product?.size?.dimensions?.depth?.value && ' x '}
+                      {product?.size?.dimensions?.depth?.value && `${product?.size?.dimensions?.depth?.value} ${product?.size?.dimensions?.depth?.unit}`}
+                    </p>
+                  </div>
+              ) : null}
+
+              {/* Affichage du poids uniquement si renseigné */}
+              {/* Poids */}
+              {product?.size?.weight?.value ? (
+                  <div>
+                    <h2 className="text-xl font-semibold text-easyorder-black">Poids</h2>
+                    <p className="text-gray-700">{`${product?.size?.weight?.value} ${product?.size?.weight?.unit}`}</p>
+                  </div>
+              ) : (
+                  <p className="text-gray-700">Pas de poids renseigné</p>
+              )}
+
+
               <div>
                 <h2 className="text-xl font-semibold text-easyorder-black">Prix</h2>
                 <p className="text-gray-700">{(product.price_in_cent / 100).toFixed(2)} €</p>
