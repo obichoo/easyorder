@@ -57,7 +57,6 @@ const Home = () => {
     }
 
     useEffect(() => {
-        UserService.addCompanyToUser(getUser()?._id, '80778605800014')
         getArtisansSlides();
         getCategoriesSlides()
         getProductsSlides()
