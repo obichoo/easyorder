@@ -25,7 +25,8 @@ const ClientProfilePage = () => {
     const userToEdit = searchParams.get('userId');
     if (userToEdit) {
       const user = await UserService.getUserById(userToEdit).then((response) => {
-        return response.data;
+        const userWithoutPassword = { ...response.data, password: undefined };
+        return userWithoutPassword;
       })
       setName(user?.name);
       setEmail(user?.email);

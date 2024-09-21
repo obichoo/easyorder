@@ -316,35 +316,6 @@ const VendorProfilePage = () => {
                         </div>
                     </div>
 
-                    {/* Modification du mot de passe */}
-                    <div className="mb-4">
-                        <label className="font-semibold mb-1 block">Modifier le mot de passe</label>
-                        <div className="bg-white rounded-lg shadow-lg p-4 mb-8">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                <div>
-                                    <label className="font-semibold">Nouveau mot de passe</label>
-                                    <input
-                                        type="password"
-                                        value={user.password || ''}
-                                        onChange={(e) => setUser({...user, password: e.target.value})}
-                                        className="w-full p-2 border border-gray-300 rounded-md"
-                                        placeholder="Mot de passe"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="font-semibold">Confirmer le mot de passe</label>
-                                    <input
-                                        type="password"
-                                        value={user.confirmPassword || ''}
-                                        onChange={(e) => setUser({...user, confirmPassword: e.target.value})}
-                                        className="w-full p-2 border border-gray-300 rounded-md"
-                                        placeholder="Confirmer le mot de passe"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <div className="flex justify-end mb-4">
                         <button
                             onClick={handleSaveChanges}

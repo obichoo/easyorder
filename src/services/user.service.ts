@@ -1,5 +1,6 @@
 import AxiosInstance from "@/services/axios.service";
 import {User} from "@/models/user.model";
+import {Company} from "@/models/company.model";
 
 class UserService {
     // Login
@@ -73,8 +74,11 @@ class UserService {
     }
 
     // Add company to user
-    addCompanyToUser(userId: User['_id'], companyId: User['_id']) {
-        return AxiosInstance.post(`/user/addCompany`);
+    addCompanyToUser(userId: User['_id'], siret: Company['siret']) {
+        return AxiosInstance.post(`/user/addCompany`, {
+            _id: userId,
+            siret
+        });
     }
 
     updateCompanyPictures(userId: User['_id'], { profilePicture, bannerPicture }: { profilePicture?: File, bannerPicture?: File }) {
