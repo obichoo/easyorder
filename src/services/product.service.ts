@@ -1,5 +1,5 @@
 import AxiosInstance from "@/services/axios.service";
-import {Product} from "@/models/product.model";
+import { Product } from "@/models/product.model";
 
 class ProductService {
     // Get all products
@@ -47,6 +47,14 @@ class ProductService {
 
         return AxiosInstance.post(`/product/${productId}/addPictures`, formData);
     }
+
+// Suppression d'une image du produit
+    deleteProductPicture(productId: Product['_id'], picturesId: string) {
+        const data = { picturesId: picturesId };
+        console.log('Sending DELETE request with data:', data); // Vérifie ce qui est envoyé ici
+        return AxiosInstance.post(`/product/${productId}/deletePicture`, data);
+    }
+
 }
 
 export default new ProductService();
