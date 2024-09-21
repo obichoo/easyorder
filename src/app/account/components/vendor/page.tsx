@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import {useState, useEffect, useRef, Suspense} from 'react';
 import {
     FaUpload,
     FaPlus,
@@ -12,7 +12,7 @@ import {
     FaFacebook,
     FaInstagram, FaTwitter, FaTiktok
 } from 'react-icons/fa';
-import { useRouter } from 'next/navigation';
+import {useRouter, useSearchParams} from 'next/navigation';
 import Select from 'react-select';
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/modal";
 import ProductService from '@/services/product.service';
@@ -21,10 +21,11 @@ import UserService from "@/services/user.service";
 import { User } from '@/models/user.model';
 import getUser from "@/utils/get-user";
 import {FaS} from "react-icons/fa6";
-import ClientProfilePage from "@/app/my-account/components/customer/page";
+import ClientProfilePage from "@/app/account/components/customer/page";
 import Link from "next/link";
 
 const VendorProfilePage = () => {
+    const searchParams = useSearchParams()
     const router = useRouter();
     const [user, setUser] = useState<User | any>({});
     const [categories, setCategories] = useState<any[]>([]);
@@ -40,15 +41,25 @@ const VendorProfilePage = () => {
     const logoInputRef = useRef<HTMLInputElement | null>(null);
 
     useEffect(() => {
-        const userId = (getUser() as User)._id;
+        fetchUser()
+    }, []);
+
+    const fetchUser = async () => {
+        const userId = searchParams.get('userId') || (getUser() as User)._id;
 
         UserService.getUserById(userId).then((response) => {
             const userWithoutPassword = response.data;
             delete userWithoutPassword.password;
             setUser(userWithoutPassword);
-            localStorage.setItem('user', JSON.stringify(response.data));
+            saveUserToLocalStorage(userWithoutPassword);
         })
-    }, []);
+    }
+
+    const saveUserToLocalStorage = (user: User) => {
+        if (user._id === (getUser() as User)._id) {
+            localStorage.setItem('user', JSON.stringify(user));
+        }
+    }
 
     useEffect(() => {
         if (user._id) {
@@ -72,7 +83,7 @@ const VendorProfilePage = () => {
         if (file) {
             UserService.updateCompanyPictures(user._id, { bannerPicture: file }).then((response) => {
                 setUser(response.data.user);
-                localStorage.setItem('user', JSON.stringify(response.data.user));
+                saveUserToLocalStorage(response.data.user);
             })
         }
     };
@@ -82,7 +93,7 @@ const VendorProfilePage = () => {
         if (file) {
             UserService.updateCompanyPictures(user._id, { profilePicture: file }).then((response) => {
                 setUser(response.data.user);
-                localStorage.setItem('user', JSON.stringify(response.data.user));
+                saveUserToLocalStorage(response.data.user);
             })
         }
     };
@@ -90,7 +101,7 @@ const VendorProfilePage = () => {
     const handleSaveChanges = async () => {
         try {
             await UserService.updateUser(user);
-            localStorage.setItem('user', JSON.stringify(user));
+            saveUserToLocalStorage(user);
         } catch (error) {
             console.error("Erreur lors de la sauvegarde des modifications:", error);
         }
@@ -106,13 +117,9 @@ const VendorProfilePage = () => {
             categories: selectedCategories?.map((c: any) => c.value)
         }).then((response) => {
             setUser(response.data);
-            localStorage.setItem('user', JSON.stringify(response.data));
+            saveUserToLocalStorage(response.data);
             closeCategoryModal();
         })
-    }
-
-    const handleProductsChange = () => {
-
     }
 
     const handleOpenCategoriesModal = () => {
@@ -127,13 +134,13 @@ const VendorProfilePage = () => {
                 className="mt-10 mx-8 bg-easyorder-black text-white font-semibold py-2 px-4 rounded-lg transition duration-300 flex justify-center items-center gap-2"
             >
                 {isEditingPersonalProfile && <FaArrowLeft size={16} />}
-                {isEditingPersonalProfile ? "Voir mon entreprise" : "Voir mon profil personnel"}
+                {isEditingPersonalProfile ? "Voir l'entreprise" : "Voir le profil personnel"}
                 {!isEditingPersonalProfile && <FaArrowRight size={16} />}
             </button>
             {isEditingPersonalProfile ?
                 <ClientProfilePage/> :
                 <div className="container mx-auto p-8">
-                    <h1 className="text-3xl font-bold text-center mb-8">Modifier mon entreprise</h1>
+                    <h1 className="text-3xl font-bold text-center mb-8">Modifier l'entreprise</h1>
 
                     <div className="flex justify-between items-center mb-8">
                         <div className="flex">
@@ -165,7 +172,7 @@ const VendorProfilePage = () => {
                             onClick={handleSubscribeClick}
                             className="bg-easyorder-green text-white font-semibold py-2 px-4 rounded-lg hover:bg-easyorder-black transition duration-300 ml-4"
                         >
-                            {user.subscriber ? "Voir mon abonnement" : "Souscrire à l'abonnement Premium"}
+                            {user.subscriber ? "Voir l'abonnement" : "Souscrire à l'abonnement Premium"}
                         </button>
                     </div>
 
@@ -447,4 +454,12 @@ const VendorProfilePage = () => {
     );
 };
 
-export default VendorProfilePage;
+const Page = () => {
+    return (
+        <Suspense>
+            <VendorProfilePage/>
+        </Suspense>
+    );
+}
+
+export default Page;

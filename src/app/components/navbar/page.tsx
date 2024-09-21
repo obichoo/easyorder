@@ -155,7 +155,7 @@ const Navbar = () => {
                                         <ul className="py-2">
                                             <li>
                                                 <Link
-                                                    href="/my-account"
+                                                    href="/account"
                                                     className="block px-4 py-2 text-[#032035] hover:bg-[#77ad86] hover:text-white transition duration-200 ease-in-out"
                                                 >
                                                     {
@@ -172,6 +172,13 @@ const Navbar = () => {
                                                 <li>
                                                     <Link href="/stock" className="block px-4 py-2 text-[#032035] hover:bg-[#77ad86] hover:text-white transition duration-200 ease-in-out">
                                                         Gérer le stock
+                                                    </Link>
+                                                </li>
+                                            )}
+                                            {user.role === 'admin' && (
+                                                <li>
+                                                    <Link href="/admin" className="block px-4 py-2 text-[#032035] hover:bg-[#77ad86] hover:text-white transition duration-200 ease-in-out">
+                                                        Administration
                                                     </Link>
                                                 </li>
                                             )}

@@ -65,7 +65,7 @@ const Page = () => {
                         </button>
                     </Link>
 
-                    <Link href="/my-account">
+                    <Link href="/account">
                         <button className="bg-gray-200 text-gray-800 px-6 py-3 rounded-md hover:bg-gray-300 transition duration-300 ease-in-out transform hover:scale-105">
                             Voir mon compte
                         </button>

@@ -119,7 +119,7 @@ const AdminPanel = () => {
                         <li key={number}>
                             <button
                                 onClick={() => paginate(number)}
-                                className="bg-easyorder-green text-white px-3 py-1 rounded-lg hover:bg-easyorder-black transition"
+                                className={`${currentPage == number ? 'bg-easyorder-black' : 'bg-easyorder-green'} text-white px-3 py-1 rounded-lg hover:bg-easyorder-black transition`}
                             >
                                 {number}
                             </button>
@@ -190,20 +190,13 @@ const AdminPanel = () => {
                                         <td className="py-4 px-6">
                                             <div className="flex space-x-2">
                                                 {/* Bouton modifier */}
-                                                {user.role === 'artisan' ? (
-                                                    <Link href={`/my-account/${user._id}`} className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                                                        Modifier Artisan
+                                                    <Link href={`/account?userId=${user._id}`} className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                                                        {user.role === 'artisan' ? 'Modifier artisan' : 'Modifier client'}
                                                     </Link>
-                                                ) : user.role === 'client' ? (
-                                                    <Link href={`/my-account/${user._id}`} className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                                                        Modifier Client
-                                                    </Link>
-                                                ) : null}
-
                                                 {/* Bouton supprimer */}
                                                 <button
                                                     className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
-                                                    onClick={() => handleDeleteUser(user._id)}
+                                                    onClick={() => handleDeleteUser(user._id as string)}
                                                 >
                                                     Supprimer
                                                 </button>
@@ -242,7 +235,7 @@ const AdminPanel = () => {
                                                 {product.name}
                                             </Link>
                                         </td>
-                                        <td className="py-4 px-6">{(product.price_in_cent / 100).toFixed(2)} €</td>
+                                        <td className="py-4 px-6">{(product.price_in_cent as number / 100).toFixed(2)} €</td>
                                         <td className="py-4 px-6">{product.stock}</td>
                                         <td className="py-4 px-6 space-x-2">
                                             {/* Bouton pour la page d'édition */}
@@ -254,7 +247,7 @@ const AdminPanel = () => {
                                             </button>
                                             <button
                                                 className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
-                                                onClick={() => handleDeleteProduct(product._id)}
+                                                onClick={() => handleDeleteProduct(product._id as string)}
                                             >
                                                 Supprimer
                                             </button>

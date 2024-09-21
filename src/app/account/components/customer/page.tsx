@@ -1,10 +1,12 @@
 /* eslint-disable */
 'use client';
-import { useState, useEffect } from 'react';
+import {useState, useEffect, Suspense} from 'react';
 import { FaUserCircle } from 'react-icons/fa';
-import UserService from "@/services/user.service"; // Import du service utilisateur
+import UserService from "@/services/user.service";
+import {useSearchParams} from "next/navigation"; // Import du service utilisateur
 
-export default function ClientProfilePage() {
+const ClientProfilePage = () => {
+  const searchParams = useSearchParams();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,15 +18,30 @@ export default function ClientProfilePage() {
 
   // Charger les informations de l'utilisateur depuis le localStorage
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const userData = JSON.parse(storedUser);
-      setName(userData.name);
-      setEmail(userData.email);
-      setPreviewImage(userData.profile_pic || '/default-profile.png');
-      setUserId(userData._id); // Assigner l'ID de l'utilisateur
-    }
+    fetchUser()
   }, []);
+
+  const fetchUser = async () => {
+    const userToEdit = searchParams.get('userId');
+    if (userToEdit) {
+      const user = await UserService.getUserById(userToEdit).then((response) => {
+        return response.data;
+      })
+      setName(user?.name);
+      setEmail(user?.email);
+      setPreviewImage(user?.profile_pic);
+      setUserId(user?._id); // Assigner l'ID de l'utilisateur
+    } else {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        setName(userData.name);
+        setEmail(userData.email);
+        setPreviewImage(userData.profile_pic);
+        setUserId(userData._id); // Assigner l'ID de l'utilisateur
+      }
+    }
+  }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -77,7 +94,7 @@ export default function ClientProfilePage() {
 
   return (
       <div className="max-w-4xl mx-auto py-8">
-        <h1 className="text-3xl font-bold text-center mb-8">Modifier mon profil</h1>
+        <h1 className="text-3xl font-bold text-center mb-8">Modifier le profil</h1>
         <div className="flex items-start space-x-8">
           <div className="flex-shrink-0">
             {previewImage === '/default-profile.png' ? (
@@ -168,3 +185,13 @@ export default function ClientProfilePage() {
       </div>
   );
 }
+
+const Page = () => {
+    return (
+        <Suspense>
+          <ClientProfilePage />
+        </Suspense>
+    );
+}
+
+export default Page;
