@@ -34,7 +34,7 @@ const EditProduct = () => {
     useEffect(() => {
         const user = getUser();
         if (user) {
-            setArtisanId(user._id);
+            setArtisanId(user._id as string);
         }
     }, []);
 
@@ -107,7 +107,7 @@ const EditProduct = () => {
     const handleSubmit = async () => {
         const priceInCent = parseFloat(price) * 100;
         const productData: Product = {
-            _id: id, // Inclure l'ID pour la mise à jour
+            _id: id as string, // Inclure l'ID pour la mise à jour
             name: productName,
             description,
             size: {
@@ -123,8 +123,7 @@ const EditProduct = () => {
             stock: parseInt(stock),
             initial_stock: parseInt(stock),
             categories: selectedCategories as Category[],
-            artisan_id: artisanId,
-            pictures: []
+            artisan_id: artisanId
         };
 
         await ProductService.updateProduct(productData as Product).then(() => {
@@ -218,24 +217,24 @@ const EditProduct = () => {
                     <div className="flex gap-2">
                         <input
                             type="number"
-                            value={height}
-                            onChange={(e) => setHeight(e.target.value)}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
-                            placeholder="Hauteur"
-                        />
-                        <input
-                            type="number"
                             value={width}
                             onChange={(e) => setWidth(e.target.value)}
                             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
-                            placeholder="Largeur"
+                            placeholder="Longueur"
                         />
                         <input
                             type="number"
                             value={depth}
                             onChange={(e) => setDepth(e.target.value)}
                             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
-                            placeholder="Profondeur"
+                            placeholder="Largeur"
+                        />
+                        <input
+                            type="number"
+                            value={height}
+                            onChange={(e) => setHeight(e.target.value)}
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
+                            placeholder="Hauteur"
                         />
                         <select
                             value={unit}

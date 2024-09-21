@@ -145,12 +145,12 @@ export default function Page() {
 
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Carousel */}
-          <div className="w-full lg:w-1/2">
+          <div className="w-full lg:w-1/2 rounded-lg overflow-hidden">
             <Carousel slides={slides} options={{ loop: true }} slidesPerView={1} slidesHeight={'300px'} slidesSpacing={'2rem'} />
           </div>
 
           {/* Détails du produit */}
-          <div className="w-full lg:w-1/2 flex flex-col justify-between">
+          <div className="w-full lg:w-1/2 flex flex-col justify-center">
             <div className="space-y-2">
               <div>
                 <h2 className="text-xl font-semibold text-easyorder-black">Description</h2>
@@ -176,28 +176,26 @@ export default function Page() {
               )}
 
               {/* Dimensions */}
-              {(product?.size?.dimensions?.height?.value || product?.size?.dimensions?.width?.value || product?.size?.dimensions?.depth?.value) ? (
+              {(product?.size?.dimensions?.width?.value || product?.size?.dimensions?.depth?.value || product?.size?.dimensions?.height?.value) && (
                   <div>
                     <h2 className="text-xl font-semibold text-easyorder-black">Dimensions</h2>
                     <p className="text-gray-700">
-                      {product?.size?.dimensions?.height?.value && `${product?.size?.dimensions?.height?.value} ${product?.size?.dimensions?.height?.unit}`}
-                      {product?.size?.dimensions?.height?.value && product?.size?.dimensions?.width?.value && ' x '}
-                      {product?.size?.dimensions?.width?.value && `${product?.size?.dimensions?.width?.value} ${product?.size?.dimensions?.width?.unit}`}
-                      {product?.size?.dimensions?.(width?.value || height?.value) && product?.size?.dimensions?.depth?.value && ' x '}
-                      {product?.size?.dimensions?.depth?.value && `${product?.size?.dimensions?.depth?.value} ${product?.size?.dimensions?.depth?.unit}`}
+                      {
+                        [(product?.size?.dimensions?.width?.value && `${product?.size?.dimensions?.width?.value} ${product?.size?.dimensions?.width?.unit}`),
+                          (product?.size?.dimensions?.depth?.value && `${product?.size?.dimensions?.depth?.value} ${product?.size?.dimensions?.depth?.unit}`),
+                          (product?.size?.dimensions?.height?.value && `${product?.size?.dimensions?.height?.value} ${product?.size?.dimensions?.height?.unit}`)].filter(x => x).join(' x ')
+                      }
                     </p>
                   </div>
-              ) : null}
+              )}
 
               {/* Affichage du poids uniquement si renseigné */}
               {/* Poids */}
-              {product?.size?.weight?.value ? (
+              {product?.size?.weight?.value && (
                   <div>
                     <h2 className="text-xl font-semibold text-easyorder-black">Poids</h2>
                     <p className="text-gray-700">{`${product?.size?.weight?.value} ${product?.size?.weight?.unit}`}</p>
                   </div>
-              ) : (
-                  <p className="text-gray-700">Pas de poids renseigné</p>
               )}
 
 
@@ -206,37 +204,37 @@ export default function Page() {
                 <p className="text-gray-700">{(product.price_in_cent / 100).toFixed(2)} €</p>
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* Boutons avec redirections */}
-            <div className="flex space-x-4">
-              <button onClick={toggleFavorite} className="text-red-500 transition-transform transform hover:scale-110">
-                {favorites?.products?.includes(product._id) ? <FaHeart size={32} /> : <FaRegHeart size={32} />}
-              </button>
+        {/* Boutons avec redirections */}
+        <div className="justify-end mt-6 flex space-x-4">
+          <button onClick={toggleFavorite} className="text-red-500 transition-transform transform hover:scale-110">
+            {favorites?.products?.includes(product._id) ? <FaHeart size={32} /> : <FaRegHeart size={32} />}
+          </button>
 
-              <Link href={`/chat?user=${product?.artisan_id}`}>
-                <button
-                    className="bg-easyorder-black text-white px-4 py-2 rounded shadow hover:bg-black transition">Contacter
-                  l'artisan
+          <Link href={`/chat?user=${product?.artisan_id}`}>
+            <button
+                className="bg-easyorder-black text-white px-4 py-2 rounded shadow hover:bg-black transition">Contacter
+              l'artisan
+            </button>
+          </Link>
+
+          <button
+              onClick={addToCart}
+              className="flex items-center bg-easyorder-green text-white px-4 py-2 rounded shadow hover:bg-easyorder-black transition">
+            <FaShoppingCart size={20} className="mr-2" />
+            Ajouter au panier
+          </button>
+
+          {userId === product?.artisan_id && (
+              <Link href={`/products/edit/${product?._id}`}>
+                <button className="bg-easyorder-gray text-easyorder-black px-4 py-2 rounded shadow hover:bg-easyorder-black hover:text-white transition flex">
+                  <FaEdit size={20} className="mr-2" />
+                  Modifier ce produit
                 </button>
               </Link>
-
-              <button
-                  onClick={addToCart}
-                  className="flex items-center bg-easyorder-green text-white px-4 py-2 rounded shadow hover:bg-easyorder-black transition">
-                <FaShoppingCart size={20} className="mr-2" />
-                Ajouter au panier
-              </button>
-
-              {userId === product?.artisan_id && (
-                  <Link href={`/products/edit/${product?._id}`}>
-                    <button className="bg-easyorder-gray text-easyorder-black px-4 py-2 rounded shadow hover:bg-easyorder-black hover:text-white transition flex">
-                      <FaEdit size={20} className="mr-2" />
-                      Modifier ce produit
-                    </button>
-                  </Link>
-              )}
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Suggestions de produits */}

@@ -48,8 +48,8 @@ const Home = () => {
         UserService.getAllArtisans().then((response) => {
             const artisans = response.data.map((user: any): CarouselSlide  => ({
                 link: `/artisans/${user._id}`,
-                image: user.profile_pic,
-                text: user.name
+                image: user.company?.banner_pic,
+                text: user.company?.denomination
             }));
             setArtisansSlides(artisans);
         })

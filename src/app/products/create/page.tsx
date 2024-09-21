@@ -176,24 +176,24 @@ const CreateProduct = () => {
                     <div className="flex gap-2">
                         <input
                             type="number"
-                            value={height}
-                            onChange={(e) => setHeight(e.target.value)}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
-                            placeholder="Hauteur"
-                        />
-                        <input
-                            type="number"
                             value={width}
                             onChange={(e) => setWidth(e.target.value)}
                             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
-                            placeholder="Largeur"
+                            placeholder="Longueur"
                         />
                         <input
                             type="number"
                             value={depth}
                             onChange={(e) => setDepth(e.target.value)}
                             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
-                            placeholder="Profondeur"
+                            placeholder="Largeur"
+                        />
+                        <input
+                            type="number"
+                            value={height}
+                            onChange={(e) => setHeight(e.target.value)}
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
+                            placeholder="Hauteur"
                         />
                         <select
                             value={unit}
