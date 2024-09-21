@@ -34,6 +34,9 @@ const EditProduct = () => {
     useEffect(() => {
         const user = getUser();
         if (user) {
+            if (user.role == 'client') {
+                router.push('/');
+            }
             setArtisanId(user._id as string);
         }
     }, []);
@@ -57,6 +60,11 @@ const EditProduct = () => {
             try {
                 const response = await ProductService.getProductById(id as string);
                 const productData = response.data;
+
+                if (productData.artisan_id !== id && getUser()?.role !== 'admin') {
+                    router.push('/');
+                    return;
+                }
 
                 // Pré-remplir les champs avec les données du produit
                 setProduct(productData);

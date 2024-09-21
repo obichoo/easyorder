@@ -30,6 +30,9 @@ const CreateProduct = () => {
         const user = localStorage.getItem('user');
         if (user) {
             const parsedUser = JSON.parse(user);
+            if (parsedUser.role !== 'artisan') {
+                router.push('/');
+            }
             setArtisanId(parsedUser._id);
         }
     }, []);

@@ -6,6 +6,7 @@ import { User } from "@/models/user.model";
 import { FaSpinner } from 'react-icons/fa';
 import getUser from "@/utils/get-user";
 import UserService from "@/services/user.service";
+import {useRouter} from "next/navigation";
 
 declare global {
     namespace JSX {
@@ -60,10 +61,15 @@ const PricingTable = () => {
 };
 
 export default function SubscriptionPage() {
+    const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
-        setUser(getUser());
+        const user = getUser();
+
+        if (!user || user.role !== 'artisan') return router.push('/');
+
+        setUser(user);
     }, []);
 
     const handleUnsubscribe = () => {

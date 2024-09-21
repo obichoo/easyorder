@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { useRouter } from 'next/navigation'; // Import du router pour redirection
 import UserService from "@/services/user.service";
 import { FaSpinner } from 'react-icons/fa';
@@ -95,6 +95,13 @@ const Login = () => {
         const role = e.target.value;
         setIsArtisan(role === 'artisan');
     }
+
+    useEffect(() => {
+        const user = localStorage.getItem("user");
+        if (user) {
+            router.push('/home');
+        }
+    })
 
     return (
         <div className="flex items-center justify-center bg-easyorder-gray mt-28">

@@ -22,6 +22,7 @@ const initialChartData = {
 };
 
 export default function StockManagementPage() {
+  const router = useRouter()
   const [data, setData] = useState({
     totalSales: 0,
     productsPending: 0,
@@ -38,6 +39,9 @@ export default function StockManagementPage() {
 
   useEffect(() => {
     const user = getUser();
+
+    if (!user || user.role !== 'artisan') return;
+
     setUserId(user?._id || '');
   }, []);
 
@@ -165,11 +169,11 @@ export default function StockManagementPage() {
 
       <div className="grid grid-cols-4 gap-4">
         {filteredProducts.map((product: any) => (
-          <Link key={product._id} href={`/products/${product._id}`} className="bg-white shadow-md p-4 text-center">
+          <Link key={product._id} href={`/products/${product._id}`} className="bg-white shadow-md p-4 text-center rounded-lg">
             <img
-              src={product.pictures[0] || 'https://via.placeholder.com/300x200'}
+              src={product.pictures[0]?.url || 'https://via.placeholder.com/300x200'}
               alt={product.name}
-              className="mb-4"
+              className="w-full h-48 object-cover rounded-lg mb-4"
             />
             <h3 className="text-lg font-semibold">{product.name}</h3>
             <p className="text-gray-500">${(product.price_in_cent / 100).toFixed(2)}</p>

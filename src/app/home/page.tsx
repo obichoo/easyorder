@@ -8,7 +8,6 @@ import { Category } from "@/models/category.model";
 import Carousel, {CarouselSlide} from "@/app/components/carousel/page";
 import UserService from "@/services/user.service";
 import {EmblaOptionsType} from "embla-carousel";
-import getUser from "@/utils/get-user";
 
 const Home = () => {
     const [artisansSlides, setArtisansSlides] = useState<CarouselSlide[]>([]);

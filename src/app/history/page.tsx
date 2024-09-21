@@ -27,8 +27,11 @@ const PurchasesHistoryTable = ({ orders, loading }: { orders: Order[], loading: 
 
     useEffect(() => {
         const user: User | null = getUser();
-        if (!user) return;
-        setUserId(user._id);
+        if (!user) {
+            return router.push('/login');
+        }
+
+        setUserId((user as any)._id);
     }, []);
 
     const getStatus = (status: Order['status']) => {
