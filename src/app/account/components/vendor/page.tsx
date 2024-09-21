@@ -45,7 +45,7 @@ const VendorProfilePage = () => {
     }, []);
 
     const fetchUser = async () => {
-        const userId = searchParams.get('userId') || (getUser() as User)._id;
+        const userId = (getUser()?.role === 'admin' && searchParams.get('userId')) || (getUser() as User)._id;
 
         UserService.getUserById(userId).then((response) => {
             const userWithoutPassword = response.data;

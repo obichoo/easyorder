@@ -3,7 +3,8 @@
 import {useState, useEffect, Suspense} from 'react';
 import { FaUserCircle } from 'react-icons/fa';
 import UserService from "@/services/user.service";
-import {useSearchParams} from "next/navigation"; // Import du service utilisateur
+import {useSearchParams} from "next/navigation";
+import getUser from "@/utils/get-user"; // Import du service utilisateur
 
 const ClientProfilePage = () => {
   const searchParams = useSearchParams();
@@ -23,7 +24,7 @@ const ClientProfilePage = () => {
 
   const fetchUser = async () => {
     const userToEdit = searchParams.get('userId');
-    if (userToEdit) {
+    if (userToEdit && getUser()?.role === 'admin') {
       const user = await UserService.getUserById(userToEdit).then((response) => {
         const userWithoutPassword = { ...response.data, password: undefined };
         return userWithoutPassword;
