@@ -4,7 +4,8 @@ import {useState, useEffect, Suspense} from 'react';
 import { FaUserCircle } from 'react-icons/fa';
 import UserService from "@/services/user.service";
 import {useSearchParams} from "next/navigation";
-import getUser from "@/utils/get-user"; // Import du service utilisateur
+import getUser from "@/utils/get-user";
+import Title from "@/app/components/title/page"; // Import du service utilisateur
 
 const ClientProfilePage = () => {
   const searchParams = useSearchParams();
@@ -95,8 +96,8 @@ const ClientProfilePage = () => {
   };
 
   return (
-      <div className="max-w-4xl mx-auto py-8">
-        <h1 className="text-3xl font-bold text-center mb-8">Modifier le profil</h1>
+      <div className="mx-auto pb-8">
+        <Title>Modifier le profil</Title>
         <div className="flex items-start space-x-8">
           <div className="flex-shrink-0">
             {previewImage === '/default-profile.png' ? (
@@ -112,11 +113,11 @@ const ClientProfilePage = () => {
 
           <form onSubmit={handleSubmit} className="flex-grow space-y-6">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nom</label>
+              <label htmlFor="name" className="block text-sm font-medium ">Nom</label>
               <input
                   type="text"
                   id="name"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-easyorder-green"
+                  className="mt-1 block w-full px-3 py-2 border  rounded-md shadow-sm focus:outline-none focus:ring focus:ring-easyorder-green"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
@@ -124,11 +125,11 @@ const ClientProfilePage = () => {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">Adresse email</label>
+              <label htmlFor="email" className="block text-sm font-medium ">Adresse email</label>
               <input
                   type="email"
                   id="email"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-easyorder-green"
+                  className="mt-1 block w-full px-3 py-2 border  rounded-md shadow-sm focus:outline-none focus:ring focus:ring-easyorder-green"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -136,29 +137,29 @@ const ClientProfilePage = () => {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">Nouveau mot de passe</label>
+              <label htmlFor="password" className="block text-sm font-medium ">Nouveau mot de passe</label>
               <input
                   type="password"
                   id="password"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-easyorder-green"
+                  className="mt-1 block w-full px-3 py-2 border  rounded-md shadow-sm focus:outline-none focus:ring focus:ring-easyorder-green"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Confirmer le mot de passe</label>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium ">Confirmer le mot de passe</label>
               <input
                   type="password"
                   id="confirmPassword"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-easyorder-green"
+                  className="mt-1 block w-full px-3 py-2 border  rounded-md shadow-sm focus:outline-none focus:ring focus:ring-easyorder-green"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </div>
 
             <div>
-              <label htmlFor="profileImage" className="block text-sm font-medium text-gray-700">Photo de profil</label>
+              <label htmlFor="profileImage" className="block text-sm font-medium ">Photo de profil</label>
               <input
                   type="file"
                   id="profileImage"

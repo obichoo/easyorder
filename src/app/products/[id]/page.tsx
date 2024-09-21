@@ -14,6 +14,7 @@ import FavoriteProductService from "@/services/favorite-product.service";
 import { FavoriteProduct } from "@/models/favorite-product.model";
 import Carousel, { CarouselSlide } from "@/app/components/carousel/page";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/modal";
+import Title from "@/app/components/title/page";
 
 export default function Page() {
   const router = useRouter();
@@ -135,12 +136,12 @@ export default function Page() {
       <div className="container mx-auto mb-8 mt-12">
         {/* Nom du produit */}
         <div className="w-2/3 mx-auto">
-          <h1 className="text-center text-4xl font-bold mb-12 text-easyorder-black">
+          <Title>
             {product.name}
             {userId === product?.artisan_id && (
                 <FaTrash size={32} className="ml-4 cursor-pointer text-danger inline mb-1" onClick={onOpen} />
             )}
-          </h1>
+          </Title>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
@@ -154,11 +155,11 @@ export default function Page() {
             <div className="space-y-2">
               <div>
                 <h2 className="text-xl font-semibold text-easyorder-black">Description</h2>
-                <p className="text-gray-700">{product.description}</p>
+                <p className="">{product.description}</p>
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-easyorder-black">Catégories</h2>
-                <p className="text-gray-700">
+                <p className="">
                   {product.categories && product.categories.length > 0
                       ? product.categories.map((cat: any) => cat.name).join(', ')
                       : 'Aucune catégorie'}
@@ -169,7 +170,7 @@ export default function Page() {
               {product.size?.sizeLabel && (
                   <div>
                     <h2 className="text-xl font-semibold text-easyorder-black">Taille</h2>
-                    <p className="text-gray-700">
+                    <p className="">
                       {product.size.sizeLabel}
                     </p>
                   </div>
@@ -179,7 +180,7 @@ export default function Page() {
               {(product?.size?.dimensions?.width?.value || product?.size?.dimensions?.depth?.value || product?.size?.dimensions?.height?.value) && (
                   <div>
                     <h2 className="text-xl font-semibold text-easyorder-black">Dimensions</h2>
-                    <p className="text-gray-700">
+                    <p className="">
                       {
                         [(product?.size?.dimensions?.width?.value && `${product?.size?.dimensions?.width?.value} ${product?.size?.dimensions?.width?.unit}`),
                           (product?.size?.dimensions?.depth?.value && `${product?.size?.dimensions?.depth?.value} ${product?.size?.dimensions?.depth?.unit}`),
@@ -194,14 +195,14 @@ export default function Page() {
               {product?.size?.weight?.value && (
                   <div>
                     <h2 className="text-xl font-semibold text-easyorder-black">Poids</h2>
-                    <p className="text-gray-700">{`${product?.size?.weight?.value} ${product?.size?.weight?.unit}`}</p>
+                    <p className="">{`${product?.size?.weight?.value} ${product?.size?.weight?.unit}`}</p>
                   </div>
               )}
 
 
               <div>
                 <h2 className="text-xl font-semibold text-easyorder-black">Prix</h2>
-                <p className="text-gray-700">{(product.price_in_cent / 100).toFixed(2)} €</p>
+                <p className="">{(product.price_in_cent / 100).toFixed(2)} €</p>
               </div>
             </div>
           </div>
@@ -276,7 +277,7 @@ export default function Page() {
             <ModalFooter>
               <button
                   onClick={onClose}
-                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition">
+                  className="bg-gray-300  px-4 py-2 rounded-md hover:bg-gray-400 transition">
                 Annuler
               </button>
               <button

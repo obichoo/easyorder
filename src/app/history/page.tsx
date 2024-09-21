@@ -234,7 +234,7 @@ const PurchasesHistoryTable = ({ orders, loading }: { orders: Order[], loading: 
                     </ModalHeader>
                     <ModalBody>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Note (0-5)</label>
+                            <label className="block text-sm font-medium ">Note (0-5)</label>
                             <input
                                 type="number"
                                 value={rate}
@@ -242,15 +242,15 @@ const PurchasesHistoryTable = ({ orders, loading }: { orders: Order[], loading: 
                                 min="0"
                                 max="5"
                                 step={0.5}
-                                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                                className="mt-1 block w-full p-2 border  rounded-md"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Commentaire</label>
+                            <label className="block text-sm font-medium ">Commentaire</label>
                             <textarea
                                 value={content}
                                 onChange={(e) => setContent(e.target.value)}
-                                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                                className="mt-1 block w-full p-2 border  rounded-md"
                                 rows={4}
                             ></textarea>
                         </div>
@@ -487,7 +487,7 @@ const SellsHistoryTable = ({ orders, loading }: { orders: Order[], loading: bool
                         <select
                             value={selectedStatus}
                             onChange={(e) => setSelectedStatus(e.target.value)}
-                            className="w-full p-2 border border-gray-300 rounded-md"
+                            className="w-full p-2 border  rounded-md"
                         >
                             {statusOptions.map((option) => (
                                 <option key={option.value} value={option.value}>

@@ -8,7 +8,8 @@ import { useRouter } from 'next/navigation';
 import { FaSpinner } from 'react-icons/fa';
 import {Category} from "@/models/category.model";
 import {Product} from "@/models/product.model";
-import Link from "next/link"; // Utilisation de FaSpinner pour l'animation de chargement
+import Link from "next/link";
+import Title from "@/app/components/title/page"; // Utilisation de FaSpinner pour l'animation de chargement
 
 const SearchPage = () => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -84,9 +85,9 @@ const SearchPage = () => {
     return (
         <div className="bg-easyorder-gray py-8">
             <div className="max-w-7xl mx-auto px-6">
-                <h1 className="text-center text-3xl font-bold text-easyorder-black mb-12">
+                <Title>
                     Résultats de recherche
-                </h1>
+                </Title>
 
                 {/* Barre de recherche */}
                 <div className="flex justify-center mb-6">

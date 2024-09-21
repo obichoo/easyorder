@@ -8,6 +8,7 @@ import getUser from "@/utils/get-user";
 import { User } from "@/models/user.model";
 import UserService from "@/services/user.service";
 import { useSearchParams } from "next/navigation";
+import Title from "@/app/components/title/page";
 
 interface Chat {
     id: number;
@@ -308,7 +309,7 @@ const Chat = () => {
 
     return (
         <>
-            <h1 className="text-3xl my-8 text-easyorder-black text-center">Messagerie</h1>
+            <Title>Messagerie</Title>
             <div className="flex mb-8 h-[700px]">
                 <div className="w-1/3 bg-white shadow-lg rounded-l-lg">
                     <div className="p-4">

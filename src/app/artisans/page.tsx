@@ -3,7 +3,8 @@ import React, { useState, useEffect, ReactNode } from 'react';
 import Link from 'next/link';
 import { FaSearch } from 'react-icons/fa';
 import UserService from '@/services/user.service';
-import { User } from "@/models/user.model"; // Import du service
+import { User } from "@/models/user.model";
+import Title from "@/app/components/title/page"; // Import du service
 
 export default function ArtisansList() {
   const [artisans, setArtisans] = useState<User[]>([]);
@@ -32,9 +33,9 @@ export default function ArtisansList() {
   return (
       <div className="min-h-screen bg-easyorder-gray">
         <div className="container mx-auto py-12">
-          <h1 className="text-4xl font-extrabold text-center mb-12 text-easyorder-black">
+          <Title>
             Artisans
-          </h1>
+          </Title>
 
           {/* Barre de recherche */}
           <div className="flex justify-center mb-12">
@@ -44,7 +45,7 @@ export default function ArtisansList() {
                   placeholder="Rechercher un artisan..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full py-3 pl-12 pr-4 border border-gray-300 rounded-full shadow focus:outline-none focus:ring-2 focus:ring-easyorder-green text-easyorder-black"
+                  className="w-full py-3 pl-12 pr-4 border  rounded-full shadow focus:outline-none focus:ring-2 focus:ring-easyorder-green text-easyorder-black"
               />
               <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" />
             </div>

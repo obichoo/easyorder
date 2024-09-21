@@ -6,6 +6,7 @@ import UserService from "@/services/user.service";
 import { FaSpinner } from 'react-icons/fa';
 import Stripe from 'stripe';
 import {User} from "@/models/user.model";
+import Title from "@/app/components/title/page";
 
 const secretKey = process.env.NEXT_PUBLIC_STRIPE_PRIVATE_KEY as string;
 const stripe = new Stripe(secretKey);
@@ -105,8 +106,8 @@ const Login = () => {
 
     return (
         <div className="flex items-center justify-center bg-easyorder-gray mt-28">
-            <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-8">
-                <h1 className="text-3xl mb-6 text-center text-easyorder-green">Bienvenue sur EasyOrder !</h1>
+            <div className="w-full max-w-lg bg-white shadow-lg rounded-lg p-8">
+                <Title className="text-easyorder-green">Bienvenue sur EasyOrder !</Title>
 
                 {/* Formulaire de connexion/inscription */}
                 <form onSubmit={handleSubmit} id="form" className="space-y-4">
@@ -124,7 +125,7 @@ const Login = () => {
                             type="email"
                             id="email"
                             name="email"
-                            className={`mt-1 block w-full p-2 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
+                            className={`mt-1 block w-full p-2 border ${errors.email ? 'border-red-500' : ''} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
                             placeholder="Votre email"
                         />
                         {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
@@ -139,7 +140,7 @@ const Login = () => {
                                     type="text"
                                     id="name"
                                     name="name"
-                                    className={`mt-1 block w-full p-2 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
+                                    className={`mt-1 block w-full p-2 border ${errors.name ? 'border-red-500' : ''} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
                                     placeholder="Votre nom"
                                 />
                                 {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
@@ -152,7 +153,7 @@ const Login = () => {
                                     id="role"
                                     defaultValue=""
                                     onChange={onRoleChange}
-                                    className={`mt-1 block w-full p-2 border ${errors.role ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
+                                    className={`mt-1 block w-full p-2 border ${errors.role ? 'border-red-500' : ''} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
                                 >
                                     <option value="">Choisissez un rôle</option>
                                     <option value="artisan">Artisan</option>
@@ -170,7 +171,7 @@ const Login = () => {
                                                 type="text"
                                                 id="denomination"
                                                 name="denomination"
-                                                className={`mt-1 block w-full p-2 border ${errors.denomination ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
+                                                className={`mt-1 block w-full p-2 border ${errors.denomination ? 'border-red-500' : ''} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
                                                 placeholder="Nom de l'entreprise"
                                             />
                                             {errors.denomination && <p className="text-red-500 text-sm">{errors.denomination}</p>}
@@ -182,7 +183,7 @@ const Login = () => {
                                                 type="text"
                                                 id="siret"
                                                 name="siret"
-                                                className={`mt-1 block w-full p-2 border ${errors.siret ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
+                                                className={`mt-1 block w-full p-2 border ${errors.siret ? 'border-red-500' : ''} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
                                                 placeholder="SIRET"
                                             />
                                             {errors.siret && <p className="text-red-500 text-sm">{errors.siret}</p>}
@@ -201,7 +202,7 @@ const Login = () => {
                             type="password"
                             id="password"
                             name="password"
-                            className={`mt-1 block w-full p-2 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
+                            className={`mt-1 block w-full p-2 border ${errors.password ? 'border-red-500' : ''} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
                             placeholder="Votre mot de passe"
                         />
                         {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}

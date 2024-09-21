@@ -65,11 +65,11 @@ const FavoriteItem = ({ favorite, product, remove }: { favorite: FavoriteProduct
 
     return (
         <div
-            className="w-60 h-60 shadow-lg mx-auto rounded-2xl p-3 bg-white cursor-pointer hover:shadow-xl transition-transform hover:scale-105 duration-300"
+            className="w-60 shadow-lg mx-auto rounded-2xl p-3 bg-white cursor-pointer hover:shadow-xl transition-transform hover:scale-105 duration-300"
             key={favorite._id}
             onClick={(e) => handleProductClick(e)}
         >
-            <img className="rounded-xl h-36 w-full object-cover mb-2" src={product.pictures?.[0]?.url || 'https://picsum.photos/224/200'} alt={product.name} />
+            <img className="rounded-xl h-36 w-full object-cover mb-2" src={product.pictures?.[0]?.url || 'https://via.placeholder.com/150'} alt={product.name} />
             <div className="flex justify-between items-center">
                 <p className="text-center font-medium">{product.name}</p>
                 <div>

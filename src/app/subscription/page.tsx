@@ -7,6 +7,7 @@ import { FaSpinner } from 'react-icons/fa';
 import getUser from "@/utils/get-user";
 import UserService from "@/services/user.service";
 import {useRouter} from "next/navigation";
+import Title from "@/app/components/title/page";
 
 declare global {
     namespace JSX {
@@ -88,7 +89,7 @@ export default function SubscriptionPage() {
                     user?.subscriber ?
                         (
                             <div className="flex flex-col items-center justify-center mt-40">
-                                <h1 className="text-4xl font-bold text-easyorder-black mb-2">Vous êtes déjà abonné à EasyOrder Premium.</h1>
+                                <Title>Vous êtes déjà abonné à EasyOrder Premium.</Title>
                                 <p className="text-lg text-easyorder-black mb-4">
                                     Vous pouvez profiter de toutes les fonctionnalités exclusives d'EasyOrder Premium.
                                 </p>
@@ -102,7 +103,7 @@ export default function SubscriptionPage() {
                         (
                             <>
                                 <div className="text-center">
-                                    <h1 className="text-4xl font-bold text-easyorder-black mb-2">Abonnement premium</h1>
+                                    <Title>Abonnement premium</Title>
                                     <p className="text-lg text-easyorder-black mb-4">Optez pour un abonnement et profitez
                                         des fonctionnalités exclusives d'EasyOrder !</p>
                                 </div>

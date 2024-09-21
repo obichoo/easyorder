@@ -8,6 +8,7 @@ import { FavoriteVendor } from "@/models/favorite-vendor.model";
 import FavoriteVendorService from "@/services/favorite-vendor.service";
 import getUser from "@/utils/get-user";
 import {User} from "@/models/user.model";
+import Title from "@/app/components/title/page";
 
 const RemoveFavoriteModal = ({ confirm, favorite }: { confirm: Function, favorite: FavoriteVendor }) => {
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
@@ -64,13 +65,13 @@ const FavoriteItem = ({ favorite, vendor, remove }: { favorite: FavoriteVendor, 
 
     return (
         <div
-            className="w-60 h-60 shadow-lg mx-auto rounded-2xl p-3 bg-white cursor-pointer hover:shadow-xl transition-transform hover:scale-105 duration-300"
+            className="w-60 shadow-lg mx-auto rounded-2xl p-3 bg-white cursor-pointer hover:shadow-xl transition-transform hover:scale-105 duration-300"
             key={favorite._id}
             onClick={(e) => handleVendorClick(e)}
         >
-            <img className="rounded-xl h-36 w-full object-cover mb-2" src={vendor.profile_pic || 'https://picsum.photos/224/200'} alt={vendor.name} />
+            <img className="rounded-xl h-36 w-full object-cover mb-2" src={vendor?.company?.profile_pic} alt={vendor.name} />
             <div className="flex justify-between items-center">
-                <p className="text-center font-medium">{vendor.name}</p>
+                <p className="text-center font-medium">{vendor?.company?.denomination}</p>
                 <div>
                     <RemoveFavoriteModal favorite={favorite} confirm={() => remove(vendor)} />
                 </div>
@@ -110,7 +111,7 @@ const FavoriteVendors = () => {
 
     return (
         <div className="container mx-auto mt-12">
-            <h2 className="text-3xl font-semibold text-center mb-10">Mes artisans favoris</h2>
+            <Title className="text-3xl font-semibold text-center mb-10">Mes artisans favoris</Title>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {favorites.length > 0 ? (
                     favorites.map(favorite => (

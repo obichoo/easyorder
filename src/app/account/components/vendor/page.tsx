@@ -23,6 +23,7 @@ import getUser from "@/utils/get-user";
 import {FaS} from "react-icons/fa6";
 import ClientProfilePage from "@/app/account/components/customer/page";
 import Link from "next/link";
+import Title from "@/app/components/title/page";
 
 const VendorProfilePage = () => {
     const searchParams = useSearchParams()
@@ -140,7 +141,7 @@ const VendorProfilePage = () => {
             {isEditingPersonalProfile ?
                 <ClientProfilePage/> :
                 <div className="container mx-auto p-8">
-                    <h1 className="text-3xl font-bold text-center mb-8">Modifier l'entreprise</h1>
+                    <Title>Modifier l'entreprise</Title>
 
                     <div className="flex justify-between items-center mb-8">
                         <div className="flex">
@@ -165,7 +166,7 @@ const VendorProfilePage = () => {
                                     })}
                                 />
                             ) : (
-                                <h1 className="text-3xl font-bold">{user.company?.denomination || "Mon entreprise"}</h1>
+                                <Title>{user.company?.denomination || "Mon entreprise"}</Title>
                             )}
                         </div>
                         <button
@@ -218,7 +219,7 @@ const VendorProfilePage = () => {
                                 ...user,
                                 description: e.target.value
                             })}
-                            className="w-full p-3 border border-gray-300 rounded-lg"
+                            className="w-full p-3 border  rounded-lg"
                             rows={5}
                         ></textarea>
                     </div>
@@ -233,7 +234,7 @@ const VendorProfilePage = () => {
                                     placeholder="Lien de votre page Facebook"
                                     value={user.social_network?.facebook || ''}
                                     onChange={(e) => setUser({...user, social_network: { ...user.social_network, facebook: e.target.value}})}
-                                    className="w-full p-2 border border-gray-300 rounded-md"
+                                    className="w-full p-2 border  rounded-md"
                                 />
                             </div>
                             <div className="w-full flex items-center gap-2">
@@ -246,7 +247,7 @@ const VendorProfilePage = () => {
                                         ...user,
                                         social_network: {...user.social_network, instagram: e.target.value}
                                     })}
-                                    className="w-full p-2 border border-gray-300 rounded-md"
+                                    className="w-full p-2 border  rounded-md"
                                 />
                             </div>
                             <div className="w-full flex items-center gap-2">
@@ -259,7 +260,7 @@ const VendorProfilePage = () => {
                                         ...user,
                                         social_network: {...user.social_network, twitter: e.target.value}
                                     })}
-                                    className="w-full p-2 border border-gray-300 rounded-md"
+                                    className="w-full p-2 border  rounded-md"
                                 />
                             </div>
                             <div className="w-full flex items-center gap-2">
@@ -272,7 +273,7 @@ const VendorProfilePage = () => {
                                         ...user,
                                         social_network: {...user.social_network, tiktok: e.target.value}
                                     })}
-                                    className="w-full p-2 border border-gray-300 rounded-md"
+                                    className="w-full p-2 border  rounded-md"
                                 />
                             </div>
                         </div>
@@ -289,7 +290,7 @@ const VendorProfilePage = () => {
                                         type="email"
                                         value={user.email || ''}
                                         onChange={(e) => setUser({...user, email: e.target.value})}
-                                        className="w-full p-2 border border-gray-300 rounded-md"
+                                        className="w-full p-2 border  rounded-md"
                                     />
                                 </div>
                                 <div>

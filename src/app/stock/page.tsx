@@ -9,6 +9,7 @@ import OrderService from '@/services/order.service';
 import ProductService from '@/services/product.service';
 import getUser from '@/utils/get-user';
 import {Product} from "@/models/product.model";
+import Title from "@/app/components/title/page";
 
 const initialChartData = {
   labels: [],
@@ -132,7 +133,7 @@ export default function StockManagementPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4 text-black text-center">Gestion du stock</h1>
+      <Title>Gestion du stock</Title>
       
       <div className="grid grid-cols-4 gap-4 mb-8">
         <div className="bg-white shadow-md p-4 text-center">
@@ -161,7 +162,7 @@ export default function StockManagementPage() {
         <input
           type="text"
           placeholder="Rechercher un produit..."
-          className="w-1/2 py-2 px-4 rounded-lg border border-gray-300 outline-none"
+          className="w-1/2 py-2 px-4 rounded-lg border  outline-none"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
