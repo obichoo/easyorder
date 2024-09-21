@@ -11,16 +11,6 @@ export interface CarouselSlide {
     data?: any
 }
 
-interface CarouselProps {
-    slides?: CarouselSlide[],
-    options?: any,
-    slidesPerView?: number,
-    slidesHeight?: string,
-    slidesSpacing?: string,
-    type?: 'category' | 'product' | string,
-    [key: string]: any
-}
-
 const Slide = ({ slide, index }: { slide: CarouselSlide, index: number }) => {
     return (
         <>
@@ -42,7 +32,7 @@ const Slide = ({ slide, index }: { slide: CarouselSlide, index: number }) => {
     )
 }
 
-const Carousel = ({slides, options, slidesPerView, slidesHeight, slidesSpacing, type}: CarouselProps) => {
+const Carousel = ({slides, options, slidesPerView, slidesHeight, slidesSpacing, type}: any) => {
     const [emblaRef, emblaApi] = useEmblaCarousel(options, [Autoplay()])
 
     return (
