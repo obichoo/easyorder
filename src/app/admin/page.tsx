@@ -8,6 +8,7 @@ import { User } from "@/models/user.model";
 import { Product } from "@/models/product.model";
 import { useRouter } from "next/navigation";
 import Title from "@/app/components/title/page";
+import Loading from "@/app/components/loading/page";
 
 const AdminPanel = () => {
     const router = useRouter();
@@ -102,7 +103,7 @@ const AdminPanel = () => {
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
     if (loading) {
-        return <p className="text-center text-easyorder-black">Chargement des données...</p>;
+        return <Loading />;
     }
 
     // Si l'utilisateur n'est pas admin, on retourne un message en attendant la redirection

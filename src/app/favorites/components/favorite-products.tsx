@@ -9,6 +9,7 @@ import FavoriteProductService from "@/services/favorite-product.service";
 import getUser from "@/utils/get-user";
 import {User} from "@/models/user.model";
 import {Product} from "@/models/product.model";
+import Title from "@/app/components/title/page";
 
 const RemoveFavoriteModal = ({ confirm, favorite }: { confirm: Function, favorite: FavoriteProduct }) => {
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
@@ -111,7 +112,7 @@ const FavoriteProducts = () => {
 
     return (
         <div className="container mx-auto mt-12">
-            <h2 className="text-3xl font-semibold text-center mb-10">Mes produits favoris</h2>
+            <Title>Mes produits favoris</Title>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {favorites.length > 0 ? (
                     favorites.map(favorite => (
@@ -125,7 +126,7 @@ const FavoriteProducts = () => {
                         ))
                     ))
                 ) : (
-                    <p className="col-span-full text-center text-lg text-gray-600">Vous n'avez pas encore de produits favoris</p>
+                    <p className="col-span-full text-center text-lg ">Vous n'avez pas encore de produits favoris</p>
                 )}
             </div>
         </div>

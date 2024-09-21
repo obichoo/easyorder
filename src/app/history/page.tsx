@@ -12,6 +12,7 @@ import {useRouter} from "next/navigation";
 import {Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure} from "@nextui-org/modal";
 import CommentService from "@/services/comment.service";
 import Link from "next/link";
+import Loading from "@/app/components/loading/page";
 
 const PurchasesHistoryTable = ({ orders, loading }: { orders: Order[], loading: boolean }) => {
     const router = useRouter();
@@ -23,7 +24,7 @@ const PurchasesHistoryTable = ({ orders, loading }: { orders: Order[], loading: 
     const { isOpen: isConfirmModalOpen, onOpen: openConfirmModal, onClose: closeConfirmModal } = useDisclosure(); // Gestion de la modale de confirmation de réception
     const [rate, setRate] = useState(0); // Note du vendeur
     const [content, setContent] = useState(''); // Commentaire pour la note
-    const [isSubmitting, setIsSubmitting] = useState(false); // État de chargement
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         const user: User | null = getUser();
@@ -178,7 +179,7 @@ const PurchasesHistoryTable = ({ orders, loading }: { orders: Order[], loading: 
                                                                     className="text-lg font-semibold text-easyorder-black truncate">
                                                                     {orderItem.product_id?.name}
                                                                 </div>
-                                                                <div className="mt-2 text-sm text-gray-600">
+                                                                <div className="mt-2 text-sm ">
                                                                     <FaUser className="inline-block mr-2"/>
                                                                     <Link href={`/artisans/${orderItem.product_id?.artisan_id?._id}`}>
                                                                         Vendeur :
@@ -187,12 +188,12 @@ const PurchasesHistoryTable = ({ orders, loading }: { orders: Order[], loading: 
                                                                         </span>
                                                                     </Link>
                                                                 </div>
-                                                                <div className="mt-1 text-sm text-gray-600">
+                                                                <div className="mt-1 text-sm ">
                                                                     <FaTag className="inline-block mr-2"/>
                                                                     Prix
                                                                     : {orderItem?.price_in_cent ? orderItem.price_in_cent / 100 + ' €' : 'Prix non défini'}
                                                                 </div>
-                                                                <div className="mt-1 text-sm text-gray-600">
+                                                                <div className="mt-1 text-sm ">
                                                                     <FaBox className="inline-block mr-2"/>
                                                                     Quantité : {orderItem.quantity}
                                                                 </div>
@@ -220,9 +221,7 @@ const PurchasesHistoryTable = ({ orders, loading }: { orders: Order[], loading: 
                         </div>
                     </div>
                 ) : (
-                    <div className="flex justify-center items-center h-96">
-                        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-easyorder-green"/>
-                    </div>
+                    <Loading />
                 )
             }
 
@@ -309,7 +308,7 @@ const SellsHistoryTable = ({ orders, loading }: { orders: Order[], loading: bool
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [selectedStatus, setSelectedStatus] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false); // État de chargement
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const statusOptions = [
         { value: 'processing', label: 'En traitement' },
@@ -442,16 +441,16 @@ const SellsHistoryTable = ({ orders, loading }: { orders: Order[], loading: bool
                                                                 className="text-lg font-semibold text-easyorder-black truncate">
                                                                 {orderItem.product_id?.name}
                                                             </div>
-                                                            <div className="mt-2 text-sm text-gray-600">
+                                                            <div className="mt-2 text-sm ">
                                                                 <FaUser className="inline-block mr-2" />
                                                                 Vendu à : {order.user_id?.name}
                                                             </div>
-                                                            <div className="mt-1 text-sm text-gray-600">
+                                                            <div className="mt-1 text-sm ">
                                                                 <FaTag className="inline-block mr-2" />
                                                                 Prix
                                                                 : {orderItem?.price_in_cent ? orderItem.price_in_cent / 100 + ' €' : 'Prix non défini'}
                                                             </div>
-                                                            <div className="mt-1 text-sm text-gray-600">
+                                                            <div className="mt-1 text-sm ">
                                                                 <FaBox className="inline-block mr-2" />
                                                                 Quantité : {orderItem.quantity}
                                                             </div>
@@ -471,9 +470,7 @@ const SellsHistoryTable = ({ orders, loading }: { orders: Order[], loading: bool
                         </div>
                     </div>
                 ) : (
-                    <div className="flex justify-center items-center h-96">
-                        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-easyorder-green" />
-                    </div>
+                    <Loading />
                 )
             }
 

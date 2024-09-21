@@ -8,6 +8,7 @@ import { Product } from "@/models/product.model";
 import { Category } from "@/models/category.model";
 import getUser from "@/utils/get-user";
 import Title from "@/app/components/title/page";
+import Loading from "@/app/components/loading/page";
 
 const EditProduct = () => {
     const router = useRouter();
@@ -178,7 +179,7 @@ const EditProduct = () => {
     };
 
     if (!product) {
-        return <p className="text-center text-easyorder-black text-2xl font-bold mt-40">Chargement du produit...</p>;
+        return <Loading />;
     }
 
     return (

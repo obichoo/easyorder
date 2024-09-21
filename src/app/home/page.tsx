@@ -8,6 +8,7 @@ import { Category } from "@/models/category.model";
 import Carousel, {CarouselSlide} from "@/app/components/carousel/page";
 import UserService from "@/services/user.service";
 import {EmblaOptionsType} from "embla-carousel";
+import Title from "@/app/components/title/page";
 
 const Home = () => {
     const [artisansSlides, setArtisansSlides] = useState<CarouselSlide[]>([]);
@@ -68,7 +69,7 @@ const Home = () => {
 
                 {/* Catégories */}
                 <div className="mt-12 mb-8">
-                    <h2 className="text-center text-2xl font-bold mb-6 text-[#032035]">Explorez les Catégories</h2>
+                    <Title>Explorez les Catégories</Title>
                     {categoriesSlides.length > 0 ? (
                         <Carousel type="category" slidesPerView={7} slidesHeight="30px" slidesSpacing="1rem" key="categories-carousel" options={options} slides={categoriesSlides} />
                     ) : (
@@ -78,7 +79,7 @@ const Home = () => {
 
                 {/* Liste des produits */}
                 <div className="mt-12 mb-12">
-                    <h2 className="text-center text-2xl font-bold mb-6 text-[#032035]">Nos Produits</h2>
+                    <Title>Nos Produits</Title>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                         {productsSlides.length > 0 ? (
                             <Carousel type="product" slidesPerView={4} slidesHeight="200px" slidesSpacing="2rem" key="products-carousel" options={options} slides={productsSlides} />

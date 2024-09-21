@@ -7,6 +7,7 @@ import ClientProfilePage from "@/app/account/components/customer/page";
 import VendorProfilePage from "@/app/account/components/vendor/page";
 import {useRouter, useSearchParams} from "next/navigation";
 import UserService from "@/services/user.service";
+import Loading from "@/app/components/loading/page";
 
 const AccountPage = () => {
     const router = useRouter();
@@ -31,7 +32,7 @@ const AccountPage = () => {
         }
     }, [])
 
-    if (!role) return <div className="text-center text-2xl mt-20 font-bold">Chargement du profil...</div>
+    if (!role) return <Loading />
 
     if (role === 'client') {
         return (<ClientProfilePage />)

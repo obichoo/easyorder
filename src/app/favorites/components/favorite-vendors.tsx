@@ -125,7 +125,7 @@ const FavoriteVendors = () => {
                         ))
                     ))
                 ) : (
-                    <p className="col-span-full text-center text-lg text-gray-600">Vous n'avez pas encore d'artisan favori</p>
+                    <p className="col-span-full text-center text-lg ">Vous n'avez pas encore d'artisan favori</p>
                 )}
             </div>
         </div>

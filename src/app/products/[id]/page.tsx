@@ -15,6 +15,7 @@ import { FavoriteProduct } from "@/models/favorite-product.model";
 import Carousel, { CarouselSlide } from "@/app/components/carousel/page";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/modal";
 import Title from "@/app/components/title/page";
+import Loading from "@/app/components/loading/page";
 
 export default function Page() {
   const router = useRouter();
@@ -72,7 +73,7 @@ export default function Page() {
   }, [product]);
 
   if (!product) {
-    return <p className="text-center text-easyorder-black text-2xl font-bold mt-40">Chargement du produit...</p>;
+    return <Loading />;
   }
 
   const addToCart = () => {
@@ -254,7 +255,7 @@ export default function Page() {
                       className="w-full h-48 object-cover rounded-lg mb-4"
                   />
                   <h4 className="font-bold text-xl text-easyorder-black mb-2 truncate">{product.name}</h4>
-                  <p className="text-gray-600 mb-2">
+                  <p className=" mb-2">
                     {(product?.description as string).substring(0, 60)}
                     {(product?.description as string).length > 59 && '...'}
                   </p>

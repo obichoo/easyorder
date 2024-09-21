@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { FaSearch, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import Title from "@/app/components/title/page";
 
 const faqs = [
   {
@@ -50,6 +51,7 @@ export default function FAQPage() {
   return (
       <div className="container mx-auto px-4 py-12">
         {/* Barre de recherche */}
+        <Title>FAQ</Title>
         <div className="flex justify-center mb-10">
           <div className="relative w-full max-w-md">
             <input
@@ -66,7 +68,7 @@ export default function FAQPage() {
         {/* Liste des questions et réponses */}
         <div className="space-y-6">
           {filteredFaqs.length === 0 ? (
-              <p className="text-center text-easyorder-gray">Aucune FAQ ne correspond à votre recherche.</p>
+              <p className="text-center text-easyorder-gray">Aucune question ne correspond à votre recherche.</p>
           ) : (
               filteredFaqs.map((faq, index) => (
                   <div key={index} className="bg-white shadow-lg rounded-lg overflow-hidden">

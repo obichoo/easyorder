@@ -101,7 +101,7 @@ export default function Page({ params }: any) {
   };
 
   if (!artisan) {
-    return <div className="text-center text-gray-600 py-16">Artisan non trouvé.</div>;
+    return <div className="text-center  py-16">Artisan non trouvé.</div>;
   }
 
   const toggleFavorite = () => {
@@ -205,12 +205,12 @@ export default function Page({ params }: any) {
                             className="w-full h-40 object-cover rounded-md mb-4"
                         />
                         <h3 className="text-lg font-semibold">{product.name}</h3>
-                        <p className="text-gray-500">{(product.price_in_cent / 100).toFixed(2)} €</p>
+                        <p className="">{(product.price_in_cent / 100).toFixed(2)} €</p>
                       </div>
                     </Link>
                 ))
             ) : (
-                <p className="text-center text-gray-500 col-span-3">Pas de produits disponibles.</p>
+                <p className="text-center  col-span-3">Pas de produits disponibles.</p>
             )}
           </div>
         </div>
@@ -230,7 +230,7 @@ export default function Page({ params }: any) {
                     </div>
                 ))
             ) : (
-                <p className="text-center text-gray-500">Aucun avis disponible.</p>
+                <p className="text-center ">Aucun avis disponible.</p>
             )}
           </div>
         </div>

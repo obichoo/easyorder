@@ -9,7 +9,8 @@ import { FaSpinner } from 'react-icons/fa';
 import {Category} from "@/models/category.model";
 import {Product} from "@/models/product.model";
 import Link from "next/link";
-import Title from "@/app/components/title/page"; // Utilisation de FaSpinner pour l'animation de chargement
+import Title from "@/app/components/title/page";
+import Loading from "@/app/components/loading/page";
 
 const SearchPage = () => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -120,10 +121,7 @@ const SearchPage = () => {
                 </div>
 
                 {loading ? (
-                    <div className="flex justify-center items-center">
-                        <FaSpinner className="animate-spin text-easyorder-green text-4xl" />
-                        <p className="ml-4 text-lg">Chargement des résultats...</p>
-                    </div>
+                    <Loading />
                 ) : error ? (
                     <p className="text-center text-lg text-red-600">
                         {error}
@@ -142,12 +140,12 @@ const SearchPage = () => {
                                     className="w-full h-48 object-cover rounded-lg mb-4"
                                 />
                                 <h4 className="font-bold text-xl text-easyorder-black mb-2 truncate">{product.name}</h4>
-                                <p className="text-gray-600 mb-2">
+                                <p className=" mb-2">
                                     {(product?.description as string).substring(0, 60)}
                                     {(product?.description as string).length > 59 && '...'}
                                 </p>
                                 <p className="text-easyorder-black font-semibold">Prix : {((product?.price_in_cent as number) / 100).toFixed(2)} €</p>
-                                <p className="text-gray-600">Stock : {(product?.stock as number) > 0 ? product.stock : 'Rupture de stock'}</p>
+                                <p className="">Stock : {(product?.stock as number) > 0 ? product.stock : 'Rupture de stock'}</p>
                             </Link>
                         ))}
                     </div>

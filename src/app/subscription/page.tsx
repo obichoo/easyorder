@@ -8,6 +8,7 @@ import getUser from "@/utils/get-user";
 import UserService from "@/services/user.service";
 import {useRouter} from "next/navigation";
 import Title from "@/app/components/title/page";
+import Loading from "@/app/components/loading/page";
 
 declare global {
     namespace JSX {
@@ -44,10 +45,7 @@ const PricingTable = () => {
     return (
         <>
             {loading ? (
-                <div className="flex items-center justify-center mt-16">
-                    <FaSpinner className="animate-spin text-easyorder-green text-4xl" />
-                    <p className="ml-4 text-easyorder-black">Chargement des options d’abonnement...</p>
-                </div>
+                <Loading />
             ) : (
                 <stripe-pricing-table
                     style={{ width: "100%" }}

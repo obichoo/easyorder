@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { FaSearch } from 'react-icons/fa';
 import UserService from '@/services/user.service';
 import { User } from "@/models/user.model";
-import Title from "@/app/components/title/page"; // Import du service
+import Title from "@/app/components/title/page";
+import Loading from "@/app/components/loading/page"; // Import du service
 
 export default function ArtisansList() {
   const [artisans, setArtisans] = useState<User[]>([]);
@@ -47,13 +48,13 @@ export default function ArtisansList() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full py-3 pl-12 pr-4 border  rounded-full shadow focus:outline-none focus:ring-2 focus:ring-easyorder-green text-easyorder-black"
               />
-              <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" />
+              <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 " />
             </div>
           </div>
 
           {/* Liste des artisans */}
           {loading ? (
-              <p className="text-center text-easyorder-black">Chargement des artisans...</p>
+              <Loading />
           ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8">
                 {filteredArtisans.length > 0 ? (
@@ -62,18 +63,17 @@ export default function ArtisansList() {
                           <div className="bg-white h-full shadow-lg rounded-lg p-6 text-center cursor-pointer hover:shadow-xl transition duration-300">
                             <img
                                 src={artisan.profile_pic}
-                                alt={`Photo de ${artisan.name}`}
+                                alt={`Photo de ${artisan?.company?.denomination}`}
                                 className="w-24 h-24 mx-auto rounded-full mb-4 border-2 border-easyorder-green"
                             />
-                            <h2 className="text-xl font-bold mb-2 text-easyorder-black">{artisan.name}</h2>
-                            <p className="text-gray-600">
+                            <p className="">
                               {(artisan.company?.denomination as ReactNode) || (artisan.company as ReactNode)}
                             </p>
                           </div>
                         </Link>
                     ))
                 ) : (
-                    <p className="text-center col-span-3 text-gray-500">Aucun artisan trouvé.</p>
+                    <p className="text-center col-span-3 ">Aucun artisan trouvé.</p>
                 )}
               </div>
           )}

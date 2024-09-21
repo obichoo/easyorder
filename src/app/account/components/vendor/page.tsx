@@ -404,13 +404,13 @@ const VendorProfilePage = () => {
                                     <div>
                                         <h4 className="font-bold text-xl text-easyorder-black mb-2 truncate">{product.name}</h4>
                                     </div>
-                                    <p className="text-gray-600 mb-2">
+                                    <p className=" mb-2">
                                         {(product?.description as string).substring(0, 60)}
                                         {(product?.description as string).length > 59 && '...'}
                                     </p>
                                     <p className="text-easyorder-black font-semibold">Prix
                                         : {((product?.price_in_cent as number) / 100).toFixed(2)} €</p>
-                                    <p className="text-gray-600">Stock
+                                    <p className="">Stock
                                         : {(product?.stock as number) > 0 ? product.stock : 'Rupture de stock'}</p>
                                 </Link>
                             ))

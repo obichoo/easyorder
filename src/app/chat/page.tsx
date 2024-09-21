@@ -9,6 +9,7 @@ import { User } from "@/models/user.model";
 import UserService from "@/services/user.service";
 import { useSearchParams } from "next/navigation";
 import Title from "@/app/components/title/page";
+import Loading from "@/app/components/loading/page";
 
 interface Chat {
     id: number;
@@ -109,7 +110,7 @@ const Conversation = ({ chat, onChatUpdate }: { chat: Chat | null, onChatUpdate:
                     >
                         {loading ? (
                             <>
-                                <FaSpinner className="animate-spin" /> Envoi...
+                                <Loading />
                             </>
                         ) : (
                             <>
@@ -122,7 +123,7 @@ const Conversation = ({ chat, onChatUpdate }: { chat: Chat | null, onChatUpdate:
         </>
     ) : (
         <div className="flex-1 flex items-center justify-center">
-            <p className="text-gray-600">Sélectionnez un utilisateur pour commencer à discuter.</p>
+            <p className="">Sélectionnez un utilisateur pour commencer à discuter.</p>
         </div>
     );
 };
@@ -174,7 +175,7 @@ const SelectUser = ({ onSelect, users }: { onSelect: Function, users: User[] }) 
                                     className="p-4 cursor-pointer hover:bg-easyorder-gray"
                                 >
                                     <h3 className="font-bold text-easyorder-black">{user.name}</h3>
-                                    <p className="text-sm text-gray-600">{user.email}</p>
+                                    <p className="text-sm ">{user.email}</p>
                                 </div>
                             ))}
                         </div>
@@ -325,7 +326,7 @@ const Chat = () => {
                                         }`}
                                     >
                                         <h3 className="font-bold text-easyorder-black">{chat.recipient?.name}</h3>
-                                        <p className="text-sm text-gray-600 truncate">
+                                        <p className="text-sm  truncate">
                                             {chat.messages[chat.messages.length - 1]?.content || (
                                                 <span className="italic">Aucun message</span>
                                             )}
@@ -333,13 +334,13 @@ const Chat = () => {
                                     </div>
                                 ))
                             ) : (
-                                <p className="text-gray-600">Aucun message disponible.</p>
+                                <p className="">Aucun message disponible.</p>
                             )}
                         </div>
                     </div>
                 </div>
 
-                <div className="w-2/3 bg-gray-50 flex flex-col rounded-r-lg overflow-hidden shadow">
+                <div className="w-2/3 flex flex-col rounded-r-lg overflow-hidden shadow">
                     <Conversation chat={selectedChat} onChatUpdate={onChatUpdate} />
                 </div>
             </div>

@@ -121,7 +121,7 @@ const Navbar = () => {
                         placeholder="Rechercher un produit..."
                         className="border  rounded-full py-2 pl-4 pr-10 w-full text-sm focus:outline-none focus:ring-2 focus:ring-[#77ad86] transition"
                     />
-                    <button type="submit" className="absolute right-2 top-2 text-gray-500">
+                    <button type="submit" className="absolute right-2 top-2 ">
                         <FaSearch size={18} className="text-[#032035]" />
                     </button>
                 </form>

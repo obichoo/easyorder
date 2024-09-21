@@ -10,6 +10,7 @@ import ProductService from '@/services/product.service';
 import getUser from '@/utils/get-user';
 import {Product} from "@/models/product.model";
 import Title from "@/app/components/title/page";
+import Loading from "@/app/components/loading/page";
 
 const initialChartData = {
   labels: [],
@@ -177,7 +178,7 @@ export default function StockManagementPage() {
               className="w-full h-48 object-cover rounded-lg mb-4"
             />
             <h3 className="text-lg font-semibold">{product.name}</h3>
-            <p className="text-gray-500">${(product.price_in_cent / 100).toFixed(2)}</p>
+            <p className="">${(product.price_in_cent / 100).toFixed(2)}</p>
             <p className={product.stock > 0 ? 'text-green-500' : 'text-red-500'}>
               {product.stock > 0 ? `${product.stock} en stock` : 'Rupture de stock'}
             </p>
@@ -185,7 +186,7 @@ export default function StockManagementPage() {
         ))}
       </div>
 
-      {loading && <p>Chargement des données...</p>}
+      {loading && <Loading />}
     </div>
   );
 }
