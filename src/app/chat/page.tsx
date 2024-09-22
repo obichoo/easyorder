@@ -1,7 +1,7 @@
 'use client';
 
-import { Suspense, useEffect, useState } from "react";
-import { FaPaperPlane } from 'react-icons/fa';
+import React, { Suspense, useEffect, useState } from "react";
+import {FaCheck, FaPaperPlane, FaQuestion} from 'react-icons/fa';
 import MessageService from "@/services/message.service";
 import { Message } from "@/models/message.model";
 import getUser from "@/utils/get-user";
@@ -10,6 +10,7 @@ import UserService from "@/services/user.service";
 import { useSearchParams } from "next/navigation";
 import Title from "@/app/components/title/page";
 import Loading from "@/app/components/loading/page";
+import {ImCross} from "react-icons/im";
 
 interface Chat {
     id: number;
@@ -69,11 +70,39 @@ const Conversation = ({ chat, onChatUpdate }: { chat: Chat | null, onChatUpdate:
     return chat ? (
         <>
             <div className="flex items-center p-4 bg-easyorder-green text-white shadow-md border-b">
-                <div className="w-12 h-12 rounded-full mr-4 overflow-hidden">
-                    <img src={chat?.recipient?.profile_pic} className="w-100 h-100 object-cover" alt="" />
+                <div className="relative w-12 h-12 mr-4">
+                    <img src={chat?.recipient?.profile_pic} className="w-100 h-100 object-cover rounded-full" alt="" />
+                    {
+                        chat?.recipient?.company && (chat.recipient?.company?.etat == 'validé' ? (
+                            <span
+                                className="bg-green-500 text-white rounded-full p-1 text-xs absolute right-0 bottom-0 tooltip">
+                                                  <FaCheck/>
+                                                  <span className="tooltiptext">Entreprise vérifiée</span>
+                                              </span>
+                        ) : chat.recipient?.company?.etat == 'en attente' ? (
+                            <span
+                                className="bg-gray-500 text-white rounded-full block p-1 text-xs absolute right-0 bottom-0 tooltip">
+                                                  <FaQuestion/>
+                                                  <span className="tooltiptext">Entreprise en attente de vérification</span>
+                                              </span>
+                        ) : (
+                            <span
+                                className="bg-red-500 text-white rounded-full p-1 text-xs absolute right-0 bottom-0 tooltip">
+                                                  <ImCross/>
+                                                  <span className="tooltiptext">Entreprise non vérifiée</span>
+                                              </span>
+                        ))
+                    }
                 </div>
                 <div>
-                    <h2 className="text-xl font-bold">{chat?.recipient?.name}</h2>
+                    <h2 className="text-xl font-bold">
+                        {
+                            chat?.recipient?.company ?
+                                chat?.recipient?.company?.denomination + " (" + chat?.recipient?.name + ")"
+                                :
+                                chat?.recipient?.name
+                        }
+                    </h2>
                     <p>{chat?.recipient?.email}</p>
                 </div>
             </div>
@@ -110,7 +139,7 @@ const Conversation = ({ chat, onChatUpdate }: { chat: Chat | null, onChatUpdate:
                     >
                         {loading ? (
                             <>
-                                <Loading />
+                                <p>Envoi...</p>
                             </>
                         ) : (
                             <>
@@ -147,7 +176,7 @@ const SelectUser = ({ onSelect, users }: { onSelect: Function, users: User[] }) 
             || user?.email?.toLowerCase().includes(search.toLowerCase())
             || user?.company?.denomination?.toLowerCase().includes(search.toLowerCase())
         );
-        
+
         setSearchedUsers(searchResults);
     };
 
@@ -335,7 +364,14 @@ const Chat = () => {
                                             selectedChat?.id === chat.id ? "bg-easyorder-gray" : ""
                                         }`}
                                     >
-                                        <h3 className="font-bold text-easyorder-black">{chat.recipient?.name}</h3>
+                                        <h3 className="font-bold text-easyorder-black">
+                                            {
+                                                chat?.recipient?.company ?
+                                                    chat?.recipient?.company?.denomination + " (" + chat?.recipient?.name + ")"
+                                                    :
+                                                    chat?.recipient?.name
+                                            }
+                                        </h3>
                                         <p className="text-sm  truncate">
                                             {chat.messages[chat.messages.length - 1]?.content || (
                                                 <span className="italic">Aucun message</span>
@@ -350,7 +386,7 @@ const Chat = () => {
                     </div>
                 </div>
 
-                <div className="w-2/3 flex flex-col rounded-r-lg overflow-hidden shadow">
+                <div className="w-2/3 flex flex-col rounded-r-lg shadow">
                     <Conversation chat={selectedChat} onChatUpdate={onChatUpdate} />
                 </div>
             </div>

@@ -6,18 +6,19 @@ import {
   FaStarHalfAlt,
   FaRegStar,
   FaHeart,
-  FaRegHeart, FaTiktok, FaFacebook, FaYoutube
+  FaRegHeart, FaTiktok, FaFacebook, FaYoutube, FaCheck, FaQuestion
 } from 'react-icons/fa';
 import UserService from '@/services/user.service';
 import ProductService from '@/services/product.service';
 import CommentService from '@/services/comment.service';
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import FavoriteVendorService from "@/services/favorite-vendor.service";
 import getUser from "@/utils/get-user";
 import {FavoriteVendor} from "@/models/favorite-vendor.model";
 import {User} from "@/models/user.model";
 import Title from "@/app/components/title/page";
+import {ImCross} from "react-icons/im";
 
 const RatingStars = ({ rating }: any) => {
   const fullStars = Math.floor(rating);
@@ -134,11 +135,34 @@ export default function Page({ params }: any) {
               className="w-full h-full object-cover filter brightness-50 rounded-b-2xl"
           />
           <div className="absolute left-6 bottom-6 flex items-end">
-            <img
-                src={artisan?.company?.profile_pic}
-                alt={`Profil de ${artisan.name}`}
-                className="w-20 h-20 lg:w-20 lg:h-20 rounded-full shadow-lg object-cover"
-            />
+            <div className="relative">
+              <img
+                  src={artisan?.company?.profile_pic}
+                  alt={`Profil de ${artisan.name}`}
+                  className="w-20 h-20 lg:w-20 lg:h-20 rounded-full shadow-lg object-cover"
+              />
+              {
+                artisan.company?.etat == 'validé' ? (
+                    <span
+                        className="bg-green-500 text-white rounded-full p-1 text-xs absolute right-0 bottom-0 tooltip">
+                                                  <FaCheck/>
+                                                  <span className="tooltiptext">Entreprise vérifiée</span>
+                                              </span>
+                ) : artisan.company?.etat == 'en attente' ? (
+                    <span
+                        className="bg-gray-500 text-white rounded-full block p-1 text-xs absolute right-0 bottom-0 tooltip">
+                                                  <FaQuestion/>
+                                                  <span className="tooltiptext">Entreprise en attente de vérification</span>
+                                              </span>
+                ) : (
+                    <span
+                        className="bg-red-500 text-white rounded-full p-1 text-xs absolute right-0 bottom-0 tooltip">
+                                                  <ImCross/>
+                                                  <span className="tooltiptext">Entreprise non vérifiée</span>
+                                              </span>
+                )
+              }
+            </div>
 
             <button onClick={toggleFavorite} className="bg-transparent text-red-700 px-4 py-2 rounded-md transition">
               {

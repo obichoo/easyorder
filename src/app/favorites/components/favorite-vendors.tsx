@@ -3,12 +3,14 @@
 import { MdFavorite } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/modal";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FavoriteVendor } from "@/models/favorite-vendor.model";
 import FavoriteVendorService from "@/services/favorite-vendor.service";
 import getUser from "@/utils/get-user";
 import {User} from "@/models/user.model";
 import Title from "@/app/components/title/page";
+import {FaCheck, FaQuestion} from "react-icons/fa";
+import {ImCross} from "react-icons/im";
 
 const RemoveFavoriteModal = ({ confirm }: { confirm: Function }) => {
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
@@ -69,7 +71,32 @@ const FavoriteItem = ({ vendor, remove }: { vendor: any, remove: Function }) => 
             key={vendor._id}
             onClick={(e) => handleVendorClick(e)}
         >
-            <img className="rounded-xl h-36 w-full object-cover mb-2" src={vendor?.company?.profile_pic} alt={vendor.name} />
+            <div className="relative mb-2 h-36 w-36 mx-auto">
+                <img className="rounded-full object-cover" src={vendor?.company?.profile_pic} alt={vendor.name} />
+                <div className="-translate-x-2 -translate-y-2">
+                    {
+                        vendor.company?.etat == 'validé' ? (
+                            <span
+                                className="bg-green-500 text-white rounded-full p-1 text-xs absolute right-0 bottom-0 tooltip">
+                                                  <FaCheck/>
+                                                  <span className="tooltiptext">Entreprise vérifiée</span>
+                                              </span>
+                        ) : vendor.company?.etat == 'en attente' ? (
+                            <span
+                                className="bg-gray-500 text-white rounded-full block p-1 text-xs absolute right-0 bottom-0 tooltip">
+                                                  <FaQuestion/>
+                                                  <span className="tooltiptext">Entreprise en attente de vérification</span>
+                                              </span>
+                        ) : (
+                            <span
+                                className="bg-red-500 text-white rounded-full p-1 text-xs absolute right-0 bottom-0 tooltip">
+                                                  <ImCross/>
+                                                  <span className="tooltiptext">Entreprise non vérifiée</span>
+                                              </span>
+                        )
+                    }
+                </div>
+            </div>
             <div className="flex justify-between items-center">
                 <p className="text-center font-medium">{vendor?.company?.denomination}</p>
                 <div>

@@ -1,11 +1,12 @@
 'use client';
 import React, { useState, useEffect, ReactNode } from 'react';
 import Link from 'next/link';
-import { FaSearch } from 'react-icons/fa';
+import {FaCheck, FaQuestion, FaSearch} from 'react-icons/fa';
 import UserService from '@/services/user.service';
 import { User } from "@/models/user.model";
 import Title from "@/app/components/title/page";
-import Loading from "@/app/components/loading/page"; // Import du service
+import Loading from "@/app/components/loading/page";
+import {ImCross} from "react-icons/im"; // Import du service
 
 export default function ArtisansList() {
   const [artisans, setArtisans] = useState<any>([]);
@@ -60,12 +61,35 @@ export default function ArtisansList() {
                 {filteredArtisans?.length > 0 ? (
                     filteredArtisans?.map((artisan: User) => (
                         <Link key={artisan._id} className="block h-full" href={`/artisans/${artisan._id}`} passHref>
-                          <div className="bg-white h-full shadow-lg rounded-lg p-6 text-center cursor-pointer hover:shadow-xl transition duration-300">
-                            <img
-                                src={artisan.company?.profile_pic}
-                                alt={`Photo de ${artisan?.company?.denomination}`}
-                                className="w-24 h-24 mx-auto rounded-full mb-4 shadow"
-                            />
+                          <div className=" bg-white h-full shadow-lg rounded-lg p-6 text-center cursor-pointer hover:shadow-xl transition duration-300">
+                            <div className="relative flex justify-center w-24 mx-auto mb-4">
+                              <img
+                                  src={artisan.company?.profile_pic}
+                                  alt={`Photo de ${artisan?.company?.denomination}`}
+                                  className="w-24 h-24 rounded-full shadow"
+                              />
+                              {
+                                artisan.company?.etat == 'validé' ? (
+                                    <span
+                                        className="bg-green-500 text-white rounded-full p-1 text-xs absolute right-0 bottom-0 tooltip">
+                                              <FaCheck/>
+                                              <span className="tooltiptext">Entreprise vérifiée</span>
+                                          </span>
+                                ) : artisan.company?.etat == 'en attente' ? (
+                                    <span
+                                        className="bg-gray-500 text-white rounded-full block p-1 text-xs absolute right-0 bottom-0 tooltip">
+                                              <FaQuestion/>
+                                              <span className="tooltiptext">Entreprise en attente de vérification</span>
+                                          </span>
+                                ) : (
+                                    <span
+                                        className="bg-red-500 text-white rounded-full p-1 text-xs absolute right-0 bottom-0 tooltip">
+                                              <ImCross/>
+                                              <span className="tooltiptext">Entreprise non vérifiée</span>
+                                          </span>
+                                )
+                              }
+                            </div>
                             <p className="">
                               {(artisan.company?.denomination as ReactNode) || (artisan.company as ReactNode)}
                             </p>

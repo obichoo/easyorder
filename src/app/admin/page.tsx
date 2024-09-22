@@ -133,7 +133,8 @@ const AdminPanel = () => {
         if (searchTerm) {
             sortableUsers = sortableUsers.filter((user) =>
                 user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+                user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                user?.company?.denomination?.toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
         if (sortConfig !== null) {
@@ -274,7 +275,18 @@ const AdminPanel = () => {
                                 <tbody>
                                 {pendingArtisans.map((user) => (
                                     <tr key={user._id} className="border-b border-easyorder-gray">
-                                        <td className="py-4 px-6">{user.name}</td>
+                                        <td className="py-4 px-6">
+                                            {user?.role == 'artisan' ? (
+                                                <Link className="text-easyorder-green" href={`/artisans/${user?._id}`}>
+                                                    {user?.company?.denomination} ({user.name})
+                                                </Link>
+                                            ) : (
+                                                <p>
+                                                    {user.name}
+                                                </p>
+                                            )
+                                            }
+                                        </td>
                                         <td className="py-4 px-6">{user.email}</td>
                                         <td className="py-4 px-6">{user.company?.denomination || 'N/A'}</td>
                                         <td className="py-4 px-6 space-x-2">
@@ -315,7 +327,18 @@ const AdminPanel = () => {
                                 <tbody>
                                 {currentUsers.map((user) => (
                                     <tr key={user._id} className="border-b border-easyorder-gray">
-                                        <td className="py-4 px-6">{user.name}</td>
+                                        <td className="py-4 px-6">
+                                            {user?.role == 'artisan' ? (
+                                                <Link className="text-easyorder-green" href={`/artisans/${user?._id}`}>
+                                                    {user?.company?.denomination} ({user.name})
+                                                </Link>
+                                            ) : (
+                                                <p>
+                                                    {user.name}
+                                                </p>
+                                            )
+                                            }
+                                        </td>
                                         <td className="py-4 px-6">{user.email}</td>
                                         <td className="py-4 px-6">{user.role}</td>
                                         <td className="py-4 px-6">

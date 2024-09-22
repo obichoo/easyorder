@@ -11,7 +11,7 @@ import {
     FaFacebook,
     FaInstagram,
     FaTiktok,
-    FaYoutube
+    FaYoutube, FaCheck, FaQuestion, FaCross
 } from 'react-icons/fa';
 import {useRouter, useSearchParams} from 'next/navigation';
 import Select from 'react-select';
@@ -21,10 +21,11 @@ import CategoryService from '@/services/category.service';
 import UserService from "@/services/user.service";
 import { User } from '@/models/user.model';
 import getUser from "@/utils/get-user";
-import {FaS} from "react-icons/fa6";
+import {FaS, FaX} from "react-icons/fa6";
 import ClientProfilePage from "@/app/account/components/customer/page";
 import Link from "next/link";
 import Title from "@/app/components/title/page";
+import {ImCross} from "react-icons/im";
 
 const VendorProfilePage = () => {
     const searchParams = useSearchParams()
@@ -37,7 +38,6 @@ const VendorProfilePage = () => {
     const [isEditingPersonalProfile, setIsEditingPersonalProfile] = useState<boolean>(false);
 
     const { isOpen: isCategoryModalOpen, onOpen: openCategoryModal, onClose: closeCategoryModal } = useDisclosure();
-    const { isOpen: isProductModalOpen, onOpen: openProductModal, onClose: closeProductModal } = useDisclosure();
 
     const bannerInputRef = useRef<HTMLInputElement | null>(null);
     const logoInputRef = useRef<HTMLInputElement | null>(null);
@@ -181,7 +181,7 @@ const VendorProfilePage = () => {
                     <div className="flex items-center w-full mb-6">
                         <div className="flex items-center">
                             <div
-                                className="mr-8 w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center cursor-pointer shadow"
+                                className="relative mr-8 w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center cursor-pointer shadow"
                                 onClick={() => logoInputRef.current?.click()}
                             >
                                 {user.company?.profile_pic ? (
@@ -190,6 +190,28 @@ const VendorProfilePage = () => {
                                 ) : (
                                     <p className="text-center">Ajouter un logo</p>
                                 )}
+
+                                {
+                                    user.company?.etat == 'validé' ? (
+                                        <span
+                                            className="bg-green-500 text-white rounded-full p-1 text-xs absolute right-0 bottom-0 tooltip">
+                                            <FaCheck/>
+                                            <span className="tooltiptext">Entreprise vérifiée</span>
+                                        </span>
+                                    ) : user.company?.etat == 'en attente' ? (
+                                        <span
+                                            className="bg-gray-500 text-white rounded-full block p-1 text-xs absolute right-0 bottom-0 tooltip">
+                                            <FaQuestion/>
+                                            <span className="tooltiptext">Entreprise en attente de vérification</span>
+                                        </span>
+                                    ) : (
+                                        <span
+                                            className="bg-red-500 text-white rounded-full p-1 text-xs absolute right-0 bottom-0 tooltip">
+                                            <ImCross/>
+                                            <span className="tooltiptext">Entreprise non vérifiée</span>
+                                        </span>
+                                    )
+                                }
                             </div>
                             <input ref={logoInputRef} type="file" accept="image/png, image/jpeg" className="hidden"
                                    onChange={handleLogoUpload}/>
@@ -286,21 +308,12 @@ const VendorProfilePage = () => {
                         <div className="bg-white rounded-lg shadow-lg p-4 mb-8">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="font-semibold">Email</label>
-                                    <input
-                                        type="email"
-                                        value={user.email || ''}
-                                        onChange={(e) => setUser({...user, email: e.target.value})}
-                                        className="w-full p-2 border  rounded-md"
-                                    />
+                                    <label className="font-semibold">SIRET</label>
+                                    <p>{user.company?.siret || 'Non défini'}</p>
                                 </div>
                                 <div>
                                     <label className="font-semibold">SIREN</label>
                                     <p>{user.company?.siren || 'Non défini'}</p>
-                                </div>
-                                <div>
-                                    <label className="font-semibold">SIRET</label>
-                                    <p>{user.company?.siret || 'Non défini'}</p>
                                 </div>
                                 <div>
                                     <label className="font-semibold">Catégorie d'entreprise</label>
@@ -310,18 +323,17 @@ const VendorProfilePage = () => {
                                     <label className="font-semibold">Code d'activité</label>
                                     <p>{user.company?.activitite_principale_legale || 'Non défini'}</p>
                                 </div>
-                                <div className="mb-4">
+                                <div
+                                    className="col-span-2"
+                                >
                                     <label className="font-semibold mb-1 block">Adresse</label>
-                                    <p>{user.company?.adresse_etablissement?.libelleVoieEtablissement || 'Non défini'}</p>
-                                </div>
-                                <div>
-                                    <label className="font-semibold">Code Postal</label>
-                                    <p>{user.company?.adresse_etablissement?.codePostalEtablissement
-                                        || 'Non défini'}</p>
-                                </div>
-                                <div>
-                                    <label className="font-semibold">Ville</label>
-                                    <p>{user.company?.adresse_etablissement?.libelleCommuneEtablissement
+                                    <p>{
+                                        [
+                                            user?.company?.adresse_etablissement?.typeVoieEtablissement,
+                                            user?.company?.adresse_etablissement?.libelleVoieEtablissement,
+                                            user?.company?.adresse_etablissement?.libelleCommuneEtablissement,
+                                            user?.company?.adresse_etablissement?.codePostalEtablissement,
+                                        ].filter((x) => x).join(' ')
                                         || 'Non défini'}</p>
                                 </div>
                             </div>
