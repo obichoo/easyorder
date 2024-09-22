@@ -23,6 +23,9 @@ const AdminPanel = () => {
     // Recherche states
     const [searchTerm, setSearchTerm] = useState('');
 
+    // Sorting state
+    const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
+
     useEffect(() => {
         // Vérifier si l'utilisateur est bien un admin
         const user = localStorage.getItem('user');
@@ -77,22 +80,65 @@ const AdminPanel = () => {
         }
     };
 
+    // Sorting logic
+    const handleSort = (key: string) => {
+        let direction: 'asc' | 'desc' = 'asc';
+        if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+            direction = 'desc';
+        }
+        setSortConfig({ key, direction });
+    };
+
+    // Combine sorting and searching logic
+    const sortedAndFilteredUsers = React.useMemo(() => {
+        let sortableUsers = [...users];
+        if (searchTerm) {
+            sortableUsers = sortableUsers.filter((user) =>
+                user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+        if (sortConfig !== null) {
+            sortableUsers.sort((a, b) => {
+                if (a[sortConfig.key as keyof User] < b[sortConfig.key as keyof User]) {
+                    return sortConfig.direction === 'asc' ? -1 : 1;
+                }
+                if (a[sortConfig.key as keyof User] > b[sortConfig.key as keyof User]) {
+                    return sortConfig.direction === 'asc' ? 1 : -1;
+                }
+                return 0;
+            });
+        }
+        return sortableUsers;
+    }, [users, sortConfig, searchTerm]);
+
+    const sortedAndFilteredProducts = React.useMemo(() => {
+        let sortableProducts = [...products];
+        if (searchTerm) {
+            sortableProducts = sortableProducts.filter((product) =>
+                product.name?.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+        if (sortConfig !== null) {
+            sortableProducts.sort((a, b) => {
+                if (a[sortConfig.key as keyof Product] < b[sortConfig.key as keyof Product]) {
+                    return sortConfig.direction === 'asc' ? -1 : 1;
+                }
+                if (a[sortConfig.key as keyof Product] > b[sortConfig.key as keyof Product]) {
+                    return sortConfig.direction === 'asc' ? 1 : -1;
+                }
+                return 0;
+            });
+        }
+        return sortableProducts;
+    }, [products, sortConfig, searchTerm]);
+
     // Pagination Logic
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
-    // Filtrage des utilisateurs et des produits en fonction de la barre de recherche
-    const filteredUsers = users.filter((user) =>
-        user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    const filteredProducts = products.filter((product) =>
-        product.name?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    const currentUsers = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
-    const currentProducts = filteredProducts.slice(indexOfFirstItem, indexOfLastItem);
+    const currentUsers = sortedAndFilteredUsers.slice(indexOfFirstItem, indexOfLastItem);
+    const currentProducts = sortedAndFilteredProducts.slice(indexOfFirstItem, indexOfLastItem);
 
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
@@ -119,7 +165,7 @@ const AdminPanel = () => {
                         <li key={number}>
                             <button
                                 onClick={() => paginate(number)}
-                                className={`${currentPage == number ? 'bg-easyorder-black' : 'bg-easyorder-green'} text-white px-3 py-1 rounded-lg hover:bg-easyorder-black transition`}
+                                className={`${currentPage === number ? 'bg-easyorder-black' : 'bg-easyorder-green'} text-white px-3 py-1 rounded-lg hover:bg-easyorder-black transition`}
                             >
                                 {number}
                             </button>
@@ -175,9 +221,9 @@ const AdminPanel = () => {
                             <table className="min-w-full bg-white rounded-lg shadow-lg">
                                 <thead className="bg-easyorder-green text-white">
                                 <tr>
-                                    <th className="py-4 px-6 text-left">Nom</th>
-                                    <th className="py-4 px-6 text-left">Email</th>
-                                    <th className="py-4 px-6 text-left">Rôle</th>
+                                    <th className="py-4 px-6 text-left cursor-pointer" onClick={() => handleSort('name')}>Nom</th>
+                                    <th className="py-4 px-6 text-left cursor-pointer" onClick={() => handleSort('email')}>Email</th>
+                                    <th className="py-4 px-6 text-left cursor-pointer" onClick={() => handleSort('role')}>Rôle</th>
                                     <th className="py-4 px-6 text-left">Actions</th>
                                 </tr>
                                 </thead>
@@ -190,9 +236,9 @@ const AdminPanel = () => {
                                         <td className="py-4 px-6">
                                             <div className="flex space-x-2">
                                                 {/* Bouton modifier */}
-                                                    <Link href={`/account?userId=${user._id}`} className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                                                        {user.role === 'artisan' ? 'Modifier artisan' : 'Modifier client'}
-                                                    </Link>
+                                                <Link href={`/account?userId=${user._id}`} className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                                                    {user.role === 'artisan' ? 'Modifier artisan' : 'Modifier client'}
+                                                </Link>
                                                 {/* Bouton supprimer */}
                                                 <button
                                                     className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
@@ -209,7 +255,7 @@ const AdminPanel = () => {
                         </div>
 
                         {/* Pagination */}
-                        <Pagination totalItems={filteredUsers.length} paginate={paginate}/>
+                        <Pagination totalItems={sortedAndFilteredUsers.length} paginate={paginate}/>
                     </section>
                 )}
 
@@ -220,9 +266,9 @@ const AdminPanel = () => {
                             <table className="min-w-full bg-white rounded-lg shadow-lg">
                                 <thead className="bg-easyorder-green text-white">
                                 <tr>
-                                    <th className="py-4 px-6 text-left">Nom du produit</th>
-                                    <th className="py-4 px-6 text-left">Prix</th>
-                                    <th className="py-4 px-6 text-left">Stock</th>
+                                    <th className="py-4 px-6 text-left cursor-pointer" onClick={() => handleSort('name')}>Nom du produit</th>
+                                    <th className="py-4 px-6 text-left cursor-pointer" onClick={() => handleSort('price_in_cent')}>Prix</th>
+                                    <th className="py-4 px-6 text-left cursor-pointer" onClick={() => handleSort('stock')}>Stock</th>
                                     <th className="py-4 px-6 text-left">Actions</th>
                                 </tr>
                                 </thead>
@@ -238,7 +284,6 @@ const AdminPanel = () => {
                                         <td className="py-4 px-6">{(product.price_in_cent as number / 100).toFixed(2)} €</td>
                                         <td className="py-4 px-6">{product.stock}</td>
                                         <td className="py-4 px-6 space-x-2">
-                                            {/* Bouton pour la page d'édition */}
                                             <button
                                                 className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
                                                 onClick={() => router.push(`/products/edit/${product._id}`)}
@@ -259,7 +304,7 @@ const AdminPanel = () => {
                         </div>
 
                         {/* Pagination */}
-                        <Pagination totalItems={filteredProducts.length} paginate={paginate} />
+                        <Pagination totalItems={sortedAndFilteredProducts.length} paginate={paginate} />
                     </section>
                 )}
             </div>

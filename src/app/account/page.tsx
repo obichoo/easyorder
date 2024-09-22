@@ -25,7 +25,7 @@ const AccountPage = () => {
 
     if (!role) return <div className="text-center text-2xl mt-20 font-bold">Chargement du profil...</div>
 
-    if (role === 'client') {
+    if (role === 'client' || role === 'admin') {
         return (<ClientProfilePage />)
     } else if (role === 'artisan') {
         return (<VendorProfilePage />)

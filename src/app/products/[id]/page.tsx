@@ -24,10 +24,14 @@ export default function Page() {
   const [favorites, setFavorites] = useState<{ _id?: string, products?: string[] }>({});
   const [slides, setSlides] = useState<CarouselSlide[]>([]);
   const { isOpen, onOpen, onClose } = useDisclosure(); // Gestion de la modale de suppression
+  const [isAdmin, setIsAdmin] = useState(false); // Ajout du rôle admin
 
   useEffect(() => {
-    const userId = getUser()?._id;
-    setUserId(userId);
+    const user = getUser();
+    if (user) {
+      setUserId(user._id);
+      setIsAdmin(user.role === 'admin'); // Vérification si l'utilisateur est un admin
+    }
     getFavoritesProducts();
   }, []);
 
@@ -137,7 +141,7 @@ export default function Page() {
         <div className="w-2/3 mx-auto">
           <h1 className="text-center text-4xl font-bold mb-12 text-easyorder-black">
             {product.name}
-            {userId === product?.artisan_id && (
+            {(userId === product?.artisan_id || isAdmin) && (
                 <FaTrash size={32} className="ml-4 cursor-pointer text-danger inline mb-1" onClick={onOpen} />
             )}
           </h1>
@@ -198,7 +202,6 @@ export default function Page() {
                   </div>
               )}
 
-
               <div>
                 <h2 className="text-xl font-semibold text-easyorder-black">Prix</h2>
                 <p className="text-gray-700">{(product.price_in_cent / 100).toFixed(2)} €</p>
@@ -227,7 +230,7 @@ export default function Page() {
             Ajouter au panier
           </button>
 
-          {userId === product?.artisan_id && (
+          {(userId === product?.artisan_id || isAdmin) && (
               <Link href={`/products/edit/${product?._id}`}>
                 <button className="bg-easyorder-gray text-easyorder-black px-4 py-2 rounded shadow hover:bg-easyorder-black hover:text-white transition flex">
                   <FaEdit size={20} className="mr-2" />
