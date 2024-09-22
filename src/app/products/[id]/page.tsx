@@ -144,7 +144,7 @@ export default function Page() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Carousel */}
           <div className="w-full lg:w-1/2 rounded-lg overflow-hidden">
-            <Carousel slides={slides} options={{ loop: true }} slidesPerView={1} slidesHeight={'300px'} slidesSpacing={'2rem'} />
+            <Carousel slides={slides} options={{ loop: true }} slidesPerView={1} slidesHeight={'500px'} slidesSpacing={'2rem'} />
           </div>
 
           {/* Détails du produit */}
