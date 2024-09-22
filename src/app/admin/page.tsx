@@ -15,8 +15,9 @@ const AdminPanel = () => {
     const [isAdmin, setIsAdmin] = useState(false);
     const [users, setUsers] = useState<User[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
+    const [pendingArtisans, setPendingArtisans] = useState<User[]>([]); // Nouvel état pour les artisans en attente
     const [loading, setLoading] = useState(true);
-    const [currentCategory, setCurrentCategory] = useState<"users" | "products">("users");
+    const [currentCategory, setCurrentCategory] = useState<"users" | "products" | "validations">("users");
 
     // Pagination states
     const [currentPage, setCurrentPage] = useState(1);
@@ -29,7 +30,6 @@ const AdminPanel = () => {
     const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
 
     useEffect(() => {
-        // Vérifier si l'utilisateur est bien un admin
         const user = localStorage.getItem('user');
         if (user) {
             const parsedUser = JSON.parse(user);
@@ -43,7 +43,6 @@ const AdminPanel = () => {
         }
     }, [router]);
 
-    // Fetch users and products on load
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -52,6 +51,10 @@ const AdminPanel = () => {
 
                 const productResponse = await ProductService.getAllProducts();
                 setProducts(productResponse.data);
+
+                // Filtrage des artisans avec état en attente
+                const artisansEnAttente = userResponse.data.filter((user: User) => user.role === 'artisan' && user.company?.etat === 'en attente');
+                setPendingArtisans(artisansEnAttente);
 
                 setLoading(false);
             } catch (error) {
@@ -65,6 +68,30 @@ const AdminPanel = () => {
     useEffect(() => {
         setCurrentPage(1);
     }, [searchTerm, currentCategory]);
+
+    const handleValidateUser = async (user: any) => {
+        try {
+            const updatedUser = await UserService.updateUser({
+                ...user,
+                company: {
+                    ...user.company,
+                    etat: "validé"
+                }
+            });
+            setPendingArtisans(pendingArtisans.filter((u) => u._id !== user._id));
+        } catch (error) {
+            console.error("Erreur lors de la validation de l'utilisateur :", error);
+        }
+    };
+
+    const handleRejectUser = async (user: any) => {
+        try {
+            await UserService.updateUser({ _id: user, company: { etat: 'refusé' } });
+            setPendingArtisans(pendingArtisans.filter((u) => u._id !== user._id));
+        } catch (error) {
+            console.error("Erreur lors du rejet de l'utilisateur :", error);
+        }
+    };
 
     // Handle user deletion
     const handleDeleteUser = async (userId: string) => {
@@ -95,7 +122,6 @@ const AdminPanel = () => {
         setSortConfig({ key, direction });
     };
 
-    // Combine sorting and searching logic
     const sortedAndFilteredUsers = React.useMemo(() => {
         let sortableUsers = [...users];
         if (searchTerm) {
@@ -139,7 +165,6 @@ const AdminPanel = () => {
         return sortableProducts;
     }, [products, sortConfig, searchTerm]);
 
-    // Pagination Logic
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
@@ -152,7 +177,6 @@ const AdminPanel = () => {
         return <Loading />;
     }
 
-    // Si l'utilisateur n'est pas admin, on retourne un message en attendant la redirection
     if (!isAdmin) {
         return <p>Redirection en cours...</p>;
     }
@@ -207,6 +231,15 @@ const AdminPanel = () => {
                     >
                         Gérer les produits
                     </button>
+                    <button
+                        onClick={() => {
+                            setCurrentCategory("validations");
+                            setSearchTerm(''); // Réinitialise la barre de recherche
+                        }}
+                        className={`px-6 py-2 rounded-lg ${currentCategory === "validations" ? "bg-easyorder-green" : "bg-easyorder-black text-white"} hover:bg-easyorder-green hover:text-white transition`}
+                    >
+                        Gérer les validations
+                    </button>
                 </div>
 
                 {/* Barre de recherche */}
@@ -220,8 +253,49 @@ const AdminPanel = () => {
                     />
                 </div>
 
+                {currentCategory === "validations" && (
+                    <section>
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full bg-white rounded-lg shadow-lg overflow-hidden">
+                                <thead className="bg-easyorder-green text-white">
+                                <tr>
+                                    <th className="py-4 px-6 text-left">Nom</th>
+                                    <th className="py-4 px-6 text-left">Email</th>
+                                    <th className="py-4 px-6 text-left">Entreprise</th>
+                                    <th className="py-4 px-6 text-left">Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {pendingArtisans.map((user) => (
+                                    <tr key={user._id} className="border-b border-easyorder-gray">
+                                        <td className="py-4 px-6">{user.name}</td>
+                                        <td className="py-4 px-6">{user.email}</td>
+                                        <td className="py-4 px-6">{user.company?.denomination || 'N/A'}</td>
+                                        <td className="py-4 px-6 space-x-2">
+                                            <button
+                                                className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+                                                onClick={() => handleValidateUser(user as any)}
+                                            >
+                                                Valider
+                                            </button>
+                                            <button
+                                                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
+                                                onClick={() => handleRejectUser(user as any)}
+                                            >
+                                                Rejeter
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                )}
+
                 {currentCategory === "users" && (
                     <section>
+                        {/* Tableau des utilisateurs */}
                         <div className="overflow-x-auto">
                             <table className="min-w-full bg-white rounded-lg shadow-lg overflow-hidden">
                                 <thead className="bg-easyorder-green text-white">
@@ -240,11 +314,9 @@ const AdminPanel = () => {
                                         <td className="py-4 px-6">{user.role}</td>
                                         <td className="py-4 px-6">
                                             <div className="flex space-x-2">
-                                                {/* Bouton modifier */}
                                                 <Link href={`/account?userId=${user._id}`} className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
                                                     {user.role === 'artisan' ? 'Modifier artisan' : 'Modifier client'}
                                                 </Link>
-                                                {/* Bouton supprimer */}
                                                 <button
                                                     className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
                                                     onClick={() => handleDeleteUser(user._id as string)}
@@ -266,6 +338,7 @@ const AdminPanel = () => {
 
                 {currentCategory === "products" && (
                     <section>
+                        {/* Tableau des produits */}
                         <div className="overflow-x-auto">
                             <table className="min-w-full bg-white rounded-lg shadow-lg overflow-hidden">
                                 <thead className="bg-easyorder-green text-white">
@@ -279,7 +352,6 @@ const AdminPanel = () => {
                                 <tbody>
                                 {currentProducts.map((product) => (
                                     <tr key={product._id} className="border-b border-easyorder-gray">
-                                        {/* Lien vers la page du produit */}
                                         <td className="py-4 px-6">
                                             <Link href={`/products/${product._id}`} className="text-easyorder-black hover:underline">
                                                 {product.name}
