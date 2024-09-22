@@ -1,5 +1,7 @@
 import AxiosInstance from "@/services/axios.service";
 import {FavoriteProduct} from "@/models/favorite-product.model";
+import {User} from "@/models/user.model";
+import {Product} from "@/models/product.model";
 
 class FavoriteProductService {
     // Get all favorites
@@ -18,8 +20,8 @@ class FavoriteProductService {
     }
 
     // Update favorite
-    updateFavorite(favorite: FavoriteProduct) {
-        return AxiosInstance.put(`/favoriteProduct/${favorite._id}`, favorite);
+    updateFavorite(favoriteId: string, products: Product['_id'][]) {
+        return AxiosInstance.put(`/favoriteProduct/${favoriteId}`, {products: products});
     }
 
     // Delete favorite
