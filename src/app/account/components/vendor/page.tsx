@@ -302,16 +302,26 @@ const VendorProfilePage = () => {
                                     <p>{user.company?.siret || 'Non défini'}</p>
                                 </div>
                                 <div>
-                                    <label className="font-semibold">Adresse</label>
-                                    <p>{user.company?.address || 'Non défini'}</p>
+                                    <label className="font-semibold">Catégorie d'entreprise</label>
+                                    <p>{user.company?.categorie_entreprise || 'Non défini'}</p>
+                                </div>
+                                <div>
+                                    <label className="font-semibold">Code d'activité</label>
+                                    <p>{user.company?.activitite_principale_legale || 'Non défini'}</p>
+                                </div>
+                                <div className="mb-4">
+                                    <label className="font-semibold mb-1 block">Adresse</label>
+                                    <p>{user.company?.adresse_etablissement?.libelleVoieEtablissement || 'Non défini'}</p>
                                 </div>
                                 <div>
                                     <label className="font-semibold">Code Postal</label>
-                                    <p>{user.company?.postalCode || 'Non défini'}</p>
+                                    <p>{user.company?.adresse_etablissement?.codePostalEtablissement
+                                        || 'Non défini'}</p>
                                 </div>
                                 <div>
                                     <label className="font-semibold">Ville</label>
-                                    <p>{user.company?.city || 'Non défini'}</p>
+                                    <p>{user.company?.adresse_etablissement?.libelleCommuneEtablissement
+                                        || 'Non défini'}</p>
                                 </div>
                             </div>
                         </div>
