@@ -105,7 +105,7 @@ const AdminPanel = () => {
             );
         }
         if (sortConfig !== null) {
-            sortableUsers.sort((a, b) => {
+            sortableUsers.sort((a: any, b: any) => {
                 if (a[sortConfig.key as keyof User] < b[sortConfig.key as keyof User]) {
                     return sortConfig.direction === 'asc' ? -1 : 1;
                 }
