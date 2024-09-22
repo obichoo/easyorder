@@ -51,7 +51,6 @@ class ProductService {
 // Suppression d'une image du produit
     deleteProductPicture(productId: Product['_id'], picturesId: string) {
         const data = { picturesId: picturesId };
-        console.log('Sending DELETE request with data:', data); // Vérifie ce qui est envoyé ici
         return AxiosInstance.post(`/product/${productId}/deletePicture`, data);
     }
 

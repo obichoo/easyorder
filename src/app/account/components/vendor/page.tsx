@@ -102,7 +102,6 @@ const VendorProfilePage = () => {
 
     const handleSaveChanges = async () => {
         try {
-            console.log('user', user);
             await UserService.updateUser(user);
             saveUserToLocalStorage(user);
         } catch (error) {

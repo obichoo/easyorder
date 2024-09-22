@@ -1,7 +1,7 @@
 'use client';
 
-import { ReactNode, Suspense, useEffect, useState } from "react";
-import { FaSpinner, FaPaperPlane } from 'react-icons/fa';
+import { Suspense, useEffect, useState } from "react";
+import { FaPaperPlane } from 'react-icons/fa';
 import MessageService from "@/services/message.service";
 import { Message } from "@/models/message.model";
 import getUser from "@/utils/get-user";
@@ -134,7 +134,6 @@ const SelectUser = ({ onSelect, users }: { onSelect: Function, users: User[] }) 
 
     useEffect(() => {
         getSearchedUsers();
-        console.log(search);
     }, [search]);
 
     const getSearchedUsers = () => {
@@ -148,9 +147,7 @@ const SelectUser = ({ onSelect, users }: { onSelect: Function, users: User[] }) 
             || user?.email?.toLowerCase().includes(search.toLowerCase())
             || user?.company?.denomination?.toLowerCase().includes(search.toLowerCase())
         );
-
-        console.log(searchResults);
-
+        
         setSearchedUsers(searchResults);
     };
 
@@ -179,7 +176,15 @@ const SelectUser = ({ onSelect, users }: { onSelect: Function, users: User[] }) 
                                     onClick={() => handleSelect(user)}
                                     className="p-4 cursor-pointer hover:bg-easyorder-gray"
                                 >
-                                    <h3 className="font-bold text-easyorder-black">{user.name}</h3>
+                                    {
+                                        user.company ?
+                                            (
+                                                <h3 className="font-bold text-easyorder-black">{user.company.denomination} ({user.name})</h3>
+                                            )
+                                            :
+                                        <h3 className="font-bold text-easyorder-black">{user.name}</h3>
+
+                                    }
                                     <p className="text-sm ">{user.email}</p>
                                 </div>
                             ))}
