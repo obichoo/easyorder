@@ -18,7 +18,7 @@ const MondialRelayWidget = ({ onParcelShopSelected }: any) => {
 
                 widgetScript.onload = () => {
                     if ((window as any).$) {
-                        (window as any).$("#Zone_Widget").MR_ParcelShopPicker({
+                        (window as any)?.$("#Zone_Widget")?.MR_ParcelShopPicker({
                             Target: "#ParcelShopCode",
                             Brand: "CC22ODIW", // code client Mondial Relay
                             Country: "FR",
@@ -43,12 +43,6 @@ const MondialRelayWidget = ({ onParcelShopSelected }: any) => {
         };
 
         loadScripts();
-
-        return () => {
-            if ((window as any).$) {
-                (window as any).$("#Zone_Widget").MR_ParcelShopPicker("destroy");
-            }
-        };
     }, [onParcelShopSelected]);
 
     return (

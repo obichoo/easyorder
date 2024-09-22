@@ -67,6 +67,20 @@ const Conversation = ({ chat, onChatUpdate }: { chat: Chat | null, onChatUpdate:
             });
     };
 
+    const replaceURL = (content: any) => {
+        if (!content) return;
+        var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
+        return content.replace(urlRegex,
+            function (url: any) {
+            var hyperlink = url;
+            if (!hyperlink.match('^https?:\/\/')) {
+                hyperlink = 'http://' + hyperlink;
+            }
+            return '<a class="underline" href="' + hyperlink + '" target="_blank" rel="noopener noreferrer">' + url + '</a>'
+        });
+    }
+
+
     return chat ? (
         <>
             <div className="flex items-center p-4 bg-easyorder-green text-white shadow-md border-b">
@@ -114,7 +128,7 @@ const Conversation = ({ chat, onChatUpdate }: { chat: Chat | null, onChatUpdate:
                             message.sender_id !== userId ? "bg-white self-start" : "ml-auto bg-easyorder-green text-white self-end"
                         }`}
                     >
-                        <p className="text-lg">{message.content}</p>
+                        <p className="text-lg" dangerouslySetInnerHTML={{__html: replaceURL(message.content)}}></p>
                         <span className="text-xs text-easyorder-black block mt-2">
                             {new Date(message.created_at as any).toLocaleString()}
                         </span>

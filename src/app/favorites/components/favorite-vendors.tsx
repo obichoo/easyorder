@@ -72,7 +72,7 @@ const FavoriteItem = ({ vendor, remove }: { vendor: any, remove: Function }) => 
             onClick={(e) => handleVendorClick(e)}
         >
             <div className="relative mb-2 h-36 w-36 mx-auto">
-                <img className="rounded-full object-cover" src={vendor?.company?.profile_pic} alt={vendor.name} />
+                <img className="rounded-full object-cover h-full" src={vendor?.company?.profile_pic} alt={vendor.name} />
                 <div className="-translate-x-2 -translate-y-2">
                     {
                         vendor.company?.etat == 'validé' ? (

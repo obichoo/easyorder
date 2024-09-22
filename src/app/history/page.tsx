@@ -184,7 +184,7 @@ const PurchasesHistoryTable = ({ orders, loading }: { orders: Order[], loading: 
                                                                     <Link href={`/artisans/${orderItem.product_id?.artisan_id?._id}`}>
                                                                         Vendeur :
                                                                         <span className="text-easyorder-green pl-1">
-                                                                            {orderItem.product_id?.artisan_id?.name}
+                                                                            {orderItem.product_id?.artisan_id?.company?.denomination}
                                                                         </span>
                                                                     </Link>
                                                                 </div>
