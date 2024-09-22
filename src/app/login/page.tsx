@@ -102,7 +102,7 @@ const Login = () => {
         if (user) {
             router.push('/home');
         }
-    })
+    }, [])
 
     return (
         <div className="flex items-center justify-center bg-easyorder-gray mt-28">

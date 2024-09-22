@@ -69,7 +69,7 @@ const Home = () => {
 
                 {/* Catégories */}
                 <div className="mt-12 mb-8">
-                    <Title>Explorez les Catégories</Title>
+                    <Title>Explorez les catégories</Title>
                     {categoriesSlides.length > 0 ? (
                         <Carousel type="category" slidesPerView={7} slidesHeight="30px" slidesSpacing="1rem" key="categories-carousel" options={options} slides={categoriesSlides} />
                     ) : (
@@ -79,7 +79,7 @@ const Home = () => {
 
                 {/* Liste des produits */}
                 <div className="mt-12 mb-12">
-                    <Title>Nos Produits</Title>
+                    <Title>Découvrez quelques produits</Title>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                         {productsSlides.length > 0 ? (
                             <Carousel type="product" slidesPerView={4} slidesHeight="200px" slidesSpacing="2rem" key="products-carousel" options={options} slides={productsSlides} />
