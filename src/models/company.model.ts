@@ -2,6 +2,8 @@ export interface Company {
     _id?: string;
     siren?: string;
     siret?: string;
+    profile_pic?: string;
+    banner_pic?: string;
     date_creation?: string;
     denomination?: string;
     categorie_entreprise?: string;

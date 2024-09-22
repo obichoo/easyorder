@@ -104,31 +104,23 @@ export default function Page() {
     const userId = getUser()?._id;
     if (!favorites?._id) {
       FavoriteProductService.createFavorite({
-        user_id: userId,
-        products: [product?._id as string]
+        user_id: userId as any,
+        products: [product?._id] as any
       }).then(() => {
-        getFavoritesProducts();
-      });
+        getFavoritesProducts()
+      })
     } else {
       if (favorites?.products?.includes(product?._id)) {
-        const newFavorite = {
-          _id: favorites?._id,
-          products: favorites?.products?.filter((p: any) => p !== product?._id)
-        };
-        FavoriteProductService.updateFavorite(newFavorite).then(() => {
-          getFavoritesProducts();
-        });
+        FavoriteProductService.updateFavorite(favorites?._id, favorites?.products?.filter((p: any) => p !== product?._id)).then(() => {
+          getFavoritesProducts()
+        })
       } else {
-        const newFavorite = {
-          _id: favorites?._id,
-          products: [...(favorites?.products as []), product?._id]
-        };
-        FavoriteProductService.updateFavorite(newFavorite).then(() => {
-          getFavoritesProducts();
-        });
+        FavoriteProductService.updateFavorite(favorites?._id, [...(favorites?.products as []), product?._id]).then(() => {
+          getFavoritesProducts()
+        })
       }
     }
-  };
+  }
 
   const handleDeleteProduct = () => {
     ProductService.deleteProduct(product._id).then(() => {

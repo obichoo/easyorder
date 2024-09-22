@@ -2,14 +2,11 @@
 
 import {
   FaInstagram,
-  FaSnapchat,
-  FaTwitter,
-  FaGlobe,
   FaStar,
   FaStarHalfAlt,
   FaRegStar,
   FaHeart,
-  FaRegHeart, FaTiktok, FaFacebook
+  FaRegHeart, FaTiktok, FaFacebook, FaYoutube
 } from 'react-icons/fa';
 import UserService from '@/services/user.service';
 import ProductService from '@/services/product.service';
@@ -108,26 +105,18 @@ export default function Page({ params }: any) {
     const userId = getUser()?._id;
     if (!favorites?._id) {
         FavoriteVendorService.createFavorite({
-            user_id: userId,
-            vendor: [artisan?._id as string]
+            user_id: userId as any,
+            vendor: [artisan?._id] as any
         }).then(() => {
             getFavoritesVendors()
         })
     } else {
       if (favorites?.vendor?.includes(artisan?._id)) {
-        const newFavorite = {
-          _id: favorites?._id,
-          vendor: favorites?.vendor?.filter((vendor: any) => vendor !== artisan?._id)
-        }
-        FavoriteVendorService.updateFavorite(newFavorite).then(() => {
+        FavoriteVendorService.updateFavorite(favorites?._id, favorites?.vendor?.filter((vendor: any) => vendor?._id !== artisan?._id)).then(() => {
             getFavoritesVendors()
         })
       } else {
-        const newFavorite = {
-          _id: favorites?._id,
-          vendor: [...(favorites?.vendor as []), artisan?._id]
-        }
-        FavoriteVendorService.updateFavorite(newFavorite).then(() => {
+        FavoriteVendorService.updateFavorite(favorites?._id, [...(favorites?.vendor as []), artisan?._id]).then(() => {
             getFavoritesVendors()
         })
       }
@@ -140,13 +129,13 @@ export default function Page({ params }: any) {
         <div
             className="relative w-full h-52 lg:h-72 overflow-hidden flex items-center justify-center bg-easyorder-gray">
           <img
-              src={artisan.company?.banner_pic || 'https://via.placeholder.com/150'}
-              alt={`Bannière de ${artisan.name}`}
+              src={artisan?.company?.banner_pic || 'https://via.placeholder.com/150'}
+              alt={`Bannière de ${artisan?.name}`}
               className="w-full h-full object-cover filter brightness-50 rounded-b-2xl"
           />
           <div className="absolute left-6 bottom-6 flex items-end">
             <img
-                src={artisan.profile_pic}
+                src={artisan?.company?.profile_pic}
                 alt={`Profil de ${artisan.name}`}
                 className="w-20 h-20 lg:w-20 lg:h-20 rounded-full shadow-lg object-cover"
             />
@@ -177,9 +166,9 @@ export default function Page({ params }: any) {
                       <FaInstagram size={32}/>
                     </a>
                 )}
-                {artisan.social_network?.twitter && (
-                    <a href={artisan.social_network.twitter} className="text-white">
-                      <FaTwitter size={32}/>
+                {artisan.social_network?.youtube && (
+                    <a href={artisan.social_network.youtube} className="text-white">
+                      <FaYoutube size={32}/>
                     </a>
                 )}
                 {artisan.social_network?.tiktok && (

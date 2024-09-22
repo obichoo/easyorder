@@ -8,7 +8,7 @@ import Title from "@/app/components/title/page";
 import Loading from "@/app/components/loading/page"; // Import du service
 
 export default function ArtisansList() {
-  const [artisans, setArtisans] = useState<User[]>([]);
+  const [artisans, setArtisans] = useState<any>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -27,8 +27,8 @@ export default function ArtisansList() {
     fetchArtisans();
   }, []);
 
-  const filteredArtisans = artisans.filter((artisan) =>
-      artisan.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredArtisans = artisans.filter((artisan: any) =>
+      artisan?.company?.denomination?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -57,14 +57,14 @@ export default function ArtisansList() {
               <Loading />
           ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8">
-                {filteredArtisans.length > 0 ? (
-                    filteredArtisans.map((artisan) => (
+                {filteredArtisans?.length > 0 ? (
+                    filteredArtisans?.map((artisan: User) => (
                         <Link key={artisan._id} className="block h-full" href={`/artisans/${artisan._id}`} passHref>
                           <div className="bg-white h-full shadow-lg rounded-lg p-6 text-center cursor-pointer hover:shadow-xl transition duration-300">
                             <img
-                                src={artisan.profile_pic}
+                                src={artisan.company?.profile_pic}
                                 alt={`Photo de ${artisan?.company?.denomination}`}
-                                className="w-24 h-24 mx-auto rounded-full mb-4 border-2 border-easyorder-green"
+                                className="w-24 h-24 mx-auto rounded-full mb-4 shadow"
                             />
                             <p className="">
                               {(artisan.company?.denomination as ReactNode) || (artisan.company as ReactNode)}

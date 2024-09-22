@@ -10,8 +10,9 @@ import getUser from "@/utils/get-user";
 import {User} from "@/models/user.model";
 import {Product} from "@/models/product.model";
 import Title from "@/app/components/title/page";
+import {FavoriteVendor} from "@/models/favorite-vendor.model";
 
-const RemoveFavoriteModal = ({ confirm, favorite }: { confirm: Function, favorite: FavoriteProduct }) => {
+const RemoveFavoriteModal = ({ confirm }: { confirm: Function }) => {
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
     const handleOpen = (event: any) => {
@@ -57,7 +58,7 @@ const RemoveFavoriteModal = ({ confirm, favorite }: { confirm: Function, favorit
     );
 };
 
-const FavoriteItem = ({ favorite, product, remove }: { favorite: FavoriteProduct, product: any, remove: Function }) => {
+const FavoriteItem = ({ product, remove }: { product: any, remove: Function }) => {
     const router = useRouter();
 
     const handleProductClick = (event: any) => {
@@ -67,14 +68,14 @@ const FavoriteItem = ({ favorite, product, remove }: { favorite: FavoriteProduct
     return (
         <div
             className="w-60 shadow-lg mx-auto rounded-2xl p-3 bg-white cursor-pointer hover:shadow-xl transition-transform hover:scale-105 duration-300"
-            key={favorite._id}
+            key={product._id}
             onClick={(e) => handleProductClick(e)}
         >
             <img className="rounded-xl h-36 w-full object-cover mb-2" src={product.pictures?.[0]?.url || 'https://via.placeholder.com/150'} alt={product.name} />
             <div className="flex justify-between items-center">
                 <p className="text-center font-medium">{product.name}</p>
                 <div>
-                    <RemoveFavoriteModal favorite={favorite} confirm={() => remove(product)} />
+                    <RemoveFavoriteModal confirm={() => remove(product)} />
                 </div>
             </div>
         </div>
@@ -82,7 +83,7 @@ const FavoriteItem = ({ favorite, product, remove }: { favorite: FavoriteProduct
 };
 
 const FavoriteProducts = () => {
-    const [favorites, setFavorites] = useState<FavoriteProduct[]>([]);
+    const [favorites, setFavorites] = useState<any>([]);
     const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
@@ -92,19 +93,18 @@ const FavoriteProducts = () => {
     useEffect(() => {
         if (user && user._id) {
             FavoriteProductService.getAllFavorites().then(res => {
-                const userFavorites = res.data.filter((favorite: FavoriteProduct) => (favorite.user_id as User)._id === user._id);
-                setFavorites(userFavorites);
+                const userFavorites = res.data.filter((favorite: FavoriteProduct) => (favorite.user_id as User)._id == user._id);
+                setFavorites(userFavorites?.[0]);
             });
         }
     }, [user]);
 
-    const handleRemove = async (product: any, favorite: FavoriteProduct) => {
+    const handleRemove = async (favorite: FavoriteProduct) => {
         try {
-            const updatedProducts = (favorite.products as Product[]).filter(p => (p as Product)._id !== product._id);
-            const updatedFavorite = { ...favorite, products: updatedProducts };
+            const updatedProducts: FavoriteProduct['_id'][] = (favorites as any)?.products?.filter((v: any) => v._id !== favorite._id).map((v: any) => v._id);
 
-            await FavoriteProductService.updateFavorite(updatedFavorite as Product);
-            setFavorites(favorites.filter(fav => fav._id !== favorite._id || updatedProducts.length > 0));
+            await FavoriteProductService.updateFavorite(favorites?._id, updatedProducts);
+            setFavorites({...favorites, products: (favorites as any)?.products?.filter((v: any) => v._id !== favorite._id)});
         } catch (error) {
             console.error("Erreur lors de la mise à jour du favori :", error);
         }
@@ -114,19 +114,16 @@ const FavoriteProducts = () => {
         <div className="container mx-auto mt-12">
             <Title>Mes produits favoris</Title>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {favorites.length > 0 ? (
-                    favorites.map(favorite => (
-                        (favorite.products as Product[]).map(product => (
-                            <FavoriteItem
-                                key={product._id}
-                                favorite={favorite}
-                                product={product}
-                                remove={() => handleRemove(product, favorite)}
-                            />
-                        ))
+                {(favorites as any)?.products?.length > 0 ? (
+                    (favorites as any)?.products?.map((favorite: any) => (
+                        <FavoriteItem
+                            key={favorite._id}
+                            product={favorite}
+                            remove={() => handleRemove(favorite)}
+                        />
                     ))
                 ) : (
-                    <p className="col-span-full text-center text-lg ">Vous n'avez pas encore de produits favoris</p>
+                    <p className="col-span-full text-center text-lg ">Vous n'avez pas encore de produit favori</p>
                 )}
             </div>
         </div>

@@ -2,7 +2,6 @@
 
 import {useState, useEffect, useRef, Suspense} from 'react';
 import {
-    FaUpload,
     FaPlus,
     FaSave,
     FaEdit,
@@ -10,7 +9,9 @@ import {
     FaArrowRight,
     FaArrowLeft,
     FaFacebook,
-    FaInstagram, FaTwitter, FaTiktok
+    FaInstagram,
+    FaTiktok,
+    FaYoutube
 } from 'react-icons/fa';
 import {useRouter, useSearchParams} from 'next/navigation';
 import Select from 'react-select';
@@ -101,6 +102,7 @@ const VendorProfilePage = () => {
 
     const handleSaveChanges = async () => {
         try {
+            console.log('user', user);
             await UserService.updateUser(user);
             saveUserToLocalStorage(user);
         } catch (error) {
@@ -251,14 +253,14 @@ const VendorProfilePage = () => {
                                 />
                             </div>
                             <div className="w-full flex items-center gap-2">
-                                <FaTwitter size={32}/>
+                                <FaYoutube size={32}/>
                                 <input
                                     type="text"
-                                    placeholder="Lien de votre page Twitter"
-                                    value={user.social_network?.twitter || ''}
+                                    placeholder="Lien de votre page Youtube"
+                                    value={user.social_network?.youtube || ''}
                                     onChange={(e) => setUser({
                                         ...user,
-                                        social_network: {...user.social_network, twitter: e.target.value}
+                                        social_network: {...user.social_network, youtube: e.target.value}
                                     })}
                                     className="w-full p-2 border  rounded-md"
                                 />
