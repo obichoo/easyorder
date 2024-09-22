@@ -9,6 +9,8 @@ import OrderService from '@/services/order.service';
 import ProductService from '@/services/product.service';
 import getUser from '@/utils/get-user';
 import {Product} from "@/models/product.model";
+import Title from "@/app/components/title/page";
+import Loading from "@/app/components/loading/page";
 
 const initialChartData = {
   labels: [],
@@ -22,6 +24,7 @@ const initialChartData = {
 };
 
 export default function StockManagementPage() {
+  const router = useRouter()
   const [data, setData] = useState({
     totalSales: 0,
     productsPending: 0,
@@ -38,6 +41,9 @@ export default function StockManagementPage() {
 
   useEffect(() => {
     const user = getUser();
+
+    if (!user || user.role !== 'artisan') return;
+
     setUserId(user?._id || '');
   }, []);
 
@@ -128,7 +134,7 @@ export default function StockManagementPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4 text-black text-center">Gestion du stock</h1>
+      <Title>Gestion du stock</Title>
       
       <div className="grid grid-cols-4 gap-4 mb-8">
         <div className="bg-white shadow-md p-4 text-center">
@@ -157,7 +163,7 @@ export default function StockManagementPage() {
         <input
           type="text"
           placeholder="Rechercher un produit..."
-          className="w-1/2 py-2 px-4 rounded-lg border border-gray-300 outline-none"
+          className="w-1/2 py-2 px-4 rounded-lg border  outline-none"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -165,14 +171,14 @@ export default function StockManagementPage() {
 
       <div className="grid grid-cols-4 gap-4">
         {filteredProducts.map((product: any) => (
-          <Link key={product._id} href={`/products/${product._id}`} className="bg-white shadow-md p-4 text-center">
+          <Link key={product._id} href={`/products/${product._id}`} className="bg-white shadow-md p-4 text-center rounded-lg">
             <img
-              src={product.pictures[0] || 'https://via.placeholder.com/300x200'}
+              src={product.pictures[0]?.url || 'https://via.placeholder.com/300x200'}
               alt={product.name}
-              className="mb-4"
+              className="w-full h-48 object-cover rounded-lg mb-4"
             />
             <h3 className="text-lg font-semibold">{product.name}</h3>
-            <p className="text-gray-500">${(product.price_in_cent / 100).toFixed(2)}</p>
+            <p className="">${(product.price_in_cent / 100).toFixed(2)}</p>
             <p className={product.stock > 0 ? 'text-green-500' : 'text-red-500'}>
               {product.stock > 0 ? `${product.stock} en stock` : 'Rupture de stock'}
             </p>
@@ -180,7 +186,7 @@ export default function StockManagementPage() {
         ))}
       </div>
 
-      {loading && <p>Chargement des données...</p>}
+      {loading && <Loading />}
     </div>
   );
 }

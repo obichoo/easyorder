@@ -7,6 +7,8 @@ import CategoryService from '@/services/category.service';
 import { Product } from "@/models/product.model";
 import { Category } from "@/models/category.model";
 import getUser from "@/utils/get-user";
+import Title from "@/app/components/title/page";
+import Loading from "@/app/components/loading/page";
 
 const EditProduct = () => {
     const router = useRouter();
@@ -34,6 +36,9 @@ const EditProduct = () => {
     useEffect(() => {
         const user = getUser();
         if (user) {
+            if (user.role == 'client') {
+                router.push('/');
+            }
             setArtisanId(user._id as string);
         }
     }, []);
@@ -57,6 +62,11 @@ const EditProduct = () => {
             try {
                 const response = await ProductService.getProductById(id as string);
                 const productData = response.data;
+
+                if (productData.artisan_id !== id && getUser()?.role !== 'admin') {
+                    router.push('/');
+                    return;
+                }
 
                 // Pré-remplir les champs avec les données du produit
                 setProduct(productData);
@@ -169,13 +179,13 @@ const EditProduct = () => {
     };
 
     if (!product) {
-        return <p className="text-center text-easyorder-black text-2xl font-bold mt-40">Chargement du produit...</p>;
+        return <Loading />;
     }
 
     return (
         <div className="min-h-screen bg-easyorder-gray flex items-center justify-center py-10">
             <div className="max-w-2xl w-full bg-white p-8 rounded-lg shadow-lg">
-                <h1 className="text-3xl font-bold text-center text-easyorder-black mb-6">Modifier un produit</h1>
+                <Title>Modifier un produit</Title>
 
                 <div className="mb-4">
                     <label className="block text-easyorder-black font-semibold">Nom du produit</label>
@@ -183,7 +193,7 @@ const EditProduct = () => {
                         type="text"
                         value={productName}
                         onChange={(e) => setProductName(e.target.value)}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
+                        className="w-full p-3 border  rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
                         placeholder="Nom du produit"
                     />
                 </div>
@@ -193,7 +203,7 @@ const EditProduct = () => {
                     <textarea
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
+                        className="w-full p-3 border  rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
                         placeholder="Description du produit"
                         rows={4}
                     ></textarea>
@@ -206,7 +216,7 @@ const EditProduct = () => {
                         type="text"
                         value={sizeLabel}
                         onChange={(e) => setSizeLabel(e.target.value)}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
+                        className="w-full p-3 border  rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
                         placeholder="Taille (ex: M, L)"
                     />
                 </div>
@@ -219,27 +229,27 @@ const EditProduct = () => {
                             type="number"
                             value={width}
                             onChange={(e) => setWidth(e.target.value)}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
+                            className="w-full p-3 border  rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
                             placeholder="Longueur"
                         />
                         <input
                             type="number"
                             value={depth}
                             onChange={(e) => setDepth(e.target.value)}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
+                            className="w-full p-3 border  rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
                             placeholder="Largeur"
                         />
                         <input
                             type="number"
                             value={height}
                             onChange={(e) => setHeight(e.target.value)}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
+                            className="w-full p-3 border  rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
                             placeholder="Hauteur"
                         />
                         <select
                             value={unit}
                             onChange={(e) => setUnit(e.target.value)}
-                            className="p-3 border border-gray-300 rounded-lg"
+                            className="p-3 border  rounded-lg"
                         >
                             <option value="cm">cm</option>
                             <option value="in">in</option>
@@ -255,13 +265,13 @@ const EditProduct = () => {
                             type="number"
                             value={weightValue}
                             onChange={(e) => setWeightValue(e.target.value)}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
+                            className="w-full p-3 border  rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
                             placeholder="Poids"
                         />
                         <select
                             value={weightUnit}
                             onChange={(e) => setWeightUnit(e.target.value)}
-                            className="p-3 border border-gray-300 rounded-lg"
+                            className="p-3 border  rounded-lg"
                         >
                             <option value="kg">kg</option>
                             <option value="lb">lb</option>
@@ -275,7 +285,7 @@ const EditProduct = () => {
                         type="number"
                         value={price}
                         onChange={(e) => setPrice(e.target.value)}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
+                        className="w-full p-3 border  rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
                         placeholder="Prix"
                         step="0.01"
                         min={0}
@@ -288,7 +298,7 @@ const EditProduct = () => {
                         type="number"
                         value={stock}
                         onChange={(e) => setStock(e.target.value)}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
+                        className="w-full p-3 border  rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
                         placeholder="Quantité en stock"
                         min={0}
                     />
@@ -322,7 +332,7 @@ const EditProduct = () => {
                             type="text"
                             value={newCategory}
                             onChange={(e) => setNewCategory(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
+                            className="w-full px-4 py-2 border  rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
                             placeholder="Ajouter une nouvelle catégorie"
                         />
                         <button
@@ -343,7 +353,7 @@ const EditProduct = () => {
                                     <img
                                         src={picture.url}
                                         alt={`Photo ${index + 1}`}
-                                        className="w-32 h-32 object-cover rounded-lg border border-gray-300"
+                                        className="w-32 h-32 object-cover rounded-lg border "
                                     />
                                     <button
                                         onClick={() => handleRemoveExistingPicture(picture._id)}
@@ -374,7 +384,7 @@ const EditProduct = () => {
                                 key={index}
                                 src={window.URL.createObjectURL(file)}
                                 alt={`Photo ${index + 1}`}
-                                className="w-32 h-32 object-cover rounded-lg border border-gray-300"
+                                className="w-32 h-32 object-cover rounded-lg border "
                             />
                         ))}
                     </div>

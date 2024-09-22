@@ -6,6 +6,7 @@ import UserService from "@/services/user.service";
 import {Suspense, useEffect} from "react";
 import { useSearchParams } from 'next/navigation';
 import OrderService from "@/services/order.service";
+import Title from "@/app/components/title/page";
 
 const ConfirmationPage = () => {
     return (
@@ -52,7 +53,7 @@ const Page = () => {
                     {/* Animation de l'icône */}
                     <FaCheckCircle className="text-easyorder-green animate-pulse" size={60} />
                 </div>
-                <h1 className="text-3xl font-bold mb-4 text-easyorder-black">Paiement Réussi !</h1>
+                <Title>Paiement Réussi !</Title>
                 <p className="text-easyorder-black mb-8 text-lg">
                     Merci pour votre paiement. Votre transaction a été complétée avec succès.
                 </p>

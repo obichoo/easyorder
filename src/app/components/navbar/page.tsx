@@ -67,13 +67,13 @@ const Navbar = () => {
     };
 
     return (
-        <div className="bg-[#e7e6e6] border-b border-gray-300 p-4">
+        <div className="bg-[#e7e6e6] border-b  p-4">
             <nav className="container mx-auto flex justify-between items-center">
                 {/* Logo et Titre */}
                 <div className="flex items-center">
                     <img src="/logo.png" alt="Logo Easyorder"
                          className="h-12 md:h-16 mr-4 rounded-full border-2 border-[#032035] shadow-lg"/>
-                    <h1 className="lg:block hidden text-xl md:text-2xl font-semibold text-[#032035]">EasyOrder</h1>
+                    <div className="lg:block hidden text-xl md:text-2xl font-semibold text-[#032035]">EasyOrder</div>
                 </div>
 
                 {/* Liens de navigation pour grand écran */}
@@ -119,9 +119,9 @@ const Navbar = () => {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)} // Mettre à jour la requête de recherche
                         placeholder="Rechercher un produit..."
-                        className="border border-gray-300 rounded-full py-2 pl-4 pr-10 w-full text-sm focus:outline-none focus:ring-2 focus:ring-[#77ad86] transition"
+                        className="border  rounded-full py-2 pl-4 pr-10 w-full text-sm focus:outline-none focus:ring-2 focus:ring-[#77ad86] transition"
                     />
-                    <button type="submit" className="absolute right-2 top-2 text-gray-500">
+                    <button type="submit" className="absolute right-2 top-2 ">
                         <FaSearch size={18} className="text-[#032035]" />
                     </button>
                 </form>
@@ -151,7 +151,7 @@ const Navbar = () => {
                                 </button>
 
                                 {isDropdownOpen && (
-                                    <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-50">
+                                    <div className="absolute top-full right-0 mt-2 w-48 bg-white border  rounded-lg shadow-lg z-50">
                                         <ul className="py-2">
                                             <li>
                                                 <Link

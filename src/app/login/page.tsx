@@ -1,19 +1,23 @@
 'use client';
 
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { useRouter } from 'next/navigation'; // Import du router pour redirection
 import UserService from "@/services/user.service";
 import { FaSpinner } from 'react-icons/fa';
 import Stripe from 'stripe';
+import {User} from "@/models/user.model";
+import Title from "@/app/components/title/page";
 
 const secretKey = process.env.NEXT_PUBLIC_STRIPE_PRIVATE_KEY as string;
 const stripe = new Stripe(secretKey);
 
 type LoginType = 'signin' | 'signup';
+type Errors = { email?: string; password?: string; name?: string; server?: string; role?: string; denomination?: string; siret?: string }
 
 const Login = () => {
     const [type, setType] = useState<LoginType>('signin');
-    const [errors, setErrors] = useState<{ email?: string; password?: string; name?: string; server?: string; role?: string; }>({});
+    const [isArtisan, setIsArtisan] = useState(false);
+    const [errors, setErrors] = useState<Errors>({});
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false); // Nouveau state pour le refresh
     const router = useRouter(); // Utilisation du router pour la redirection
@@ -28,13 +32,17 @@ const Login = () => {
         const password = form.password.value;
         const name = type === 'signup' ? form.name.value : undefined;
         const role = type === 'signup' ? form.role.value : undefined;
+        const denomination = (type === 'signup' && role == 'artisan') ? form.denomination.value : undefined;
+        const siret = (type === 'signup' && role == 'artisan') ? form.siret.value?.replace(/\D/g, '') : undefined;
 
-        let newErrors: { email?: string; password?: string; name?: string; role?: string; } = {};
+        let newErrors: Errors = {};
 
         if (!email) newErrors.email = "L'email est requis.";
         if (!password) newErrors.password = "Le mot de passe est requis.";
         if (type === 'signup' && !name) newErrors.name = "Le nom est requis.";
         if (type === 'signup' && !role) newErrors.role = "Le rôle est requis.";
+        if (type === 'signup' && role == 'artisan' && !denomination) newErrors.denomination = "Le nom de l'entreprise est requis.";
+        if (type === 'signup' && role == 'artisan' && (!siret || siret.length !== 14)) newErrors.siret = "Le SIRET est invalide.";
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
@@ -48,7 +56,12 @@ const Login = () => {
                 response = await UserService.login(email, password)
                 response.data = response.data.user;
             } else {
-                const user = { email, password, name, role };
+                const user: User = { email, password, name, role };
+
+                if (role == 'artisan') {
+                    user.company = {denomination, siret}
+                }
+
                 const customer = await stripe.customers.create({
                     email: email,
                     name: name,
@@ -57,17 +70,19 @@ const Login = () => {
             }
 
             if ([200, 201].includes(response.status)) {
+                setRefreshing(true);
+
                 const userData = response.data;
 
-                // Sauvegarder les informations de l'utilisateur dans le localStorage
-                localStorage.setItem("user", JSON.stringify(userData));
-
-                // Déclencher l'animation de chargement et rediriger
-                setRefreshing(true);
-                setTimeout(() => {
-                    // Redirection vers la page d'accueil
+                if (siret) {
+                    UserService.addCompanyToUser(userData._id, siret).then((response) => {
+                        localStorage.setItem("user", JSON.stringify(userData));
+                        router.push('/home');
+                    })
+                } else {
+                    localStorage.setItem("user", JSON.stringify(userData));
                     router.push('/home');
-                }, 1500);
+                }
             }
         } catch (error: any) {
             const serverError = error.response?.data?.message || "Une erreur est survenue lors de la connexion.";
@@ -77,13 +92,25 @@ const Login = () => {
         setLoading(false);
     };
 
+    const onRoleChange = (e: any) => {
+        const role = e.target.value;
+        setIsArtisan(role === 'artisan');
+    }
+
+    useEffect(() => {
+        const user = localStorage.getItem("user");
+        if (user) {
+            router.push('/home');
+        }
+    })
+
     return (
         <div className="flex items-center justify-center bg-easyorder-gray mt-28">
-            <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-8">
-                <h1 className="text-3xl mb-6 text-center text-easyorder-green">Bienvenue sur EasyOrder !</h1>
+            <div className="w-full max-w-lg bg-white shadow-lg rounded-lg p-8">
+                <Title className="text-easyorder-green">Bienvenue sur EasyOrder !</Title>
 
                 {/* Formulaire de connexion/inscription */}
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} id="form" className="space-y-4">
                     <h2 className="text-2xl font-bold mb-4 text-center text-easyorder-black">
                         {type === 'signin' ? 'Connexion' : 'Inscription'}
                     </h2>
@@ -98,7 +125,7 @@ const Login = () => {
                             type="email"
                             id="email"
                             name="email"
-                            className={`mt-1 block w-full p-2 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
+                            className={`mt-1 block w-full p-2 border ${errors.email ? 'border-red-500' : ''} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
                             placeholder="Votre email"
                         />
                         {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
@@ -107,23 +134,26 @@ const Login = () => {
                     {type === 'signup' && (
                         <>
                             <div>
-                                <label htmlFor="name" className="block text-sm font-medium text-easyorder-black">Nom</label>
+                                <label htmlFor="name"
+                                       className="block text-sm font-medium text-easyorder-black">Nom</label>
                                 <input
                                     type="text"
                                     id="name"
                                     name="name"
-                                    className={`mt-1 block w-full p-2 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
+                                    className={`mt-1 block w-full p-2 border ${errors.name ? 'border-red-500' : ''} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
                                     placeholder="Votre nom"
                                 />
                                 {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
                             </div>
                             <div>
-                                <label htmlFor="role" className="block text-sm font-medium text-easyorder-black">Rôle</label>
+                                <label htmlFor="role"
+                                       className="block text-sm font-medium text-easyorder-black">Rôle</label>
                                 <select
                                     name="role"
                                     id="role"
                                     defaultValue=""
-                                    className={`mt-1 block w-full p-2 border ${errors.role ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
+                                    onChange={onRoleChange}
+                                    className={`mt-1 block w-full p-2 border ${errors.role ? 'border-red-500' : ''} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
                                 >
                                     <option value="">Choisissez un rôle</option>
                                     <option value="artisan">Artisan</option>
@@ -131,17 +161,48 @@ const Login = () => {
                                 </select>
                                 {errors.role && <p className="text-red-500 text-sm">{errors.role}</p>}
                             </div>
+                            {
+                                isArtisan && (
+                                    <>
+                                        <div>
+                                            <label htmlFor="denomination"
+                                                   className="block text-sm font-medium text-easyorder-black">Nom de l'entreprise</label>
+                                            <input
+                                                type="text"
+                                                id="denomination"
+                                                name="denomination"
+                                                className={`mt-1 block w-full p-2 border ${errors.denomination ? 'border-red-500' : ''} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
+                                                placeholder="Nom de l'entreprise"
+                                            />
+                                            {errors.denomination && <p className="text-red-500 text-sm">{errors.denomination}</p>}
+                                        </div>
+                                        <div>
+                                            <label htmlFor="siret"
+                                                   className="block text-sm font-medium text-easyorder-black">SIRET</label>
+                                            <input
+                                                type="text"
+                                                id="siret"
+                                                name="siret"
+                                                className={`mt-1 block w-full p-2 border ${errors.siret ? 'border-red-500' : ''} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
+                                                placeholder="SIRET"
+                                            />
+                                            {errors.siret && <p className="text-red-500 text-sm">{errors.siret}</p>}
+                                        </div>
+                                    </>
+                                )
+                            }
                         </>
                     )}
 
                     {/* Champs mot de passe */}
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-easyorder-black">Mot de passe</label>
+                        <label htmlFor="password" className="block text-sm font-medium text-easyorder-black">Mot de
+                            passe</label>
                         <input
                             type="password"
                             id="password"
                             name="password"
-                            className={`mt-1 block w-full p-2 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
+                            className={`mt-1 block w-full p-2 border ${errors.password ? 'border-red-500' : ''} rounded-md focus:ring-easyorder-green focus:border-easyorder-green`}
                             placeholder="Votre mot de passe"
                         />
                         {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
@@ -182,13 +243,6 @@ const Login = () => {
                     )}
                 </p>
             </div>
-
-            {/* Animation pendant le refresh */}
-            {refreshing && (
-                <div className="fixed inset-0 bg-gray-200 bg-opacity-75 flex justify-center items-center z-50">
-                    <FaSpinner className="text-easyorder-green animate-spin" size={50} />
-                </div>
-            )}
         </div>
     );
 };

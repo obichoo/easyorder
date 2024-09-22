@@ -2,14 +2,15 @@
 
 import React from 'react';
 import Image from 'next/image';
+import Title from "@/app/components/title/page";
 
 export default function AboutUsPage() {
     return (
         <div className="container mx-auto px-4 py-16">
             {/* Titre principal */}
-            <h1 className="text-5xl font-extrabold mb-12 text-center text-[#77ad86]">
+            <Title>
                 Qui sommes-nous ?
-            </h1>
+            </Title>
 
             {/* Section principale */}
             <section className="flex flex-col items-center mb-16 text-center">
@@ -19,7 +20,6 @@ export default function AboutUsPage() {
                     alt="Présentation EasyOrder"
                     width={300}
                     height={300}
-                    className="rounded-full border-4 border-[#77ad86] shadow-xl hover:shadow-2xl transition-shadow duration-300"
                 />
                 {/* Description de l'entreprise */}
                 <p className="mt-8 text-xl max-w-4xl text-[#032035] leading-relaxed">

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { FaTimesCircle } from 'react-icons/fa';
 import {Suspense} from 'react';
+import Title from "@/app/components/title/page";
 
 const FailurePage = () => {
     return (
@@ -20,7 +21,7 @@ const Page = () => {
                     {/* Animation de l'icône */}
                     <FaTimesCircle className="text-red-500 animate-pulse" size={60} />
                 </div>
-                <h1 className="text-3xl font-bold mb-4 text-easyorder-black">Échec du Paiement</h1>
+                <Title>Échec du Paiement</Title>
                 <p className="text-easyorder-black mb-8 text-lg">
                     Une erreur est survenue lors du traitement de votre paiement. Veuillez réessayer ou contacter l'assistance si le problème persiste.
                 </p>

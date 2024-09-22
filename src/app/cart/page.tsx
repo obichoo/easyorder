@@ -12,6 +12,7 @@ import { User } from "@/models/user.model";
 import { Product } from "@/models/product.model";
 import { FaArrowLeft } from "react-icons/fa";
 import MondialRelayWidget from "@/app/components/relaiscolis/MondialRelayWidget";
+import Title from "@/app/components/title/page";
 
 const Cart = () => {
     const [order, setOrder] = useState<Order | null>(null);
@@ -127,7 +128,7 @@ const Cart = () => {
 
     return (
         <div className="container mx-auto mt-10">
-            <h1 className="text-3xl font-semibold mb-8 text-easyorder-black">Panier</h1>
+            <Title>Panier</Title>
 
             {cartItems.length === 0 ? (
                 <div className="text-center">

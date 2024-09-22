@@ -11,16 +11,6 @@ export interface CarouselSlide {
     data?: any
 }
 
-interface CarouselProps {
-    slides?: CarouselSlide[],
-    options?: any,
-    slidesPerView?: number,
-    slidesHeight?: string,
-    slidesSpacing?: string,
-    type?: 'category' | 'product' | string,
-    [key: string]: any
-}
-
 const Slide = ({ slide, index }: { slide: CarouselSlide, index: number }) => {
     return (
         <>
@@ -42,7 +32,7 @@ const Slide = ({ slide, index }: { slide: CarouselSlide, index: number }) => {
     )
 }
 
-const Carousel = ({slides, options, slidesPerView, slidesHeight, slidesSpacing, type}: CarouselProps) => {
+const Carousel = ({slides, options, slidesPerView, slidesHeight, slidesSpacing, type}: any) => {
     const [emblaRef, emblaApi] = useEmblaCarousel(options, [Autoplay()])
 
     return (
@@ -72,11 +62,11 @@ const Carousel = ({slides, options, slidesPerView, slidesHeight, slidesSpacing, 
                                             className="w-full h-48 object-cover rounded-lg mb-4"
                                             />
                                             <h4 className="font-bold text-xl text-easyorder-black mb-2 truncate">{value?.data.name}</h4>
-                                            <p className="text-gray-600 mb-2 truncate">
+                                            <p className=" mb-2 truncate">
                                                 {(value?.data?.description as string)}
                                             </p>
                                             <p className="text-easyorder-black font-semibold">Prix : {((value?.data?.price_in_cent as number) / 100).toFixed(2)} €</p>
-                                            <p className="text-gray-600">Stock : {(value?.data?.stock as number) > 0 ? value?.data.stock : 'Rupture de stock'}</p>
+                                            <p className="">Stock : {(value?.data?.stock as number) > 0 ? value?.data.stock : 'Rupture de stock'}</p>
                                         </div>
                                     </Link>
                                 )

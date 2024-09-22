@@ -6,6 +6,9 @@ import { User } from "@/models/user.model";
 import { FaSpinner } from 'react-icons/fa';
 import getUser from "@/utils/get-user";
 import UserService from "@/services/user.service";
+import {useRouter} from "next/navigation";
+import Title from "@/app/components/title/page";
+import Loading from "@/app/components/loading/page";
 
 declare global {
     namespace JSX {
@@ -42,10 +45,7 @@ const PricingTable = () => {
     return (
         <>
             {loading ? (
-                <div className="flex items-center justify-center mt-16">
-                    <FaSpinner className="animate-spin text-easyorder-green text-4xl" />
-                    <p className="ml-4 text-easyorder-black">Chargement des options d’abonnement...</p>
-                </div>
+                <Loading />
             ) : (
                 <stripe-pricing-table
                     style={{ width: "100%" }}
@@ -60,10 +60,15 @@ const PricingTable = () => {
 };
 
 export default function SubscriptionPage() {
+    const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
-        setUser(getUser());
+        const user = getUser();
+
+        if (!user || user.role !== 'artisan') return router.push('/');
+
+        setUser(user);
     }, []);
 
     const handleUnsubscribe = () => {
@@ -82,7 +87,7 @@ export default function SubscriptionPage() {
                     user?.subscriber ?
                         (
                             <div className="flex flex-col items-center justify-center mt-40">
-                                <h1 className="text-4xl font-bold text-easyorder-black mb-2">Vous êtes déjà abonné à EasyOrder Premium.</h1>
+                                <Title>Vous êtes déjà abonné à EasyOrder Premium.</Title>
                                 <p className="text-lg text-easyorder-black mb-4">
                                     Vous pouvez profiter de toutes les fonctionnalités exclusives d'EasyOrder Premium.
                                 </p>
@@ -96,7 +101,7 @@ export default function SubscriptionPage() {
                         (
                             <>
                                 <div className="text-center">
-                                    <h1 className="text-4xl font-bold text-easyorder-black mb-2">Abonnement premium</h1>
+                                    <Title>Abonnement premium</Title>
                                     <p className="text-lg text-easyorder-black mb-4">Optez pour un abonnement et profitez
                                         des fonctionnalités exclusives d'EasyOrder !</p>
                                 </div>

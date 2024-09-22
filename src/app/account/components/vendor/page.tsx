@@ -23,6 +23,7 @@ import getUser from "@/utils/get-user";
 import {FaS} from "react-icons/fa6";
 import ClientProfilePage from "@/app/account/components/customer/page";
 import Link from "next/link";
+import Title from "@/app/components/title/page";
 
 const VendorProfilePage = () => {
     const searchParams = useSearchParams()
@@ -45,7 +46,7 @@ const VendorProfilePage = () => {
     }, []);
 
     const fetchUser = async () => {
-        const userId = searchParams.get('userId') || (getUser() as User)._id;
+        const userId = (getUser()?.role === 'admin' && searchParams.get('userId')) || (getUser() as User)._id;
 
         UserService.getUserById(userId).then((response) => {
             const userWithoutPassword = response.data;
@@ -140,7 +141,7 @@ const VendorProfilePage = () => {
             {isEditingPersonalProfile ?
                 <ClientProfilePage/> :
                 <div className="container mx-auto p-8">
-                    <h1 className="text-3xl font-bold text-center mb-8">Modifier l'entreprise</h1>
+                    <Title>Modifier l'entreprise</Title>
 
                     <div className="flex justify-between items-center mb-8">
                         <div className="flex">
@@ -165,7 +166,7 @@ const VendorProfilePage = () => {
                                     })}
                                 />
                             ) : (
-                                <h1 className="text-3xl font-bold">{user.company?.denomination || "Mon entreprise"}</h1>
+                                <Title>{user.company?.denomination || "Mon entreprise"}</Title>
                             )}
                         </div>
                         <button
@@ -218,7 +219,7 @@ const VendorProfilePage = () => {
                                 ...user,
                                 description: e.target.value
                             })}
-                            className="w-full p-3 border border-gray-300 rounded-lg"
+                            className="w-full p-3 border  rounded-lg"
                             rows={5}
                         ></textarea>
                     </div>
@@ -233,7 +234,7 @@ const VendorProfilePage = () => {
                                     placeholder="Lien de votre page Facebook"
                                     value={user.social_network?.facebook || ''}
                                     onChange={(e) => setUser({...user, social_network: { ...user.social_network, facebook: e.target.value}})}
-                                    className="w-full p-2 border border-gray-300 rounded-md"
+                                    className="w-full p-2 border  rounded-md"
                                 />
                             </div>
                             <div className="w-full flex items-center gap-2">
@@ -246,7 +247,7 @@ const VendorProfilePage = () => {
                                         ...user,
                                         social_network: {...user.social_network, instagram: e.target.value}
                                     })}
-                                    className="w-full p-2 border border-gray-300 rounded-md"
+                                    className="w-full p-2 border  rounded-md"
                                 />
                             </div>
                             <div className="w-full flex items-center gap-2">
@@ -259,7 +260,7 @@ const VendorProfilePage = () => {
                                         ...user,
                                         social_network: {...user.social_network, twitter: e.target.value}
                                     })}
-                                    className="w-full p-2 border border-gray-300 rounded-md"
+                                    className="w-full p-2 border  rounded-md"
                                 />
                             </div>
                             <div className="w-full flex items-center gap-2">
@@ -272,7 +273,7 @@ const VendorProfilePage = () => {
                                         ...user,
                                         social_network: {...user.social_network, tiktok: e.target.value}
                                     })}
-                                    className="w-full p-2 border border-gray-300 rounded-md"
+                                    className="w-full p-2 border  rounded-md"
                                 />
                             </div>
                         </div>
@@ -289,7 +290,7 @@ const VendorProfilePage = () => {
                                         type="email"
                                         value={user.email || ''}
                                         onChange={(e) => setUser({...user, email: e.target.value})}
-                                        className="w-full p-2 border border-gray-300 rounded-md"
+                                        className="w-full p-2 border  rounded-md"
                                     />
                                 </div>
                                 <div>
@@ -311,35 +312,6 @@ const VendorProfilePage = () => {
                                 <div>
                                     <label className="font-semibold">Ville</label>
                                     <p>{user.company?.city || 'Non défini'}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Modification du mot de passe */}
-                    <div className="mb-4">
-                        <label className="font-semibold mb-1 block">Modifier le mot de passe</label>
-                        <div className="bg-white rounded-lg shadow-lg p-4 mb-8">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                <div>
-                                    <label className="font-semibold">Nouveau mot de passe</label>
-                                    <input
-                                        type="password"
-                                        value={user.password || ''}
-                                        onChange={(e) => setUser({...user, password: e.target.value})}
-                                        className="w-full p-2 border border-gray-300 rounded-md"
-                                        placeholder="Mot de passe"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="font-semibold">Confirmer le mot de passe</label>
-                                    <input
-                                        type="password"
-                                        value={user.confirmPassword || ''}
-                                        onChange={(e) => setUser({...user, confirmPassword: e.target.value})}
-                                        className="w-full p-2 border border-gray-300 rounded-md"
-                                        placeholder="Confirmer le mot de passe"
-                                    />
                                 </div>
                             </div>
                         </div>
@@ -432,13 +404,13 @@ const VendorProfilePage = () => {
                                     <div>
                                         <h4 className="font-bold text-xl text-easyorder-black mb-2 truncate">{product.name}</h4>
                                     </div>
-                                    <p className="text-gray-600 mb-2">
+                                    <p className=" mb-2">
                                         {(product?.description as string).substring(0, 60)}
                                         {(product?.description as string).length > 59 && '...'}
                                     </p>
                                     <p className="text-easyorder-black font-semibold">Prix
                                         : {((product?.price_in_cent as number) / 100).toFixed(2)} €</p>
-                                    <p className="text-gray-600">Stock
+                                    <p className="">Stock
                                         : {(product?.stock as number) > 0 ? product.stock : 'Rupture de stock'}</p>
                                 </Link>
                             ))

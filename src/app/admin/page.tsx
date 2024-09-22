@@ -7,6 +7,8 @@ import ProductService from "@/services/product.service";
 import { User } from "@/models/user.model";
 import { Product } from "@/models/product.model";
 import { useRouter } from "next/navigation";
+import Title from "@/app/components/title/page";
+import Loading from "@/app/components/loading/page";
 
 const AdminPanel = () => {
     const router = useRouter();
@@ -59,6 +61,10 @@ const AdminPanel = () => {
         };
         fetchData();
     }, []);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, currentCategory]);
 
     // Handle user deletion
     const handleDeleteUser = async (userId: string) => {
@@ -143,7 +149,7 @@ const AdminPanel = () => {
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
     if (loading) {
-        return <p className="text-center text-easyorder-black">Chargement des données...</p>;
+        return <Loading />;
     }
 
     // Si l'utilisateur n'est pas admin, on retourne un message en attendant la redirection
@@ -179,7 +185,7 @@ const AdminPanel = () => {
     return (
         <div className="min-h-screen bg-easyorder-gray">
             <div className="container mx-auto py-8">
-                <h1 className="text-4xl font-bold text-center text-easyorder-black mb-8">Panneau d'administration</h1>
+                <Title>Panneau d'administration</Title>
 
                 {/* Navigation par catégorie */}
                 <div className="flex justify-center space-x-4 mb-8">
@@ -209,16 +215,15 @@ const AdminPanel = () => {
                         type="text"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
+                        className="w-full p-3 border  rounded-lg focus:outline-none focus:ring focus:ring-easyorder-green"
                         placeholder={`Rechercher un ${currentCategory === 'users' ? 'utilisateur' : 'produit'}`}
                     />
                 </div>
 
                 {currentCategory === "users" && (
                     <section>
-                        <h2 className="text-2xl font-semibold text-easyorder-black mb-4">Liste des utilisateurs</h2>
                         <div className="overflow-x-auto">
-                            <table className="min-w-full bg-white rounded-lg shadow-lg">
+                            <table className="min-w-full bg-white rounded-lg shadow-lg overflow-hidden">
                                 <thead className="bg-easyorder-green text-white">
                                 <tr>
                                     <th className="py-4 px-6 text-left cursor-pointer" onClick={() => handleSort('name')}>Nom</th>
@@ -261,9 +266,8 @@ const AdminPanel = () => {
 
                 {currentCategory === "products" && (
                     <section>
-                        <h2 className="text-2xl font-semibold text-easyorder-black mb-4">Liste des produits</h2>
                         <div className="overflow-x-auto">
-                            <table className="min-w-full bg-white rounded-lg shadow-lg">
+                            <table className="min-w-full bg-white rounded-lg shadow-lg overflow-hidden">
                                 <thead className="bg-easyorder-green text-white">
                                 <tr>
                                     <th className="py-4 px-6 text-left cursor-pointer" onClick={() => handleSort('name')}>Nom du produit</th>

@@ -9,6 +9,7 @@ import FavoriteProductService from "@/services/favorite-product.service";
 import getUser from "@/utils/get-user";
 import {User} from "@/models/user.model";
 import {Product} from "@/models/product.model";
+import Title from "@/app/components/title/page";
 
 const RemoveFavoriteModal = ({ confirm, favorite }: { confirm: Function, favorite: FavoriteProduct }) => {
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
@@ -65,11 +66,11 @@ const FavoriteItem = ({ favorite, product, remove }: { favorite: FavoriteProduct
 
     return (
         <div
-            className="w-60 h-60 shadow-lg mx-auto rounded-2xl p-3 bg-white cursor-pointer hover:shadow-xl transition-transform hover:scale-105 duration-300"
+            className="w-60 shadow-lg mx-auto rounded-2xl p-3 bg-white cursor-pointer hover:shadow-xl transition-transform hover:scale-105 duration-300"
             key={favorite._id}
             onClick={(e) => handleProductClick(e)}
         >
-            <img className="rounded-xl h-36 w-full object-cover mb-2" src={product.pictures?.[0]?.url || 'https://picsum.photos/224/200'} alt={product.name} />
+            <img className="rounded-xl h-36 w-full object-cover mb-2" src={product.pictures?.[0]?.url || 'https://via.placeholder.com/150'} alt={product.name} />
             <div className="flex justify-between items-center">
                 <p className="text-center font-medium">{product.name}</p>
                 <div>
@@ -111,7 +112,7 @@ const FavoriteProducts = () => {
 
     return (
         <div className="container mx-auto mt-12">
-            <h2 className="text-3xl font-semibold text-center mb-10">Mes produits favoris</h2>
+            <Title>Mes produits favoris</Title>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {favorites.length > 0 ? (
                     favorites.map(favorite => (
@@ -125,7 +126,7 @@ const FavoriteProducts = () => {
                         ))
                     ))
                 ) : (
-                    <p className="col-span-full text-center text-lg text-gray-600">Vous n'avez pas encore de produits favoris</p>
+                    <p className="col-span-full text-center text-lg ">Vous n'avez pas encore de produits favoris</p>
                 )}
             </div>
         </div>

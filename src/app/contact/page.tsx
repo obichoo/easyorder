@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import axios from 'axios';
+import Title from "@/app/components/title/page";
 
 export default function Page() {
   const [formData, setFormData] = useState<any>({
@@ -56,7 +57,7 @@ export default function Page() {
         {/* Section Actualités */}
         <section className="py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-extrabold text-easyorder-black text-center">Actualités</h2>
+            <Title>Actualités</Title>
             <div className="mt-6 space-y-4">
               <div className="p-4 bg-white rounded-lg shadow-md">
                 <h3 className="text-xl font-semibold text-easyorder-green">15/09/2024 - Nouvelle fonctionnalité déployée !</h3>
@@ -78,7 +79,7 @@ export default function Page() {
         <section className="py-12">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="p-6 bg-white rounded-lg shadow-md">
-              <h2 className="text-3xl font-extrabold text-easyorder-black text-center p-6">Contactez-nous</h2>
+              <Title>Contactez-nous</Title>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="flex flex-col items-center">
                   <input

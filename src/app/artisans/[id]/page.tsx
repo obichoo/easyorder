@@ -20,6 +20,7 @@ import FavoriteVendorService from "@/services/favorite-vendor.service";
 import getUser from "@/utils/get-user";
 import {FavoriteVendor} from "@/models/favorite-vendor.model";
 import {User} from "@/models/user.model";
+import Title from "@/app/components/title/page";
 
 const RatingStars = ({ rating }: any) => {
   const fullStars = Math.floor(rating);
@@ -100,7 +101,7 @@ export default function Page({ params }: any) {
   };
 
   if (!artisan) {
-    return <div className="text-center text-gray-600 py-16">Artisan non trouvé.</div>;
+    return <div className="text-center  py-16">Artisan non trouvé.</div>;
   }
 
   const toggleFavorite = () => {
@@ -161,7 +162,7 @@ export default function Page({ params }: any) {
             </button>
           </div>
           <div className="absolute text-white text-center">
-            <h1 className="text-4xl lg:text-6xl font-bold">{artisan.company?.denomination}</h1>
+            <Title>{artisan.company?.denomination}</Title>
             <p className="text-white text-center mx-40">{artisan.description}</p>
           </div>
           <div className="absolute right-6 bottom-6">
@@ -192,7 +193,7 @@ export default function Page({ params }: any) {
 
         {/* Produits de l'artisan */}
         <div className="container mx-auto mt-12">
-          <h2 className="text-3xl font-semibold mb-6 text-center text-[#032035]">Produits</h2>
+          <Title>Produits</Title>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {products.length > 0 ? (
                 products.map((product: any) => (
@@ -204,19 +205,19 @@ export default function Page({ params }: any) {
                             className="w-full h-40 object-cover rounded-md mb-4"
                         />
                         <h3 className="text-lg font-semibold">{product.name}</h3>
-                        <p className="text-gray-500">{(product.price_in_cent / 100).toFixed(2)} €</p>
+                        <p className="">{(product.price_in_cent / 100).toFixed(2)} €</p>
                       </div>
                     </Link>
                 ))
             ) : (
-                <p className="text-center text-gray-500 col-span-3">Pas de produits disponibles.</p>
+                <p className="text-center  col-span-3">Pas de produits disponibles.</p>
             )}
           </div>
         </div>
 
         {/* Avis clients */}
         <div className="container mx-auto mt-12 mb-12">
-          <h2 className="text-3xl font-semibold mb-6 text-center text-[#032035]">Avis clients</h2>
+          <Title>Avis clients</Title>
           <div className="space-y-6">
             {comments.length > 0 ? (
                 comments.map((comment: any, index: number) => (
@@ -225,11 +226,11 @@ export default function Page({ params }: any) {
                         <p className="font-semibold">{comment.sender_id?.name || comment.sender_id}</p>
                         <RatingStars rating={comment.rate}/>
                       </div>
-                      <p className="mt-4 text-gray-700">{comment.content}</p>
+                      <p className="mt-4 ">{comment.content}</p>
                     </div>
                 ))
             ) : (
-                <p className="text-center text-gray-500">Aucun avis disponible.</p>
+                <p className="text-center ">Aucun avis disponible.</p>
             )}
           </div>
         </div>
