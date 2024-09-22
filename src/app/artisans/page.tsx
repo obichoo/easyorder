@@ -66,7 +66,7 @@ export default function ArtisansList() {
                               <img
                                   src={artisan.company?.profile_pic}
                                   alt={`Photo de ${artisan?.company?.denomination}`}
-                                  className="w-24 h-24 rounded-full shadow"
+                                  className="w-24 h-24 rounded-full shadow object-cover"
                               />
                               {
                                 artisan.company?.etat == 'validé' ? (

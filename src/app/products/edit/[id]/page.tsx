@@ -63,7 +63,7 @@ const EditProduct = () => {
                 const response = await ProductService.getProductById(id as string);
                 const productData = response.data;
 
-                if (productData.artisan_id !== id && getUser()?.role !== 'admin') {
+                if (productData.artisan_id !== getUser()?._id && getUser()?.role !== 'admin') {
                     router.push('/');
                     return;
                 }

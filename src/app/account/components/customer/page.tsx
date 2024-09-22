@@ -5,7 +5,8 @@ import { FaUserCircle } from 'react-icons/fa';
 import UserService from "@/services/user.service";
 import {useSearchParams} from "next/navigation";
 import getUser from "@/utils/get-user";
-import Title from "@/app/components/title/page"; // Import du service utilisateur
+import Title from "@/app/components/title/page";
+import {User} from "@/models/user.model"; // Import du service utilisateur
 
 const ClientProfilePage = () => {
   const searchParams = useSearchParams();
@@ -66,7 +67,9 @@ const ClientProfilePage = () => {
       // Mise à jour de l'image de profil si un fichier a été sélectionné
       if (profileImage && userId) {
         await UserService.updateProfilePicture(userId, profileImage).then((response) => {
-          localStorage.setItem("user", JSON.stringify(response.data?.user));
+          if (userId === (getUser() as User)._id) {
+            localStorage.setItem("user", JSON.stringify(response.data?.user));
+          }
         })
       }
 
@@ -87,8 +90,10 @@ const ClientProfilePage = () => {
       }
 
       // Actualiser les données utilisateur dans le localStorage
-      const updatedStoredUser = JSON.parse(localStorage.getItem("user") || '{}');
-      updatedStoredUser.user = { ...updatedStoredUser.user, name, email, profile_pic: previewImage };
+      if (userId === (getUser() as User)._id) {
+        const updatedStoredUser = JSON.parse(localStorage.getItem("user") || '{}');
+        updatedStoredUser.user = {...updatedStoredUser.user, name, email, profile_pic: previewImage};
+      }
     } catch (error) {
       console.error("Erreur lors de la mise à jour du profil", error);
       setUpdateMessage("Une erreur est survenue lors de la mise à jour.");

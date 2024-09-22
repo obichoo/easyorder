@@ -105,8 +105,8 @@ const Login = () => {
     }, [])
 
     return (
-        <div className="flex items-center justify-center bg-easyorder-gray mt-28">
-            <div className="w-full max-w-lg bg-white shadow-lg rounded-lg p-8">
+        <div className="flex items-center justify-center bg-easyorder-gray mt-12">
+            <div className="w-full max-w-lg bg-white shadow-lg rounded-lg p-8 mb-10">
                 <Title className="text-easyorder-green">Bienvenue sur EasyOrder !</Title>
 
                 {/* Formulaire de connexion/inscription */}
