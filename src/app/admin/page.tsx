@@ -126,7 +126,7 @@ const AdminPanel = () => {
             );
         }
         if (sortConfig !== null) {
-            sortableProducts.sort((a, b) => {
+            sortableProducts.sort((a: any, b: any) => {
                 if (a[sortConfig.key as keyof Product] < b[sortConfig.key as keyof Product]) {
                     return sortConfig.direction === 'asc' ? -1 : 1;
                 }
