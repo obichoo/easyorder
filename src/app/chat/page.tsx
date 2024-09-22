@@ -69,10 +69,10 @@ const Conversation = ({ chat, onChatUpdate }: { chat: Chat | null, onChatUpdate:
 
     const replaceURL = (content: any) => {
         if (!content) return;
-        var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
+        const urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
         return content.replace(urlRegex,
             function (url: any) {
-            var hyperlink = url;
+            let hyperlink = url;
             if (!hyperlink.match('^https?:\/\/')) {
                 hyperlink = 'http://' + hyperlink;
             }
