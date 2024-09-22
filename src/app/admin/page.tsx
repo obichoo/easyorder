@@ -71,7 +71,7 @@ const AdminPanel = () => {
 
     const handleValidateUser = async (user: any) => {
         try {
-            const updatedUser = await UserService.updateUser({
+            await UserService.updateUser({
                 ...user,
                 company: {
                     ...user.company,
@@ -86,7 +86,13 @@ const AdminPanel = () => {
 
     const handleRejectUser = async (user: any) => {
         try {
-            await UserService.updateUser({ _id: user, company: { etat: 'refusé' } });
+            await UserService.updateUser({
+                ...user,
+                company: {
+                    ...user.company,
+                    etat: "refusé"
+                }
+            });
             setPendingArtisans(pendingArtisans.filter((u) => u._id !== user._id));
         } catch (error) {
             console.error("Erreur lors du rejet de l'utilisateur :", error);

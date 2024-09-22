@@ -134,6 +134,7 @@ const SelectUser = ({ onSelect, users }: { onSelect: Function, users: User[] }) 
 
     useEffect(() => {
         getSearchedUsers();
+        console.log(search);
     }, [search]);
 
     const getSearchedUsers = () => {
@@ -144,7 +145,11 @@ const SelectUser = ({ onSelect, users }: { onSelect: Function, users: User[] }) 
 
         const searchResults = users.filter((user: User) =>
             user?.name?.toLowerCase().includes(search.toLowerCase())
+            || user?.email?.toLowerCase().includes(search.toLowerCase())
+            || user?.company?.denomination?.toLowerCase().includes(search.toLowerCase())
         );
+
+        console.log(searchResults);
 
         setSearchedUsers(searchResults);
     };
