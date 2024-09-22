@@ -311,16 +311,16 @@ const VendorProfilePage = () => {
                                 </div>
                                 <div className="mb-4">
                                     <label className="font-semibold mb-1 block">Adresse</label>
-                                    <p>{user.company.adresse_etablissement?.libelleVoieEtablissement || 'Non défini'}</p>
+                                    <p>{user.company?.adresse_etablissement?.libelleVoieEtablissement || 'Non défini'}</p>
                                 </div>
                                 <div>
                                     <label className="font-semibold">Code Postal</label>
-                                    <p>{user.company.adresse_etablissement?.codePostalEtablissement
+                                    <p>{user.company?.adresse_etablissement?.codePostalEtablissement
                                         || 'Non défini'}</p>
                                 </div>
                                 <div>
                                     <label className="font-semibold">Ville</label>
-                                    <p>{user.company.adresse_etablissement?.libelleCommuneEtablissement
+                                    <p>{user.company?.adresse_etablissement?.libelleCommuneEtablissement
                                         || 'Non défini'}</p>
                                 </div>
                             </div>
