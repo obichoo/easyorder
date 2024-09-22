@@ -2,12 +2,11 @@
 
 import {
   FaInstagram,
-  FaTwitter,
   FaStar,
   FaStarHalfAlt,
   FaRegStar,
   FaHeart,
-  FaRegHeart, FaTiktok, FaFacebook
+  FaRegHeart, FaTiktok, FaFacebook, FaYoutube
 } from 'react-icons/fa';
 import UserService from '@/services/user.service';
 import ProductService from '@/services/product.service';
@@ -167,9 +166,9 @@ export default function Page({ params }: any) {
                       <FaInstagram size={32}/>
                     </a>
                 )}
-                {artisan.social_network?.twitter && (
-                    <a href={artisan.social_network.twitter} className="text-white">
-                      <FaTwitter size={32}/>
+                {artisan.social_network?.youtube && (
+                    <a href={artisan.social_network.youtube} className="text-white">
+                      <FaYoutube size={32}/>
                     </a>
                 )}
                 {artisan.social_network?.tiktok && (

@@ -19,7 +19,7 @@ export interface User {
     social_network?: {
         facebook?: string;
         instagram?: string;
-        twitter?: string;
+        youtube?: string;
         tiktok?: string;
     }
 }
