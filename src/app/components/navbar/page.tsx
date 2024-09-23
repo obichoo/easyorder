@@ -64,6 +64,10 @@ const Navbar = () => {
         } else {
             router.push('/search');
         }
+
+        if (window.location.pathname === '/search') {
+            window.location.reload();
+        }
     };
 
     return (
