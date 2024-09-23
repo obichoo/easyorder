@@ -139,7 +139,8 @@ export default function StockManagementPage() {
       <div className="grid grid-cols-4 gap-4 mb-8">
         <div className="bg-white shadow-md p-4 text-center">
           <h2 className="text-lg font-semibold">Ventes totales</h2>
-          <p className="text-2xl font-bold">${data.totalSales.toFixed(2)}</p>
+          <p className="text-2xl font-bold">{data.totalSales.toFixed(2)} €
+          </p>
         </div>
         <div className="bg-white shadow-md p-4 text-center">
           <h2 className="text-lg font-semibold">Produits en stock</h2>
@@ -178,7 +179,7 @@ export default function StockManagementPage() {
               className="w-full h-48 object-cover rounded-lg mb-4"
             />
             <h3 className="text-lg font-semibold">{product.name}</h3>
-            <p className="">${(product.price_in_cent / 100).toFixed(2)}</p>
+            <p className="">{(product.price_in_cent / 100).toFixed(2)} €</p>
             <p className={product.stock > 0 ? 'text-green-500' : 'text-red-500'}>
               {product.stock > 0 ? `${product.stock} en stock` : 'Rupture de stock'}
             </p>
