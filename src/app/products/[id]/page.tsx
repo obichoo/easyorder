@@ -206,27 +206,34 @@ export default function Page() {
 
         {/* Boutons avec redirections */}
         <div className="justify-end mt-6 flex space-x-4">
-          <button onClick={toggleFavorite} className="text-red-500 transition-transform transform hover:scale-110">
-            {favorites?.products?.includes(product._id) ? <FaHeart size={32} /> : <FaRegHeart size={32} />}
-          </button>
+          {
+              userId !== product?.artisan_id && !isAdmin && (
+                  <>
+                    <button onClick={toggleFavorite}
+                            className="text-red-500 transition-transform transform hover:scale-110">
+                      {favorites?.products?.includes(product._id) ? <FaHeart size={32}/> : <FaRegHeart size={32}/>}
+                    </button>
+                    <Link href={`/chat?user=${product?.artisan_id}`}>
+                      <button className="bg-easyorder-black text-white px-4 py-2 rounded shadow hover:bg-black transition">
+                        Contacter l'artisan
+                      </button>
+                    </Link>
 
-          <Link href={`/chat?user=${product?.artisan_id}`}>
-            <button
-                className="bg-easyorder-black text-white px-4 py-2 rounded shadow hover:bg-black transition">Contacter
-              l'artisan
-            </button>
-          </Link>
-
-          <button
-              onClick={addToCart}
-              className="flex items-center bg-easyorder-green text-white px-4 py-2 rounded shadow hover:bg-easyorder-black transition">
-            <FaShoppingCart size={20} className="mr-2" />
-            Ajouter au panier
-          </button>
+                    <button
+                        onClick={addToCart}
+                        className="flex items-center bg-easyorder-green text-white px-4 py-2 rounded shadow hover:bg-easyorder-black transition"
+                    >
+                      <FaShoppingCart size={20} className="mr-2"/>
+                      Ajouter au panier
+                    </button>
+                  </>
+              )
+          }
 
           {(userId === product?.artisan_id || isAdmin) && (
               <Link href={`/products/edit/${product?._id}`}>
-                <button className="bg-easyorder-gray text-easyorder-black px-4 py-2 rounded shadow hover:bg-easyorder-black hover:text-white transition flex">
+                <button
+                    className="bg-easyorder-gray text-easyorder-black px-4 py-2 rounded shadow hover:bg-easyorder-black hover:text-white transition flex">
                   <FaEdit size={20} className="mr-2" />
                   Modifier ce produit
                 </button>
