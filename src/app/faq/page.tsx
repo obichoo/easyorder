@@ -23,7 +23,7 @@ const faqs = [
   },
   {
     question: "J'ai confirmé la livraison par mégarde, que faire ?",
-    answer: 'Dirigez-vous vers le formulaire de contact et expliquez votre situation. Nous vous répondrons dans les plus brefs délais.',
+    answer: "Contactez un administrateur via la messagerie et expliquez la situation. Il pourra vous aider à résoudre le problème.",
   },
   {
     question: 'Existe-t-il une fonctionnalité qui permet de mettre en avant ses produits ?',
