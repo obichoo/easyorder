@@ -198,14 +198,17 @@ const PurchasesHistoryTable = ({ orders, loading }: { orders: Order[], loading: 
                                                                     Quantité : {orderItem.quantity}
                                                                 </div>
                                                             </div>
-                                                            <div>
-                                                                <button
-                                                                    onClick={() => openRatingModalForItem(orderItem)}
-                                                                    className="bg-easyorder-green text-easyorder-black p-2 shadow rounded hover:bg-easyorder-black hover:text-easyorder-gray transition"
-                                                                >
-                                                                    Noter le vendeur
-                                                                </button>
-                                                            </div>
+                                                            {
+                                                                order.status === 'delivered' &&
+                                                                <div>
+                                                                    <button
+                                                                        onClick={() => openRatingModalForItem(orderItem)}
+                                                                        className="bg-easyorder-green text-easyorder-black p-2 shadow rounded hover:bg-easyorder-black hover:text-easyorder-gray transition"
+                                                                    >
+                                                                        Noter le vendeur
+                                                                    </button>
+                                                                </div>
+                                                            }
                                                         </div>
                                                     </div>
                                                 ))}
