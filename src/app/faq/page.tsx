@@ -22,6 +22,10 @@ const faqs = [
     answer: 'Oui, tous les vendeurs sur notre plateforme sont enregistrés au RCS pour garantir la légalité de leurs activités.',
   },
   {
+    question: "J'ai confirmé la livraison par mégarde, que faire ?",
+    answer: 'Dirigez-vous vers le formulaire de contact et expliquez votre situation. Nous vous répondrons dans les plus brefs délais.',
+  },
+  {
     question: 'Existe-t-il une fonctionnalité qui permet de mettre en avant ses produits ?',
     answer: 'Oui, pour cela, un abonnement à 7,99 euros/mois est disponible.',
   },
